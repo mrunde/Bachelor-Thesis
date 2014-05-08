@@ -1,6 +1,7 @@
 package de.mrunde.bachelorthesis.instructions;
 
 import de.mrunde.bachelorthesis.basics.Landmark;
+import de.mrunde.bachelorthesis.basics.Maneuver;
 
 /**
  * The instruction is pushed to the user at decision points giving instructions
@@ -14,9 +15,14 @@ import de.mrunde.bachelorthesis.basics.Landmark;
 public abstract class Instruction {
 
 	/**
-	 * The maneuver
+	 * The maneuver type
 	 */
-	private Integer maneuver;
+	private int maneuverType;
+
+	/**
+	 * Verbal instruction for the maneuver
+	 */
+	private String maneuver;
 
 	/**
 	 * Global landmark off road (optional)
@@ -26,32 +32,40 @@ public abstract class Instruction {
 	/**
 	 * Super constructor for all sub-instruction classes
 	 * 
-	 * @param maneuver
-	 *            The maneuver
+	 * @param maneuverType
+	 *            The maneuver type
 	 */
-	public Instruction(Integer maneuver) {
-		this.maneuver = maneuver;
+	public Instruction(int maneuverType) {
+		this.maneuverType = maneuverType;
+		this.maneuver = Maneuver.getManeuverText(this.maneuverType);
 		this.global = null;
 	}
 
 	/**
 	 * Super constructor for all sub-instruction classes with global landmark
 	 * 
-	 * @param maneuver
-	 *            The maneuver
+	 * @param maneuverType
+	 *            The maneuver type
 	 * @param global
 	 *            Global landmark off road
 	 */
-	public Instruction(Integer maneuver, Landmark global) {
-		this.maneuver = maneuver;
+	public Instruction(int maneuverType, Landmark global) {
+		this.maneuverType = maneuverType;
 		this.global = global;
 	}
 
 	/**
-	 * @return The maneuver
+	 * @return The maneuver type
 	 */
-	public Integer getManeuver() {
-		return maneuver;
+	public int getManeuverType() {
+		return this.maneuverType;
+	}
+
+	/**
+	 * @return The verbal instruction for the maneuver
+	 */
+	public String getManeuver() {
+		return this.maneuver;
 	}
 
 	/**
