@@ -380,9 +380,34 @@ public class MainActivity extends MapActivity implements OnInitListener {
 		// Check if the GPS is enabled
 		if (!((LocationManager) getSystemService(LOCATION_SERVICE))
 				.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			// Open the location settings if it is disabled
-			Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-			startActivity(intent);
+			// Open dialog to inform the user that the GPS is disabled
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(getResources().getString(R.string.gpsDisabled));
+			builder.setCancelable(false);
+			builder.setPositiveButton(R.string.openSettings,
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Open the location settings if it is disabled
+							Intent intent = new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivity(intent);
+						}
+					});
+			builder.setNegativeButton(R.string.cancel,
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Dismiss the dialog
+							dialog.cancel();
+						}
+					});
+
+			// Display the dialog
+			AlertDialog dialog = builder.create();
+			dialog.show();
 		}
 
 		// Create the MyLocationOverlay

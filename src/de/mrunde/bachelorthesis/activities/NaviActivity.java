@@ -15,12 +15,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -156,6 +159,39 @@ public class NaviActivity extends MapActivity {
 	 * been fixed
 	 */
 	private void setupMyLocation() {
+		// Check if the GPS is enabled
+		if (!((LocationManager) getSystemService(LOCATION_SERVICE))
+				.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			// Open dialog to inform the user that the GPS is disabled
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(getResources().getString(R.string.gpsDisabled));
+			builder.setCancelable(false);
+			builder.setPositiveButton(R.string.openSettings,
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Open the location settings if it is disabled
+							Intent intent = new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivity(intent);
+						}
+					});
+			builder.setNegativeButton(R.string.cancel,
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// Dismiss the dialog
+							dialog.cancel();
+						}
+					});
+
+			// Display the dialog
+			AlertDialog dialog = builder.create();
+			dialog.show();
+		}
+
 		this.myLocationOverlay = new MyLocationOverlay(this, map);
 		myLocationOverlay.enableMyLocation();
 		myLocationOverlay.runOnFirstFix(new Runnable() {
@@ -374,11 +410,6 @@ public class NaviActivity extends MapActivity {
 	 *            The guidance information from MapQuest
 	 */
 	private void createInstructions(JSONObject json) {
-		// Display progress dialog
-		ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage("Creating instructions...");
-		progressDialog.show();
-
 		if (json == null) {
 			// Could not receive the JSON
 			Toast.makeText(this,
@@ -387,21 +418,21 @@ public class NaviActivity extends MapActivity {
 			// Finish the activity to return to MainActivity
 			finish();
 		} else {
-			// TODO Test the json content
-			try {
-				tv_instruction.setText("Fuel used: "
-						+ String.valueOf(json.getJSONObject("guidance")
-								.getDouble("FuelUsed")));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
 			// Create the instruction manager
 			im = new InstructionManager(json);
 			// Check if the import was successful
 			if (im.isImportSuccessful()) {
 				// Create the instructions
-				// im.createInstructions(); TODO
+				im.createInstructions();
+
+				// Display the first instruction in the TextView
+				// TODO must be only the first one and not 5
+				tv_instruction.setText(im.getInstruction(0) + "\n"
+						+ im.getInstruction(1) + "\n" + im.getInstruction(2)
+						+ "\n" + im.getInstruction(3) + "\n"
+						+ im.getInstruction(4));
 			} else {
+				// Import was not successful
 				Toast.makeText(
 						this,
 						getResources().getString(
@@ -411,9 +442,6 @@ public class NaviActivity extends MapActivity {
 				finish();
 			}
 		}
-
-		// Dismiss progress dialog
-		progressDialog.dismiss();
 	}
 
 	@Override
