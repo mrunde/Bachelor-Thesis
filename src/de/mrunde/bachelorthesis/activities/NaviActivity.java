@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Calendar;
+import java.util.Locale;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -17,13 +18,18 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +52,7 @@ import de.mrunde.bachelorthesis.instructions.InstructionManager;
  * 
  * @author Marius Runde
  */
-public class NaviActivity extends MapActivity {
+public class NaviActivity extends MapActivity implements OnInitListener {
 
 	// --- The graphical user interface (GUI) ---
 	/**
@@ -106,6 +112,68 @@ public class NaviActivity extends MapActivity {
 	// --- End of route and instruction objects ---
 
 	/**
+	 * LocationListener of the NaviActivity
+	 */
+	private LocationListener locationListener;
+
+	/**
+	 * Maximum amount of tolerated driving errors
+	 */
+	private final int MAX_DRIVING_ERRORS = 5;
+
+	/**
+	 * Store the number of driving errors
+	 */
+	private int drivingErrors = 0;
+
+	/**
+	 * Store the last distance to the next decision point to recognize driving
+	 * errors
+	 */
+	private double lastDistance = -1;
+
+	/**
+	 * TextToSpeech for audio output
+	 */
+	private TextToSpeech tts;
+
+	/**
+	 * This class handles changes of the user's location.
+	 * 
+	 * @author Marius Runde
+	 */
+	private final class MyLocationListener implements LocationListener {
+
+		@Override
+		public void onLocationChanged(Location location) {
+			// TODO This is just for testing and should be deleted
+			// AlertDialog.Builder builder = new AlertDialog.Builder(
+			// NaviActivity.this);
+			// builder.setTitle("Location changed!");
+			// AlertDialog dialog = builder.create();
+			// dialog.show();
+
+			checkForDrivingError(location);
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// GPS provider status changed. Do nothing
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+			// GPS is turned on. Do nothing
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			// GPS is turned off. Do nothing. User should have been informed
+			// already before
+		}
+	}
+
+	/**
 	 * This method is called when the application has been started
 	 */
 	@Override
@@ -120,6 +188,15 @@ public class NaviActivity extends MapActivity {
 		this.destination_lat = intent.getDoubleExtra("destination_lat", 0.0);
 		this.destination_lng = intent.getDoubleExtra("destination_lng", 0.0);
 		this.routeOptions = intent.getStringExtra("routeOptions");
+
+		// Initialize the TextToSpeech
+		tts = new TextToSpeech(this, this);
+
+		// Initialize the MyLocationListener
+		this.locationListener = new MyLocationListener();
+		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
+				this.locationListener);
 
 		// Setup the whole GUI and map
 		setupGUI();
@@ -390,7 +467,7 @@ public class NaviActivity extends MapActivity {
 		@Override
 		protected void onPostExecute(JSONObject result) {
 			// Dismiss progress dialog
-			this.progressDialog.dismiss();
+			progressDialog.dismiss();
 
 			// Write the time needed for the download into the log
 			downloadTimer = Calendar.getInstance().get(Calendar.SECOND)
@@ -444,6 +521,51 @@ public class NaviActivity extends MapActivity {
 		}
 	}
 
+	/**
+	 * This method compares the distance between the user and the next decision
+	 * point. If this distance increases MAX_DRIVING_ERRORS times in a row, the
+	 * route will be recalculated.
+	 * 
+	 * @param lastLocation
+	 *            The user location
+	 */
+	private void checkForDrivingError(Location lastLocation) {
+		// Get the last decision point
+		GeoPoint lastDecisionPoint = im.getLastInstruction().getDecisionPoint();
+
+		// Calculate the distance to the next decision point
+		float[] results = new float[1];
+		Location.distanceBetween(lastLocation.getLatitude(),
+				lastLocation.getLongitude(), lastDecisionPoint.getLatitude(),
+				lastDecisionPoint.getLongitude(), results);
+
+		// Compare the distances
+		if (this.lastDistance < results[0]) {
+			this.drivingErrors++;
+			Log.w("NaviActivity.DrivingError", "Driving errors increased to "
+					+ this.drivingErrors);
+		} else if (this.drivingErrors > 0) {
+			this.drivingErrors--;
+			Log.i("NaviActivity.DrivingError", "Driving errors decreased to "
+					+ this.drivingErrors);
+		}
+
+		if (this.drivingErrors >= this.MAX_DRIVING_ERRORS) {
+			// This is supposed to be a driving error
+			Toast.makeText(this, R.string.recalculate, Toast.LENGTH_SHORT)
+					.show();
+			tts.speak(getResources().getString(R.string.recalculate),
+					TextToSpeech.QUEUE_FLUSH, null);
+			Log.w("NaviActivity.DrivingError", "Recalculating route...");
+
+			// Recalculate route
+			calculateRoute();
+
+			// Get the guidance information and create the instructions
+//			getGuidance(); TODO seems like an error is happening here
+		}
+	}
+
 	@Override
 	protected boolean isRouteDisplayed() {
 		// Do nothing
@@ -466,5 +588,15 @@ public class NaviActivity extends MapActivity {
 	protected void onPause() {
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
+	}
+
+	@Override
+	public void onInit(int status) {
+		if (status == TextToSpeech.SUCCESS) {
+			tts.setLanguage(Locale.ENGLISH);
+		} else {
+			tts = null;
+			Log.e("MainActivity", "Failed to initialize the TextToSpeech");
+		}
 	}
 }

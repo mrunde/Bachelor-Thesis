@@ -28,5 +28,6 @@
     <string name="cancel">Cancel</string>
     <string name="openSettings">Open settings</string>
     <string name="gpsDisabled">GPS is disabled</string>
+    <string name="recalculate">Recalculating route</string>
 
 </resources>
