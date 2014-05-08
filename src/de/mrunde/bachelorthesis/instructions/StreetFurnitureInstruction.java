@@ -1,5 +1,7 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import com.mapquest.android.maps.GeoPoint;
+
 /**
  * This is a "street furniture"-based instruction.
  * 
@@ -9,11 +11,8 @@ public class StreetFurnitureInstruction extends Instruction {
 
 	/**
 	 * Constructor of the StreetFurnitureInstruction class
-	 * 
-	 * @param maneuver
-	 *            The maneuver
 	 */
-	public StreetFurnitureInstruction(Integer maneuver) {
-		super(maneuver);
+	public StreetFurnitureInstruction(GeoPoint decisionPoint, int maneuverType) {
+		super(decisionPoint, maneuverType);
 	}
 }

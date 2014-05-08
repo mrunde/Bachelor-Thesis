@@ -1,5 +1,7 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import com.mapquest.android.maps.GeoPoint;
+
 import de.mrunde.bachelorthesis.basics.Maneuver;
 
 /**
@@ -22,8 +24,9 @@ public class DistanceInstruction extends Instruction {
 	 * @param distance
 	 *            Distance to the decision point
 	 */
-	public DistanceInstruction(int maneuverType, int distance) {
-		super(maneuverType);
+	public DistanceInstruction(GeoPoint decisionPoint, int maneuverType,
+			int distance) {
+		super(decisionPoint, maneuverType);
 		this.distance = distance;
 	}
 

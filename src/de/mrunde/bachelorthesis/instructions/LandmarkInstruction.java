@@ -1,5 +1,7 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import com.mapquest.android.maps.GeoPoint;
+
 import de.mrunde.bachelorthesis.basics.Landmark;
 
 /**
@@ -16,11 +18,8 @@ public class LandmarkInstruction extends Instruction {
 
 	/**
 	 * Constructor of the LandmarkInstruction class
-	 * 
-	 * @param text
-	 *            Instruction as a verbal text
 	 */
-	public LandmarkInstruction(Integer maneuver) {
-		super(maneuver);
+	public LandmarkInstruction(GeoPoint decisionPoint, int maneuverType) {
+		super(decisionPoint, maneuverType);
 	}
 }

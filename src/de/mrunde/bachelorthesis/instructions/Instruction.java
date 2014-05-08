@@ -1,5 +1,7 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import com.mapquest.android.maps.GeoPoint;
+
 import de.mrunde.bachelorthesis.basics.Landmark;
 import de.mrunde.bachelorthesis.basics.Maneuver;
 
@@ -13,6 +15,11 @@ import de.mrunde.bachelorthesis.basics.Maneuver;
  * @author Marius Runde
  */
 public abstract class Instruction {
+
+	/**
+	 * The decision point where the maneuver has to be done
+	 */
+	private GeoPoint decisionPoint;
 
 	/**
 	 * The maneuver type
@@ -35,7 +42,8 @@ public abstract class Instruction {
 	 * @param maneuverType
 	 *            The maneuver type
 	 */
-	public Instruction(int maneuverType) {
+	public Instruction(GeoPoint decisionPoint, int maneuverType) {
+		this.decisionPoint = decisionPoint;
 		this.maneuverType = maneuverType;
 		this.maneuver = Maneuver.getManeuverText(this.maneuverType);
 		this.global = null;
@@ -49,9 +57,17 @@ public abstract class Instruction {
 	 * @param global
 	 *            Global landmark off road
 	 */
-	public Instruction(int maneuverType, Landmark global) {
+	public Instruction(GeoPoint decisionPoint, int maneuverType, Landmark global) {
+		this.decisionPoint = decisionPoint;
 		this.maneuverType = maneuverType;
 		this.global = global;
+	}
+
+	/**
+	 * @return The decision point
+	 */
+	public GeoPoint getDecisionPoint() {
+		return this.decisionPoint;
 	}
 
 	/**

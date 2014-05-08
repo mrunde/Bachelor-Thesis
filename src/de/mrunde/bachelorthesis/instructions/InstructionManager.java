@@ -11,9 +11,6 @@ import android.util.Log;
 
 import com.mapquest.android.maps.GeoPoint;
 
-import de.mrunde.bachelorthesis.basics.Landmark;
-import de.mrunde.bachelorthesis.basics.StreetFurniture;
-
 /**
  * The InstructionManager handles turn events in the navigation process. It can
  * create instructions depending on the available landmarks, street furniture or
@@ -22,11 +19,6 @@ import de.mrunde.bachelorthesis.basics.StreetFurniture;
  * @author Marius Runde
  */
 public class InstructionManager {
-
-	/**
-	 * The guidance information
-	 */
-	private JSONObject guidance;
 
 	/**
 	 * Value to check if the JSON import succeeded
@@ -46,12 +38,17 @@ public class InstructionManager {
 	/**
 	 * Distance of each leg in the route
 	 */
-	private Integer[] distances;
+	private int[] distances;
 
 	/**
 	 * Instructions created by the InstructionManager
 	 */
-	private String[] instructions;
+	private Instruction[] instructions;
+
+	/**
+	 * Store the last instruction, pushed to the system. Default = 0
+	 */
+	private int lastInstruction;
 
 	/**
 	 * Constructor of the InstructionManager class
@@ -62,7 +59,7 @@ public class InstructionManager {
 	public InstructionManager(JSONObject json) {
 		// Extract the guidance information out of the raw JSON file
 		try {
-			this.guidance = json.getJSONObject("guidance");
+			JSONObject guidance = json.getJSONObject("guidance");
 
 			// Get the maneuver types
 			this.maneuvers = new ArrayList<Integer>();
@@ -78,7 +75,11 @@ public class InstructionManager {
 
 			// Get the decision points TODO shape points contain more points
 			// than needed
-			// this.decisionPoints = new GeoPoint[this.maneuvers.size()];
+			this.decisionPoints = new GeoPoint[this.maneuvers.size()];
+			// TODO just for testing
+			for (int i = 0; i < this.decisionPoints.length; i++) {
+				this.decisionPoints[i] = new GeoPoint(52, 7);
+			}
 			// JSONArray shapePoints = guidance.getJSONArray("shapePoints");
 			// for (int i = 0; i < shapePoints.length() - 1; i += 2) {
 			// this.decisionPoints[i] = new GeoPoint(shapePoints.getDouble(i),
@@ -87,7 +88,7 @@ public class InstructionManager {
 			// }
 
 			// Get the distances
-			this.distances = new Integer[this.maneuvers.size()];
+			this.distances = new int[this.maneuvers.size()];
 			// TODO just for testing
 			for (int i = 0; i < this.distances.length; i++) {
 				this.distances[i] = (int) Math.round(Math.random() * 100);
@@ -102,6 +103,9 @@ public class InstructionManager {
 			// guidanceLinkCollection.getJSONObject(i)
 			// .get("length");
 			// }
+
+			// Set the last instruction index
+			this.lastInstruction = 0;
 
 			this.importSuccessful = true;
 		} catch (JSONException e) {
@@ -120,14 +124,15 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Get the verbal instruction at the desired index
+	 * Get the instruction at the desired index
 	 * 
 	 * @param index
 	 *            Index of the instruction
-	 * @return Verbal instruction
+	 * @return The instruction
 	 */
-	public String getInstruction(int index) {
+	public Instruction getInstruction(int index) {
 		if (this.instructions[index] != null) {
+			this.lastInstruction = index;
 			return this.instructions[index];
 		} else {
 			Log.e("InstructionManager", "Could not get instruction at index "
@@ -137,13 +142,22 @@ public class InstructionManager {
 	}
 
 	/**
+	 * Get the last instruction, pushed to the system
+	 * 
+	 * @return The last instruction, pushed to the system
+	 */
+	public Instruction getLastInstruction() {
+		return this.instructions[this.lastInstruction];
+	}
+
+	/**
 	 * Create the instructions
 	 */
 	public void createInstructions() {
-		this.instructions = new String[this.maneuvers.size()];
+		this.instructions = new Instruction[this.maneuvers.size()];
 		for (int i = 0; i < this.instructions.length; i++) {
-			this.instructions[i] = createInstruction(this.maneuvers.get(i),
-					this.distances[i]);
+			this.instructions[i] = createInstruction(this.decisionPoints[i],
+					this.maneuvers.get(i), this.distances[i]);
 		}
 	}
 
@@ -152,141 +166,19 @@ public class InstructionManager {
 	 * InstructionManager automatically finds out which type of instruction has
 	 * to be created and returns it as a verbal text.
 	 * 
-	 * @param maneuver
-	 *            maneuver
-	 * @return The instruction as a verbal text
-	 */
-	private String createInstruction(Integer maneuver, Integer distance) {
-		String instruction = createDistanceInstruction(maneuver, distance);
-
-		return instruction;
-	}
-
-	/**
-	 * Create a landmark-based instruction
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param local
-	 *            The local landmark at the decision point
-	 * @return The instruction as a verbal text
-	 */
-	private String createLandmarkInstruction(Integer maneuver, Landmark local) {
-		return null;
-	}
-
-	/**
-	 * Create a landmark-based instruction with a global landmark
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param local
-	 *            The local landmark at the decision point
-	 * @param global
-	 *            The global landmark off road
-	 * @return The instruction as a verbal text
-	 */
-	private String createLandmarkInstruction(Integer maneuver, Landmark local,
-			Landmark global) {
-		return null;
-	}
-
-	/**
-	 * Create a "street furniture"-based instruction
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param sf
-	 *            The street furniture at the decision point
-	 * @return The instruction as a verbal text
-	 */
-	private String createStreetFurnitureInstruction(Integer maneuver,
-			StreetFurniture sf) {
-		return null;
-	}
-
-	/**
-	 * Create a "street furniture"-based instruction with a global landmark
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param sf
-	 *            The street furniture at the decision point
-	 * @param global
-	 *            The global landmark off road
-	 * @return The instruction as a verbal text
-	 */
-	private String createStreetFurnitureInstruction(Integer maneuver,
-			StreetFurniture sf, Landmark global) {
-		return null;
-	}
-
-	/**
-	 * Create an intersection-based instruction
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param numberOfIntersections
-	 *            Number of intersections to pass
-	 * @param position
-	 *            Position where the maneuver takes place
-	 * @return The instruction as a verbal text
-	 */
-	private String createIntersectionInstruction(Integer maneuver,
-			int numberOfIntersections, GeoPoint position) {
-		String instruction = maneuver + " after " + numberOfIntersections
-				+ " intersections";
-
-		return instruction;
-	}
-
-	/**
-	 * Create an intersection-based instruction with a global landmark
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param numberOfIntersections
-	 *            Number of intersections to pass
-	 * @param position
-	 *            Position where the maneuver takes place
-	 * @param global
-	 *            The global landmark off road
-	 * @return The instruction as a verbal text
-	 */
-	private String createIntersectionInstruction(Integer maneuver,
-			int numberOfIntersections, GeoPoint position, Landmark global) {
-		return null;
-	}
-
-	/**
-	 * Create a distance-based instruction
-	 * 
-	 * @param maneuver
-	 *            The maneuver
+	 * @param decisionPoint
+	 *            Decision point where the maneuver has to be done
+	 * @param maneuverType
+	 *            Maneuver type
 	 * @param distance
-	 *            Distance to maneuver
-	 * @return The instruction as a verbal text
+	 *            Distance to decision point
+	 * @return The instruction
 	 */
-	private String createDistanceInstruction(Integer maneuver, Integer distance) {
-		String instruction = new DistanceInstruction(maneuver, distance)
-				.toString();
+	private Instruction createInstruction(GeoPoint decisionPoint,
+			Integer maneuverType, Integer distance) {
+		Instruction instruction = new DistanceInstruction(decisionPoint,
+				maneuverType, distance);
 
 		return instruction;
-	}
-
-	/**
-	 * Create a distance-based instruction with a global landmark
-	 * 
-	 * @param maneuver
-	 *            The maneuver
-	 * @param distance
-	 *            Distance to maneuver
-	 * @param global
-	 *            The global landmark off road
-	 * @return The instruction as a verbal text
-	 */
-	private String createDistanceInstruction(Integer maneuver,
-			Integer distance, Landmark global) {
-		return null;
 	}
 }

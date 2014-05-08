@@ -1,14 +1,16 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import com.mapquest.android.maps.GeoPoint;
+
 public class IntersectionInstruction extends Instruction {
 
 	/**
 	 * Constructor of the IntersectionInstruction class
 	 * 
-	 * @param maneuver
-	 *            The maneuver
+	 * @param maneuverType
+	 *            The maneuver type
 	 */
-	public IntersectionInstruction(Integer maneuver) {
-		super(maneuver);
+	public IntersectionInstruction(GeoPoint decisionPoint, int maneuverType) {
+		super(decisionPoint, maneuverType);
 	}
 }
