@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Calendar;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -145,6 +146,9 @@ public class NaviActivity extends MapActivity {
 	private void setupMapView() {
 		this.map = (MapView) findViewById(R.id.map);
 		map.setBuiltInZoomControls(true);
+		// Disable user interaction on the map
+		map.setClickable(false);
+		map.setLongClickable(false);
 	}
 
 	/**
@@ -276,6 +280,11 @@ public class NaviActivity extends MapActivity {
 		private ProgressDialog progressDialog = new ProgressDialog(
 				NaviActivity.this);
 
+		/**
+		 * Count the time needed for the data download
+		 */
+		private int downloadTimer;
+
 		@Override
 		protected void onPreExecute() {
 			// Display progress dialog
@@ -290,6 +299,9 @@ public class NaviActivity extends MapActivity {
 					GetJsonTask.this.cancel(true);
 				}
 			});
+
+			// Set timer to current time
+			downloadTimer = Calendar.getInstance().get(Calendar.SECOND);
 		}
 
 		@Override
@@ -312,7 +324,7 @@ public class NaviActivity extends MapActivity {
 					throw new IOException(statusLine.getReasonPhrase());
 				}
 			} catch (Exception e) {
-				Log.e("NaviActivity",
+				Log.e("GetJsonTask",
 						"Could not get the data. This is the error message: "
 								+ e.getMessage());
 				return null;
@@ -332,7 +344,7 @@ public class NaviActivity extends MapActivity {
 				JSONObject result = new JSONObject(output);
 				return result;
 			} catch (JSONException e) {
-				Log.e("NaviActivity",
+				Log.e("GetJsonTask",
 						"Could not convert output to JSONObject. This is the error message: "
 								+ e.getMessage());
 				return null;
@@ -343,6 +355,12 @@ public class NaviActivity extends MapActivity {
 		protected void onPostExecute(JSONObject result) {
 			// Dismiss progress dialog
 			this.progressDialog.dismiss();
+
+			// Write the time needed for the download into the log
+			downloadTimer = Calendar.getInstance().get(Calendar.SECOND)
+					- downloadTimer;
+			Log.i("GetJsonTask", "Completed guidance download in "
+					+ downloadTimer + " seconds");
 
 			// Create the instructions
 			createInstructions(result);
@@ -379,19 +397,19 @@ public class NaviActivity extends MapActivity {
 			}
 			// Create the instruction manager
 			im = new InstructionManager(json);
-//			// Check if the import was successful
-//			if (im.isImportSuccessful()) {
-//				// Create the instructions
-//				im.createInstructions();
-//			} else {
-//				Toast.makeText(
-//						this,
-//						getResources().getString(
-//								R.string.jsonImportNotSuccessful),
-//						Toast.LENGTH_SHORT).show();
-//				// Finish the activity to return to MainActivity
-//				finish();
-//			}
+			// Check if the import was successful
+			if (im.isImportSuccessful()) {
+				// Create the instructions
+				// im.createInstructions(); TODO
+			} else {
+				Toast.makeText(
+						this,
+						getResources().getString(
+								R.string.jsonImportNotSuccessful),
+						Toast.LENGTH_SHORT).show();
+				// Finish the activity to return to MainActivity
+				finish();
+			}
 		}
 
 		// Dismiss progress dialog
@@ -400,7 +418,7 @@ public class NaviActivity extends MapActivity {
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		return false;
 	}
 

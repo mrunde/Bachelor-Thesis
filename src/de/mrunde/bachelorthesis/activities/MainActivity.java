@@ -12,7 +12,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -375,6 +377,15 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	 * been fixed
 	 */
 	private void setupMyLocation() {
+		// Check if the GPS is enabled
+		if (!((LocationManager) getSystemService(LOCATION_SERVICE))
+				.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			// Open the location settings if it is disabled
+			Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivity(intent);
+		}
+
+		// Create the MyLocationOverlay
 		this.myLocationOverlay = new MyLocationOverlay(this, map);
 		myLocationOverlay.enableMyLocation();
 		myLocationOverlay.runOnFirstFix(new Runnable() {

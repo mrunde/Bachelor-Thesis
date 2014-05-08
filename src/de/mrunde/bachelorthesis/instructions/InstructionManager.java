@@ -1,5 +1,6 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -9,10 +10,6 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.mapquest.android.maps.GeoPoint;
-import com.mapquest.android.maps.RouteResponse.Route.Leg.Maneuver;
-
-import de.mrunde.bachelorthesis.basics.Landmark;
-import de.mrunde.bachelorthesis.basics.StreetFurniture;
 
 /**
  * The InstructionManager handles turn events in the navigation process. It can
@@ -65,13 +62,17 @@ public class InstructionManager {
 			this.guidance = json.getJSONObject("guidance");
 
 			// Get the maneuver types
+			this.maneuvers = new ArrayList<Integer>();
 			JSONArray guidanceNodeCollection = guidance
 					.getJSONArray("GuidanceNodeCollection");
 			for (int i = 0; i < guidanceNodeCollection.length(); i++) {
-				if (((JSONObject) guidanceNodeCollection.get(i))
+				if ((guidanceNodeCollection.getJSONObject(i))
 						.has("maneuverType")) {
-					this.maneuvers.add((Integer) guidanceNodeCollection.getJSONObject(i)
-							.get("maneuverType")); // TODO here still the error occurs!!!
+					Log.i("Test", i + " has maneuverType");
+					this.maneuvers.add(guidanceNodeCollection.getJSONObject(i)
+							.getInt("maneuverType"));
+				} else {
+					Log.i("Test", i + " has no maneuverType");
 				}
 			}
 
@@ -80,7 +81,7 @@ public class InstructionManager {
 			JSONArray shapePoints = guidance.getJSONArray("shapePoints");
 			for (int i = 0; i < shapePoints.length() - 1; i += 2) {
 				this.decisionPoints[i] = new GeoPoint(shapePoints.getDouble(i),
-						(Double) shapePoints.get(i + 1));
+						(Double) shapePoints.get(i + 1)); // TODO now here an error occurs :(
 			}
 
 			// Get the distances
