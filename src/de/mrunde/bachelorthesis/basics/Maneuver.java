@@ -2,7 +2,11 @@ package de.mrunde.bachelorthesis.basics;
 
 /**
  * This is the Maneuver class that converts the maneuver types of MapQuest into
- * the verbal instructions.
+ * the verbal instructions.<br/>
+ * <br/>
+ * You can find the maneuver types at the MapQuest API here:<br/>
+ * <a href="https://open.mapquestapi.com/guidance/#maneuvertypes">https://open
+ * .mapquestapi.com/guidance/#maneuvertypes</a>
  * 
  * @author Marius Runde
  */
@@ -56,34 +60,56 @@ public abstract class Maneuver {
 	// --- End of maneuver types of MapQuest ---
 
 	/**
-	 * Store the verbal maneuver instructions in an array
+	 * Store the verbal maneuver instructions in an array. The Strings are taken
+	 * from the MapQuest API [1] and edited to insert them more adequately into
+	 * the instructions.<br/>
+	 * <br/>
+	 * [1] <a
+	 * href="https://open.mapquestapi.com/guidance/#maneuvertypes">https:/
+	 * /open.mapquestapi.com/guidance/#maneuvertypes</a>
 	 */
 	private static final String[] maneuverTexts = new String[] {
-			"No maneuver occurs here.", "Continue straight.",
-			"No maneuver occurs here. Road name changes.",
-			"Make a slight left.", "Turn left.", "Make a sharp left.",
-			"Make a slight right.", "Turn right.", "Make a sharp right.",
-			"Stay left.", "Stay right.", "Stay straight.", "Make a U-turn.",
-			"Make a left U-turn.", "Make a right U-turn.", "Exit left.",
-			"Exit right.", "Take the ramp on the left.",
-			"Take the ramp on the right.", "Take the ramp straight ahead.",
-			"Merge left.", "Merge right.", "Merge.", "Enter state/province.",
-			"Arrive at your destination.",
-			"Arrive at your destination on the left.",
-			"Arrive at your destination on the right.",
-			"Enter the roundabout and take the 1st exit.",
-			"Enter the roundabout and take the 2nd exit.",
-			"Enter the roundabout and take the 3rd exit.",
-			"Enter the roundabout and take the 4th exit.",
-			"Enter the roundabout and take the 5th exit.",
-			"Enter the roundabout and take the 6th exit.",
-			"Enter the roundabout and take the 7th exit.",
-			"Enter the roundabout and take the 8th exit.",
-			"Take a public transit bus or rail line.",
-			"Transfer to a public transit bus or rail line.",
+			null, /* 0 */
+			"Continue straight",
+			null,
+			"Make a slight left turn",
+			"Turn left",
+			"Make a sharp left turn", /* 5 */
+			"Make a slight right turn",
+			"Turn right",
+			"Make a sharp right turn",
+			"Stay left",
+			"Stay right", /* 10 */
+			"Stay straight",
+			"Make a U-turn",
+			"Make a left U-turn",
+			"Make a right U-turn",
+			"Exit left", /* 15 */
+			"Exit right",
+			"Take the ramp on the left",
+			"Take the ramp on the right",
+			"Take the ramp straight ahead",
+			"Merge left", /* 20 */
+			"Merge right",
+			"Merge",
+			"Enter state/province",
+			"Arrive at your destination",
+			"Arrive at your destination on the left", /* 25 */
+			"Arrive at your destination on the right",
+			"Enter the roundabout and take the 1st exit",
+			"Enter the roundabout and take the 2nd exit",
+			"Enter the roundabout and take the 3rd exit",
+			"Enter the roundabout and take the 4th exit", /* 30 */
+			"Enter the roundabout and take the 5th exit",
+			"Enter the roundabout and take the 6th exit",
+			"Enter the roundabout and take the 7th exit",
+			"Enter the roundabout and take the 8th exit",
+			"Take a public transit bus or rail line", /* 35 */
+			"Transfer to a public transit bus or rail line",
 			"Enter a public transit bus or rail station",
 			"Exit a public transit bus or rail station",
-			"Remain on the current bus/rail car" };
+			"Remain on the current bus/rail car" /* 39 */
+		};
 
 	/**
 	 * Get the corresponding verbal maneuver instruction of the maneuver type
