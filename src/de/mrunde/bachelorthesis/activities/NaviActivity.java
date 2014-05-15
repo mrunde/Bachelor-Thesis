@@ -272,7 +272,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 			public void run() {
 				GeoPoint currentLocation = myLocationOverlay.getMyLocation();
 				map.getController().animateTo(currentLocation);
-				map.getController().setZoom(14);
+				map.getController().setZoom(18);
 				map.getOverlays().add(myLocationOverlay);
 				myLocationOverlay.setFollowing(true);
 			}
