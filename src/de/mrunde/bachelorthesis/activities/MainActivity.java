@@ -233,7 +233,8 @@ public class MainActivity extends MapActivity implements OnInitListener {
 						R.string.calculate)) {
 					// Inform the user about the route is being calculated
 					tts.speak("Calculating route from current location to "
-							+ str_destination, TextToSpeech.QUEUE_FLUSH, null);
+							+ edt_destination.getText().toString(),
+							TextToSpeech.QUEUE_FLUSH, null);
 
 					// Transform the current location into a String
 					str_currentLocation = "{latLng:{lat:"
@@ -241,6 +242,10 @@ public class MainActivity extends MapActivity implements OnInitListener {
 							+ ",lng:"
 							+ myLocationOverlay.getMyLocation().getLongitude()
 							+ "}}";
+
+					// Transform the destination location into a String
+					str_destination = "{latLng:{lat:" + destination_coords[0]
+							+ ",lng:" + destination_coords[1] + "}}";
 
 					// Calculate the route
 					calculateRoute();
