@@ -266,6 +266,8 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 
 		this.myLocationOverlay = new MyLocationOverlay(this, map);
 		myLocationOverlay.enableMyLocation();
+		myLocationOverlay.setMarker(
+				getResources().getDrawable(R.drawable.my_location), 0);
 		myLocationOverlay.runOnFirstFix(new Runnable() {
 
 			@Override

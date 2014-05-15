@@ -418,6 +418,8 @@ public class MainActivity extends MapActivity implements OnInitListener {
 		// Create the MyLocationOverlay
 		this.myLocationOverlay = new MyLocationOverlay(this, map);
 		myLocationOverlay.enableMyLocation();
+		myLocationOverlay.setMarker(
+				getResources().getDrawable(R.drawable.my_location), 0);
 		myLocationOverlay.runOnFirstFix(new Runnable() {
 
 			@Override
