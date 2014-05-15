@@ -1,15 +1,13 @@
 package de.mrunde.bachelorthesis.instructions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
 import com.mapquest.android.maps.GeoPoint;
+
+import de.mrunde.bachelorthesis.basics.Route;
+import de.mrunde.bachelorthesis.basics.RouteSegment;
 
 /**
  * The InstructionManager handles turn events in the navigation process. It can
@@ -26,19 +24,9 @@ public class InstructionManager {
 	private boolean importSuccessful;
 
 	/**
-	 * Maneuver types at the decision points
+	 * Store the route information
 	 */
-	private List<Integer> maneuvers;
-
-	/**
-	 * Decision points of the route
-	 */
-	private GeoPoint[] decisionPoints;
-
-	/**
-	 * Distance of each leg in the route
-	 */
-	private int[] distances;
+	private Route route;
 
 	/**
 	 * Instructions created by the InstructionManager
@@ -46,9 +34,9 @@ public class InstructionManager {
 	private Instruction[] instructions;
 
 	/**
-	 * Store the last instruction, pushed to the system. Default = 0
+	 * Store the current instruction, pushed to the system. Default = 0
 	 */
-	private int lastInstruction;
+	private int currentInstruction;
 
 	/**
 	 * Constructor of the InstructionManager class
@@ -57,63 +45,10 @@ public class InstructionManager {
 	 *            The guidance information in a JSON format
 	 */
 	public InstructionManager(JSONObject json) {
-		// Extract the guidance information out of the raw JSON file
-		try {
-			JSONObject guidance = json.getJSONObject("guidance");
+		this.route = new Route(json);
 
-			// Get the maneuver types
-			this.maneuvers = new ArrayList<Integer>();
-			JSONArray guidanceNodeCollection = guidance
-					.getJSONArray("GuidanceNodeCollection");
-			for (int i = 0; i < guidanceNodeCollection.length(); i++) {
-				if ((guidanceNodeCollection.getJSONObject(i))
-						.has("maneuverType")) {
-					this.maneuvers.add(guidanceNodeCollection.getJSONObject(i)
-							.getInt("maneuverType"));
-				}
-			}
-
-			// Get the decision points TODO shape points contain more points
-			// than needed
-			this.decisionPoints = new GeoPoint[this.maneuvers.size()];
-			// TODO just for testing
-			for (int i = 0; i < this.decisionPoints.length; i++) {
-				this.decisionPoints[i] = new GeoPoint(52, 7);
-			}
-			// JSONArray shapePoints = guidance.getJSONArray("shapePoints");
-			// for (int i = 0; i < shapePoints.length() - 1; i += 2) {
-			// this.decisionPoints[i] = new GeoPoint(shapePoints.getDouble(i),
-			// (Double) shapePoints.get(i + 1)); // TODO now here an error
-			// occurs :(
-			// }
-
-			// Get the distances
-			this.distances = new int[this.maneuvers.size()];
-			// TODO just for testing
-			for (int i = 0; i < this.distances.length; i++) {
-				this.distances[i] = (int) Math.round(Math.random() * 100);
-			}
-			// JSONArray guidanceLinkCollection = guidance
-			// .getJSONArray("GuidanceLinkCollection");
-			// int distanceLength = this.distances.length; TODO test
-			// int guidanceLinkCollectionLength =
-			// guidanceLinkCollection.length(); TODO test
-			// for (int i = 0; i < guidanceLinkCollection.length(); i++) {
-			// this.distances[i] = (Integer)
-			// guidanceLinkCollection.getJSONObject(i)
-			// .get("length");
-			// }
-
-			// Set the last instruction index
-			this.lastInstruction = 0;
-
-			this.importSuccessful = true;
-		} catch (JSONException e) {
-			Log.e("InstructionManager",
-					"Could not extract the guidance JSONObject. This is the error message: "
-							+ e.getMessage());
-			this.importSuccessful = false;
-		}
+		// Check if the JSON import has been successful
+		this.importSuccessful = this.route.isImportSuccessful();
 	}
 
 	/**
@@ -132,7 +67,7 @@ public class InstructionManager {
 	 */
 	public Instruction getInstruction(int index) {
 		if (this.instructions[index] != null) {
-			this.lastInstruction = index;
+			this.currentInstruction = index;
 			return this.instructions[index];
 		} else {
 			Log.e("InstructionManager", "Could not get instruction at index "
@@ -142,22 +77,27 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Get the last instruction, pushed to the system
+	 * Get the current instruction, pushed to the system
 	 * 
-	 * @return The last instruction, pushed to the system
+	 * @return The current instruction, pushed to the system
 	 */
-	public Instruction getLastInstruction() {
-		return this.instructions[this.lastInstruction];
+	public Instruction getCurrentInstruction() {
+		return this.instructions[this.currentInstruction];
 	}
 
 	/**
-	 * Create the instructions
+	 * Create the instructions from the route information
 	 */
 	public void createInstructions() {
-		this.instructions = new Instruction[this.maneuvers.size()];
+		this.instructions = new Instruction[this.route.getNumberOfSegments()];
 		for (int i = 0; i < this.instructions.length; i++) {
-			this.instructions[i] = createInstruction(this.decisionPoints[i],
-					this.maneuvers.get(i), this.distances[i]);
+			RouteSegment rs = this.route.getNextSegment();
+			this.instructions[i] = createInstruction(rs.getEndPoint(),
+					rs.getManeuverType(), rs.getDistance());
+			// TODO Log all instructions for testing
+			Log.d("InstructionManager", "Instruction " + i + ": "
+					+ this.instructions[i].toString() + " | Maneuver Type: "
+					+ this.instructions[i].getManeuverType());
 		}
 	}
 

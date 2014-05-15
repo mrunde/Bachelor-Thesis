@@ -146,14 +146,8 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 
 		@Override
 		public void onLocationChanged(Location location) {
-			// TODO This is just for testing and should be deleted
-			// AlertDialog.Builder builder = new AlertDialog.Builder(
-			// NaviActivity.this);
-			// builder.setTitle("Location changed!");
-			// AlertDialog dialog = builder.create();
-			// dialog.show();
-
-			checkForDrivingError(location);
+			// Check for driving errors when the location changed
+			// checkForDrivingError(location); TODO
 		}
 
 		@Override
@@ -195,7 +189,9 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		// Initialize the MyLocationListener
 		this.locationListener = new MyLocationListener();
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
+		// Request location changes every 5 seconds (5000ms) and use a minimum
+		// distance of 10 meters
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10,
 				this.locationListener);
 
 		// Setup the whole GUI and map
@@ -221,12 +217,11 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	}
 
 	/**
-	 * Set up the map and enable default zoom controls
+	 * Set up the map and disable user interaction
 	 */
 	private void setupMapView() {
 		this.map = (MapView) findViewById(R.id.map);
-		map.setBuiltInZoomControls(true);
-		// Disable user interaction on the map
+		map.setBuiltInZoomControls(false);
 		map.setClickable(false);
 		map.setLongClickable(false);
 	}
@@ -335,9 +330,6 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 				// Route has been calculated successfully
 				Log.i("NaviActivity",
 						getResources().getString(R.string.routeCalculated));
-
-				// Dismiss the progress dialog
-				// progressDialog.dismiss();
 			}
 
 			@Override
@@ -350,6 +342,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		// Calculate the route and display it on the map
 		rm.createRoute(str_currentLocation, str_destination);
 
+		// Zoom to current location
 		map.getController().animateTo(myLocationOverlay.getMyLocation());
 		map.getController().setZoom(18);
 	}
@@ -508,6 +501,11 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 						+ im.getInstruction(1) + "\n" + im.getInstruction(2)
 						+ "\n" + im.getInstruction(3) + "\n"
 						+ im.getInstruction(4));
+
+				// Speak out the first instruction
+				tts.setSpeechRate((float) 0.85);
+				tts.speak(tv_instruction.getText().toString(),
+						TextToSpeech.QUEUE_FLUSH, null);
 			} else {
 				// Import was not successful
 				Toast.makeText(
@@ -531,7 +529,8 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	 */
 	private void checkForDrivingError(Location lastLocation) {
 		// Get the last decision point
-		GeoPoint lastDecisionPoint = im.getLastInstruction().getDecisionPoint();
+		GeoPoint lastDecisionPoint = im.getCurrentInstruction()
+				.getDecisionPoint();
 
 		// Calculate the distance to the next decision point
 		float[] results = new float[1];
@@ -539,7 +538,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 				lastLocation.getLongitude(), lastDecisionPoint.getLatitude(),
 				lastDecisionPoint.getLongitude(), results);
 
-		// Compare the distances
+		// Compare the distances and increase or decrease driving error counter
 		if (this.lastDistance < results[0]) {
 			this.drivingErrors++;
 			Log.w("NaviActivity.DrivingError", "Driving errors increased to "
@@ -558,11 +557,21 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 					TextToSpeech.QUEUE_FLUSH, null);
 			Log.w("NaviActivity.DrivingError", "Recalculating route...");
 
+			// Reset driving errors and the last distance
+			this.drivingErrors = 0;
+			this.lastDistance = -1;
+
 			// Recalculate route
 			calculateRoute();
 
 			// Get the guidance information and create the instructions
-//			getGuidance(); TODO seems like an error is happening here
+			// getGuidance(); TODO seems like an error is happening here
+
+			// Zoom to current location (just to make sure the map displays the
+			// user location because the calculateRoute() method sometimes does
+			// not do this)
+			map.getController().animateTo(myLocationOverlay.getMyLocation());
+			map.getController().setZoom(18);
 		}
 	}
 
