@@ -28,6 +28,8 @@
     <string name="recalculate">Recalculating route</string>
     <string name="openSettings">Open settings</string>
     <string name="cancel">Cancel</string>
+    <string name="closeActivity_title">Stopping Navigation</string><string name="closeActivity_message">Are you sure you want to stop the navigation?</string>
+    
     
 
 </resources>

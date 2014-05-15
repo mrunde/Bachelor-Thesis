@@ -573,6 +573,23 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	}
 
 	@Override
+	public void onBackPressed() {
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.closeActivity_title)
+				.setMessage(R.string.closeActivity_message)
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								finish();
+							}
+						}).setNegativeButton("No", null).show();
+	}
+
+	@Override
 	protected boolean isRouteDisplayed() {
 		// Do nothing
 		return false;
