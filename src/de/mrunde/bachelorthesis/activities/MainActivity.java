@@ -453,7 +453,7 @@ public class MainActivity extends MapActivity implements OnInitListener {
 
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.about:
+		case R.id.menu_about:
 			// Inform the user about this application
 			builder.setMessage("This is the Bachelor Thesis of Marius Runde");
 			builder.setPositiveButton("Awesome!",
@@ -467,7 +467,7 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			dialog = builder.create();
 			dialog.show();
 			return true;
-		case R.id.help:
+		case R.id.menu_help:
 			// Inform the user about this application
 			builder.setMessage("Coming soon...");
 			builder.setPositiveButton("OK",
@@ -481,7 +481,7 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			dialog = builder.create();
 			dialog.show();
 			return true;
-		case R.id.settings:
+		case R.id.menu_routeTypes:
 			// Change the route type in the settings
 			builder.setTitle(R.string.routeType);
 			builder.setItems(R.array.routeTypes,
