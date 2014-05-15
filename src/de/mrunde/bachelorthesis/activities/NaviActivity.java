@@ -175,7 +175,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.navi);
 
-		// Get the route information from the intent (start and destination)
+		// Get the route information from the intent
 		Intent intent = getIntent();
 		this.str_currentLocation = intent.getStringExtra("str_currentLocation");
 		this.str_destination = intent.getStringExtra("str_destination");

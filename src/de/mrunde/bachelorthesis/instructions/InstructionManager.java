@@ -9,8 +9,11 @@ import android.util.Log;
 
 import com.mapquest.android.maps.GeoPoint;
 
+import de.mrunde.bachelorthesis.basics.Landmark;
+import de.mrunde.bachelorthesis.basics.LandmarkCategory;
 import de.mrunde.bachelorthesis.basics.Route;
 import de.mrunde.bachelorthesis.basics.RouteSegment;
+import de.mrunde.bachelorthesis.basics.StreetFurniture;
 
 /**
  * The InstructionManager handles turn events in the navigation process. It can
@@ -42,13 +45,22 @@ public class InstructionManager {
 	private int currentInstruction;
 
 	/**
+	 * Landmarks to be used
+	 */
+	private List<Landmark> landmarks;
+
+	/**
 	 * Constructor of the InstructionManager class
 	 * 
 	 * @param json
 	 *            The guidance information in a JSON format
 	 */
 	public InstructionManager(JSONObject json) {
+		// Initialize the route
 		this.route = new Route(json);
+
+		// Intitialize the landmarks
+		initLandmarks();
 
 		// Check if the JSON import has been successful
 		this.importSuccessful = this.route.isImportSuccessful();
@@ -122,14 +134,100 @@ public class InstructionManager {
 	 * @param maneuverType
 	 *            Maneuver type
 	 * @param distance
-	 *            Distance to decision point
+	 *            Distance to decision point (only used for
+	 *            <code>DistanceInstruction</code> objects)
 	 * @return The instruction
 	 */
 	private Instruction createInstruction(GeoPoint decisionPoint,
 			Integer maneuverType, Integer distance) {
-		Instruction instruction = new DistanceInstruction(decisionPoint,
-				maneuverType, distance);
+		Instruction instruction = null;
+
+		// Search for global landmark
+		Landmark globalLandmark = searchForGlobalLandmark(decisionPoint);
+
+		// Search for local landmark or street furniture
+		Landmark localLandmark;
+		StreetFurniture streetFurniture;
+		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
+			// TODO Create LandmarkInstruction
+		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint)) != null) {
+			// TODO Create StreetFurnitureInstruction
+		} else {
+			instruction = new DistanceInstruction(decisionPoint, maneuverType,
+					distance);
+		}
 
 		return instruction;
+	}
+
+	/**
+	 * Search for a global landmark close to the given location
+	 * 
+	 * @param location
+	 *            Decision point
+	 * @return <code>Landmark</code> object if available. Otherwise
+	 *         <code>null</code> will be returned.
+	 */
+	private Landmark searchForGlobalLandmark(GeoPoint location) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * Search for a local landmark close to the given location
+	 * 
+	 * @param location
+	 *            Decision point
+	 * @return <code>Landmark</code> object if available. Otherwise
+	 *         <code>null</code> will be returned.
+	 */
+	private Landmark searchForLocalLandmark(GeoPoint location) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * Search for a street furniture close to the given location
+	 * 
+	 * @param location
+	 *            Decision point
+	 * @return <code>StreetFurniture</code> object if available. Otherwise
+	 *         <code>null</code> will be returned.
+	 */
+	private StreetFurniture searchForStreetFurniture(GeoPoint location) {
+		// TODO
+		return null;
+	}
+
+	/**
+	 * Initialize the landmarks (of Münster)
+	 */
+	private void initLandmarks() {
+		this.landmarks = new ArrayList<Landmark>();
+
+		// --- Hauptbahnhof ---
+		this.landmarks.add(new Landmark(false, "Hauptbahnhof", new GeoPoint(
+				51.963544, 7.613163), LandmarkCategory.TRAIN_STATION));
+
+		// --- Innenstadt ---
+		this.landmarks.add(new Landmark(false, "Innenstadt", new GeoPoint(
+				51.963544, 7.613163), LandmarkCategory.MONUMENT));
+
+		// --- Ludgerikirche ---
+		this.landmarks.add(new Landmark(true, "Ludgerikirche", new GeoPoint(
+				51.963544, 7.613163), LandmarkCategory.CHURCH));
+
+		// --- Schloss ---
+		this.landmarks.add(new Landmark(false, "Schloss", new GeoPoint(
+				51.963544, 7.613163), LandmarkCategory.MONUMENT));
+
+		// --- St. Antonius Kirche ---
+		this.landmarks.add(new Landmark(true, "St. Antonius Kirche",
+				new GeoPoint(51.954883, 7.620105), LandmarkCategory.CHURCH));
+
+		// --- Westfalentankstelle (Weselerstr.) ---
+		this.landmarks
+				.add(new Landmark(true, "Westfalentankstelle", new GeoPoint(
+						51.963544, 7.613163), LandmarkCategory.GAS_STATION));
 	}
 }

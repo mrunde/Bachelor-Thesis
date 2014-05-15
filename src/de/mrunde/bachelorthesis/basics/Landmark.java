@@ -34,7 +34,7 @@ public class Landmark {
 	/**
 	 * Category (must be from list of categories from LandmarkCategory)
 	 */
-	private int category;
+	private String category;
 
 	/**
 	 * Constructor of the Landmark class
@@ -49,7 +49,8 @@ public class Landmark {
 	 *            Category (must be from list of categories from
 	 *            LandmarkCategory)
 	 */
-	public Landmark(boolean local, String title, GeoPoint center, int category) {
+	public Landmark(boolean local, String title, GeoPoint center,
+			String category) {
 		this.local = local;
 		this.title = title;
 		this.description = null;
@@ -60,38 +61,7 @@ public class Landmark {
 			this.category = category;
 		} else {
 			Log.e("Landmark", "Category is not correct and will be set to -1");
-			this.category = -1;
-		}
-	}
-
-	/**
-	 * Constructor of the Landmark class with landmark description
-	 * 
-	 * @param local
-	 *            Indicator for local or global landmark
-	 * @param title
-	 *            Title
-	 * @param description
-	 *            Description
-	 * @param center
-	 *            Central position
-	 * @param category
-	 *            Category (must be from list of categories from
-	 *            LandmarkCategory)
-	 */
-	public Landmark(boolean local, String title, String description,
-			GeoPoint center, int category) {
-		this.local = local;
-		this.title = title;
-		this.description = description;
-		this.center = center;
-
-		// If the category is not correct, set it to -1
-		if (LandmarkCategory.isCategory(category)) {
-			this.category = category;
-		} else {
-			Log.e("Landmark", "Category is not correct and will be set to -1");
-			this.category = -1;
+			this.category = null;
 		}
 	}
 
@@ -126,7 +96,7 @@ public class Landmark {
 	/**
 	 * @return the category
 	 */
-	public int getCategory() {
+	public String getCategory() {
 		return category;
 	}
 }

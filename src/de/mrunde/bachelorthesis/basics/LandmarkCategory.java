@@ -8,43 +8,56 @@ package de.mrunde.bachelorthesis.basics;
 public abstract class LandmarkCategory {
 
 	/**
+	 * Church
+	 */
+	public final static String CHURCH = "church";
+
+	/**
 	 * Gas station
 	 */
-	public final static int GAS_STATION = 0;
+	public final static String GAS_STATION = "gas station";
 
 	/**
 	 * Hospital
 	 */
-	public final static int HOSPITAL = 1;
+	public final static String HOSPITAL = "hospital";
+
+	/**
+	 * Monument - should be always replaced with the real name of the landmark
+	 */
+	public final static String MONUMENT = "monument";
 
 	/**
 	 * Post office
 	 */
-	public final static int POST_OFFICE = 2;
-
-	/**
-	 * Fire station
-	 */
-	public final static int FIRE_STATION = 3;
+	public final static String POST_OFFICE = "post office";
 
 	/**
 	 * Train station
 	 */
-	public final static int TRAIN_STATION = 4;
+	public final static String TRAIN_STATION = "train station";
 
 	/**
-	 * Test if a category belongs to one of the implemented categories
+	 * Check if a category is a valid Landmark category
 	 * 
 	 * @param category
-	 *            The category to be tested
-	 * @return TRUE: category is correct<br/>
-	 *         FALSE: category is not correct
+	 *            Category to be controlled
+	 * @return TRUE: <code>category</code> is valid<br/>
+	 *         FALSE: <code>category</code> is not valid
 	 */
-	public static boolean isCategory(int category) {
-		if (category < 0 || category > 4) {
-			return false;
-		} else {
+	public static boolean isCategory(String category) {
+		if (category.equals(CHURCH))
 			return true;
-		}
+		if (category.equals(GAS_STATION))
+			return true;
+		if (category.equals(HOSPITAL))
+			return true;
+		if (category.equals(MONUMENT))
+			return true;
+		if (category.equals(POST_OFFICE))
+			return true;
+		if (category.equals(TRAIN_STATION))
+			return true;
+		return false;
 	}
 }
