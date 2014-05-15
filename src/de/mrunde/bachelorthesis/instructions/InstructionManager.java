@@ -1,5 +1,8 @@
 package de.mrunde.bachelorthesis.instructions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -31,7 +34,7 @@ public class InstructionManager {
 	/**
 	 * Instructions created by the InstructionManager
 	 */
-	private Instruction[] instructions;
+	private List<Instruction> instructions;
 
 	/**
 	 * Store the current instruction, pushed to the system. Default = 0
@@ -66,9 +69,9 @@ public class InstructionManager {
 	 * @return The instruction
 	 */
 	public Instruction getInstruction(int index) {
-		if (this.instructions[index] != null) {
+		if (this.instructions.get(index) != null) {
 			this.currentInstruction = index;
-			return this.instructions[index];
+			return this.instructions.get(index);
 		} else {
 			Log.e("InstructionManager", "Could not get instruction at index "
 					+ index);
@@ -82,22 +85,30 @@ public class InstructionManager {
 	 * @return The current instruction, pushed to the system
 	 */
 	public Instruction getCurrentInstruction() {
-		return this.instructions[this.currentInstruction];
+		return this.instructions.get(this.currentInstruction);
 	}
 
 	/**
 	 * Create the instructions from the route information
 	 */
 	public void createInstructions() {
-		this.instructions = new Instruction[this.route.getNumberOfSegments()];
-		for (int i = 0; i < this.instructions.length; i++) {
+		this.instructions = new ArrayList<Instruction>();
+		int j = 0;
+		for (int i = 0; i < this.route.getNumberOfSegments(); i++) {
 			RouteSegment rs = this.route.getNextSegment();
-			this.instructions[i] = createInstruction(rs.getEndPoint(),
+			Instruction instruction = createInstruction(rs.getEndPoint(),
 					rs.getManeuverType(), rs.getDistance());
-			// TODO Log all instructions for testing
-			Log.d("InstructionManager", "Instruction " + i + ": "
-					+ this.instructions[i].toString() + " | Maneuver Type: "
-					+ this.instructions[i].getManeuverType());
+
+			// Remove "no-turn" instructions
+			if (instruction.toString() != null) {
+				this.instructions.add(instruction);
+				// TODO Log all instructions for testing
+				Log.d("InstructionManager", "Instruction " + j + ": "
+						+ this.instructions.get(j).toString()
+						+ " | Maneuver Type: "
+						+ this.instructions.get(j).getManeuverType());
+				j++;
+			}
 		}
 	}
 

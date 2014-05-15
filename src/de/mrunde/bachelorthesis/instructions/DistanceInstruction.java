@@ -35,12 +35,15 @@ public class DistanceInstruction extends Instruction {
 	 */
 	public String toString() {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
-			String instruction = super.getManeuver() + " in ";
-			if (this.distance >= 1000) {
-				float distanceAsFloat = ((float) distance) / 1000;
-				instruction += distanceAsFloat + " kilometers";
-			} else {
-				instruction += distance + " meters";
+			String instruction = super.getManeuver();
+			if (this.distance > 0) {
+				instruction += " in ";
+				if (this.distance >= 1000) {
+					float distanceAsFloat = ((float) distance) / 1000;
+					instruction += distanceAsFloat + " kilometers";
+				} else {
+					instruction += distance + " meters";
+				}
 			}
 			return instruction;
 		} else {

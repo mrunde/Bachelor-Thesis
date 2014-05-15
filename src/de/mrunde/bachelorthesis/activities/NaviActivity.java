@@ -496,11 +496,8 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 				im.createInstructions();
 
 				// Display the first instruction in the TextView
-				// TODO must be only the first one and not 5
-				tv_instruction.setText(im.getInstruction(0) + "\n"
-						+ im.getInstruction(1) + "\n" + im.getInstruction(2)
-						+ "\n" + im.getInstruction(3) + "\n"
-						+ im.getInstruction(4));
+				String instruction = im.getInstruction(0).toString();
+				tv_instruction.setText(instruction);
 
 				// Speak out the first instruction
 				tts.setSpeechRate((float) 0.85);
