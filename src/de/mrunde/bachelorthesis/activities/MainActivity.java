@@ -127,7 +127,7 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	/**
 	 * Coordinates of the destination to be sent to the NaviActivity
 	 */
-	private double[] destination_coords;
+	private double[] destination_coords = null;
 
 	/**
 	 * TextToSpeech for audio output
@@ -185,7 +185,8 @@ public class MainActivity extends MapActivity implements OnInitListener {
 					} catch (IOException e) {
 						// Destination could not be located
 						Log.e("MainActivity",
-								"IO Exception in searching for destination");
+								"IO Exception in searching for destination. This is the error message: "
+										+ e.getMessage());
 						Toast.makeText(MainActivity.this,
 								R.string.noDestinationFound, Toast.LENGTH_SHORT)
 								.show();
@@ -225,7 +226,7 @@ public class MainActivity extends MapActivity implements OnInitListener {
 
 			@Override
 			public void onClick(View v) {
-				if (str_destination == null) {
+				if (destination_coords == null) {
 					Toast.makeText(MainActivity.this,
 							R.string.noDestinationEntered, Toast.LENGTH_SHORT)
 							.show();
@@ -492,6 +493,15 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			dialog.show();
 			return true;
 		case R.id.menu_routeTypes:
+			// If the route has been calculated before change the text
+			// of the button so the route has to be calculated again and
+			// clear the route from the RouteManager
+			if (btn_calculate.getText() == getResources().getString(
+					R.string.start)) {
+				btn_calculate.setText(R.string.calculate);
+				rm.clearRoute();
+			}
+
 			// Change the route type in the settings
 			builder.setTitle(R.string.routeType);
 			builder.setItems(R.array.routeTypes,
