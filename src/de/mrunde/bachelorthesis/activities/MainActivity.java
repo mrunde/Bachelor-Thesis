@@ -337,6 +337,9 @@ public class MainActivity extends MapActivity implements OnInitListener {
 				// Route could not be calculated
 				Log.e("MainActivity",
 						getResources().getString(R.string.routeNotCalculated));
+				Toast.makeText(MainActivity.this,
+						getResources().getString(R.string.routeNotCalculated),
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 		// Calculate the route and display it on the map
