@@ -21,7 +21,7 @@
     <string name="routeType">Please select a route type</string>
     
     <string name="start">Start Navigation</string>
-    <string name="routeNotCalculated">Route could not be calculated. Please try again.</string><string name="routeNotCalculated_601">Route could not be calculated. Please change your destination.</string>
+    <string name="routeNotCalculated">Route could not be calculated. Please try again or use another destination.</string><string name="routeNotCalculated_500">Route could not be calculated. Please change your destination. If you are using the pedestrian route type, please use a closer destination.</string>
     <string name="routeCalculated">Route has been calculated successfully.</string>
     <string name="jsonImportNotSuccessful">The guidance information could not be imported. Please try again.</string>
     <string name="gpsDisabled">GPS is disabled</string>

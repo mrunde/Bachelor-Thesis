@@ -321,6 +321,8 @@ public class MainActivity extends MapActivity implements OnInitListener {
 		rm.setBestFitRoute(true);
 		// Set the route options (e.g. route type)
 		rm.setOptions(getRouteOptions());
+		// Set debug true to receive the URL
+		rm.setDebug(true);
 		// Set route callback
 		rm.setRouteCallback(new RouteManager.RouteCallback() {
 
@@ -337,19 +339,20 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			public void onError(RouteResponse response) {
 				// Find the reason why the route could not be calculated. The
 				// status codes can be found here:
-				// http://www.mapquestapi.com/directions/status_codes.html
-				if (response.info.statusCode == 601) {
+				// http://www.mapquestapi.com/directions/status_codes.html The
+				// pedestrian error seems to be 500 though and not 6xx
+				if (response.info.statusCode == 500) {
 					// Route could not be calculated because the length of
 					// routes with the pedestrian route type are restricted to a
 					// specific distance
 					Log.e("MainActivity",
 							getResources().getString(
-									R.string.routeNotCalculated_601));
+									R.string.routeNotCalculated_500));
 					Toast.makeText(
 							MainActivity.this,
 							getResources().getString(
-									R.string.routeNotCalculated_601),
-							Toast.LENGTH_SHORT).show();
+									R.string.routeNotCalculated_500),
+							Toast.LENGTH_LONG).show();
 				} else {
 					// Route could not be calculated because of another error
 					Log.e("MainActivity",
