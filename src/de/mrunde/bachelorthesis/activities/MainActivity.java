@@ -335,12 +335,34 @@ public class MainActivity extends MapActivity implements OnInitListener {
 
 			@Override
 			public void onError(RouteResponse response) {
-				// Route could not be calculated
-				Log.e("MainActivity",
-						getResources().getString(R.string.routeNotCalculated));
-				Toast.makeText(MainActivity.this,
-						getResources().getString(R.string.routeNotCalculated),
-						Toast.LENGTH_SHORT).show();
+				// Find the reason why the route could not be calculated. The
+				// status codes can be found here:
+				// http://www.mapquestapi.com/directions/status_codes.html
+				if (response.info.statusCode == 601) {
+					// Route could not be calculated because the length of
+					// routes with the pedestrian route type are restricted to a
+					// specific distance
+					Log.e("MainActivity",
+							getResources().getString(
+									R.string.routeNotCalculated_601));
+					Toast.makeText(
+							MainActivity.this,
+							getResources().getString(
+									R.string.routeNotCalculated_601),
+							Toast.LENGTH_SHORT).show();
+				} else {
+					// Route could not be calculated because of another error
+					Log.e("MainActivity",
+							getResources().getString(
+									R.string.routeNotCalculated)
+									+ "\nStatus Code: "
+									+ response.info.statusCode);
+					Toast.makeText(
+							MainActivity.this,
+							getResources().getString(
+									R.string.routeNotCalculated),
+							Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		// Calculate the route and display it on the map

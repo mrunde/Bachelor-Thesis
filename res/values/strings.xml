@@ -21,7 +21,7 @@
     <string name="routeType">Please select a route type</string>
     
     <string name="start">Start Navigation</string>
-    <string name="routeNotCalculated">Route could not be calculated. Please try again.</string>
+    <string name="routeNotCalculated">Route could not be calculated. Please try again.</string><string name="routeNotCalculated_601">Route could not be calculated. Please change your destination.</string>
     <string name="routeCalculated">Route has been calculated successfully.</string>
     <string name="jsonImportNotSuccessful">The guidance information could not be imported. Please try again.</string>
     <string name="gpsDisabled">GPS is disabled</string>
@@ -29,6 +29,7 @@
     <string name="openSettings">Open settings</string>
     <string name="cancel">Cancel</string>
     <string name="closeActivity_title">Stopping Navigation</string><string name="closeActivity_message">Are you sure you want to stop the navigation?</string>
+    
     
     
 
