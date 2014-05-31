@@ -58,6 +58,14 @@ public class Landmark {
 			this.category = null;
 		}
 	}
+	
+	public String toString() {
+		return "Landmark({\"local\":\"" + this.local + "\",\"title\":\""
+				+ this.title + "\",\"center\":{\"lat\":\""
+				+ this.center.getLatitude() + "\",\"lng\":\""
+				+ this.center.getLongitude() + "\"},\"category\":\""
+				+ this.category + "\"});";
+	}
 
 	/**
 	 * @return The indicator whether this is a local or global landmark

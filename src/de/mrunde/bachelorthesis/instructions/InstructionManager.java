@@ -3,6 +3,8 @@ package de.mrunde.bachelorthesis.instructions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -52,18 +54,20 @@ public class InstructionManager {
 	/**
 	 * Constructor of the InstructionManager class
 	 * 
-	 * @param json
+	 * @param guidance
 	 *            The guidance information in a JSON format
+	 * @param landmarks
+	 *            The landmarks from res/raw/landmarks.json
 	 */
-	public InstructionManager(JSONObject json) {
+	public InstructionManager(JSONObject guidance, JSONObject landmarks) {
 		// Initialize the route
-		this.route = new Route(json);
-
-		// Intitialize the landmarks
-		initLandmarks();
+		this.route = new Route(guidance);
 
 		// Check if the JSON import has been successful
 		this.importSuccessful = this.route.isImportSuccessful();
+
+		// Intitialize the landmarks
+		initLandmarks(landmarks);
 	}
 
 	/**
@@ -71,6 +75,15 @@ public class InstructionManager {
 	 */
 	public boolean isImportSuccessful() {
 		return this.importSuccessful;
+	}
+
+	/**
+	 * Get all shape points from the route that create it
+	 * 
+	 * @return All shape points
+	 */
+	public GeoPoint[] getShapePoints() {
+		return this.route.getShapePoints();
 	}
 
 	/**
@@ -200,34 +213,50 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Initialize the landmarks (of Münster)
+	 * Initialize the landmarks
+	 * 
+	 * @param landmarks
+	 *            The landmarks from res/raw/landmarks.json
 	 */
-	private void initLandmarks() {
+	private void initLandmarks(JSONObject landmarks) {
 		this.landmarks = new ArrayList<Landmark>();
+		try {
+			// Initialize all local landmarks
+			JSONArray local = landmarks.getJSONArray("local");
+			for (int i = 0; i < local.length(); i++) {
+				String title = ((JSONObject) local.get(i)).getString("title");
+				GeoPoint center = new GeoPoint(((JSONObject) local.get(i))
+						.getJSONObject("center").getDouble("lng"),
+						((JSONObject) local.get(i)).getJSONObject("center")
+								.getDouble("lng"));
+				String category = ((JSONObject) local.get(i))
+						.getString("category");
+				this.landmarks.add(new Landmark(true, title, center, category));
+			}
 
-		// --- Hauptbahnhof ---
-		this.landmarks.add(new Landmark(false, "Hauptbahnhof", new GeoPoint(
-				51.963544, 7.613163), LandmarkCategory.TRAIN_STATION));
+			// Initialize all global landmarks
+			JSONArray global = landmarks.getJSONArray("global");
+			for (int i = 0; i < local.length(); i++) {
+				String title = ((JSONObject) local.get(i)).getString("title");
+				GeoPoint center = new GeoPoint(((JSONObject) local.get(i))
+						.getJSONObject("center").getDouble("lng"),
+						((JSONObject) local.get(i)).getJSONObject("center")
+								.getDouble("lng"));
+				String category = ((JSONObject) local.get(i))
+						.getString("category");
+				this.landmarks
+						.add(new Landmark(false, title, center, category));
+			}
+		} catch (JSONException e) {
+			// Error while parsing JSONObject
+			Log.e("InstructionManager",
+					"Error while parsing JSONObject to initialize the landmarks.");
+			this.importSuccessful = false;
+		}
 
-		// --- Innenstadt ---
-		this.landmarks.add(new Landmark(false, "Innenstadt", new GeoPoint(
-				51.963544, 7.613163), LandmarkCategory.MONUMENT));
-
-		// --- Ludgerikirche ---
-		this.landmarks.add(new Landmark(true, "Ludgerikirche", new GeoPoint(
-				51.963544, 7.613163), LandmarkCategory.CHURCH));
-
-		// --- Schloss ---
-		this.landmarks.add(new Landmark(false, "Schloss", new GeoPoint(
-				51.963544, 7.613163), LandmarkCategory.MONUMENT));
-
-		// --- St. Antonius Kirche ---
-		this.landmarks.add(new Landmark(true, "St. Antonius Kirche",
-				new GeoPoint(51.954883, 7.620105), LandmarkCategory.CHURCH));
-
-		// --- Westfalentankstelle (Weselerstr.) ---
-		this.landmarks
-				.add(new Landmark(true, "Westfalentankstelle", new GeoPoint(
-						51.963544, 7.613163), LandmarkCategory.GAS_STATION));
+		for (int i = 0; i < this.landmarks.size(); i++) {
+			Log.v("InstructionManager", "Landmark " + i + ": "
+					+ this.landmarks.get(i).toString());
+		}
 	}
 }

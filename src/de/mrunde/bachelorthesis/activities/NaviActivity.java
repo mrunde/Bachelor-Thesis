@@ -2,6 +2,7 @@ package de.mrunde.bachelorthesis.activities;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -496,12 +498,25 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	/**
 	 * Create the instructions for the navigation
 	 * 
-	 * @param json
+	 * @param guidance
 	 *            The guidance information from MapQuest
 	 */
-	private void createInstructions(JSONObject json) {
+	private void createInstructions(JSONObject guidance) {
+		// Load the landmarks as a JSONObject from res/raw/landmarks.json
+		InputStream is = getResources().openRawResource(R.raw.landmarks);
+		JSONObject landmarks = null;
+		try {
+			String rawJson = IOUtils.toString(is, "UTF-8");
+			landmarks = new JSONObject(rawJson);
+		} catch (Exception e) {
+			// Could not load landmarks
+			Log.e("NaviActivity",
+					"Could not load landmarks. This is the error message: "
+							+ e.getMessage());
+		}
+
 		// Create the instruction manager
-		im = new InstructionManager(json);
+		im = new InstructionManager(guidance, landmarks);
 		// Check if the import was successful
 		if (im.isImportSuccessful()) {
 			// Create the instructions
@@ -587,28 +602,30 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 			tts.speak(getResources().getString(R.string.recalculate),
 					TextToSpeech.QUEUE_FLUSH, null);
 			Log.w("NaviActivity.DrivingError", "Recalculating route...");
-			
+
 			// Restart activity
 			Intent intent = getIntent();
 			intent.putExtra("str_currentLocation", str_currentLocation);
 			finish();
 			startActivity(intent);
 
-//			// Reset driving errors and the last distance
-//			this.drivingErrors = 0;
-//			this.lastDistance = -1;
-//
-//			// Recalculate route
-//			calculateRoute();
-//
-//			// Get the guidance information and create the instructions
-//			// getGuidance(); TODO seems like an error is happening here
-//
-//			// Zoom to current location (just to make sure the map displays the
-//			// user location because the calculateRoute() method sometimes does
-//			// not do this)
-//			map.getController().animateTo(myLocationOverlay.getMyLocation());
-//			map.getController().setZoom(18);
+			// // Reset driving errors and the last distance
+			// this.drivingErrors = 0;
+			// this.lastDistance = -1;
+			//
+			// // Recalculate route
+			// calculateRoute();
+			//
+			// // Get the guidance information and create the instructions
+			// // getGuidance(); TODO seems like an error is happening here
+			//
+			// // Zoom to current location (just to make sure the map displays
+			// the
+			// // user location because the calculateRoute() method sometimes
+			// does
+			// // not do this)
+			// map.getController().animateTo(myLocationOverlay.getMyLocation());
+			// map.getController().setZoom(18);
 		}
 	}
 
