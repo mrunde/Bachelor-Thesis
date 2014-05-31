@@ -4,7 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.http.HttpResponse;
@@ -22,6 +25,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -36,6 +41,7 @@ import android.widget.Toast;
 
 import com.mapquest.android.maps.DefaultItemizedOverlay;
 import com.mapquest.android.maps.GeoPoint;
+import com.mapquest.android.maps.LineOverlay;
 import com.mapquest.android.maps.MapActivity;
 import com.mapquest.android.maps.MapView;
 import com.mapquest.android.maps.MyLocationOverlay;
@@ -470,8 +476,21 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 			Log.i("GetJsonTask", "Completed guidance download in "
 					+ downloadTimer + " seconds");
 
-			// Create the instructions
-			createInstructions(result);
+			// Check if the download was successful
+			if (result == null) {
+				// Could not receive the JSON
+				Toast.makeText(NaviActivity.this,
+						getResources().getString(R.string.routeNotCalculated),
+						Toast.LENGTH_SHORT).show();
+				// Finish the activity to return to MainActivity
+				finish();
+			} else {
+				// Create the instructions
+				createInstructions(result);
+
+				// Draw the route
+				drawRoute(result);
+			}
 		}
 	}
 
@@ -482,40 +501,57 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	 *            The guidance information from MapQuest
 	 */
 	private void createInstructions(JSONObject json) {
-		if (json == null) {
-			// Could not receive the JSON
+		// Create the instruction manager
+		im = new InstructionManager(json);
+		// Check if the import was successful
+		if (im.isImportSuccessful()) {
+			// Create the instructions
+			im.createInstructions();
+
+			// Display the first instruction in the TextView
+			String instruction = im.getInstruction(0).toString();
+			tv_instruction.setText(instruction);
+
+			// Speak out the first instruction
+			tts.setSpeechRate((float) 0.85);
+			tts.speak(tv_instruction.getText().toString(),
+					TextToSpeech.QUEUE_FLUSH, null);
+		} else {
+			// Import was not successful
 			Toast.makeText(this,
-					getResources().getString(R.string.routeNotCalculated),
+					getResources().getString(R.string.jsonImportNotSuccessful),
 					Toast.LENGTH_SHORT).show();
 			// Finish the activity to return to MainActivity
 			finish();
-		} else {
-			// Create the instruction manager
-			im = new InstructionManager(json);
-			// Check if the import was successful
-			if (im.isImportSuccessful()) {
-				// Create the instructions
-				im.createInstructions();
-
-				// Display the first instruction in the TextView
-				String instruction = im.getInstruction(0).toString();
-				tv_instruction.setText(instruction);
-
-				// Speak out the first instruction
-				tts.setSpeechRate((float) 0.85);
-				tts.speak(tv_instruction.getText().toString(),
-						TextToSpeech.QUEUE_FLUSH, null);
-			} else {
-				// Import was not successful
-				Toast.makeText(
-						this,
-						getResources().getString(
-								R.string.jsonImportNotSuccessful),
-						Toast.LENGTH_SHORT).show();
-				// Finish the activity to return to MainActivity
-				finish();
-			}
 		}
+	}
+
+	/**
+	 * Draw the route with the given shapePoints from the guidance information
+	 * 
+	 * @param json
+	 *            The guidance information from MapQuest
+	 */
+	private void drawRoute(JSONObject json) {
+		// Set custom line style
+		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paint.setColor(Color.BLACK);
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(3);
+
+		// Initialize the route overlay
+		List<GeoPoint> shapePoints = new ArrayList<GeoPoint>(
+				Arrays.asList(this.im.getShapePoints()));
+		LineOverlay drawnRoute = new LineOverlay(paint);
+		drawnRoute.setData(shapePoints);
+
+		// Clear the generated route
+		rm.clearRoute();
+
+		// Add the drawn route to the map
+		Log.d("NaviActivity", "Adding route overlay...");
+		map.getOverlays().add(drawnRoute);
+		map.getController().setZoom(15); // TODO test
 	}
 
 	/**
