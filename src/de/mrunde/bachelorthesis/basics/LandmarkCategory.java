@@ -11,6 +11,11 @@ public abstract class LandmarkCategory {
 	 * Church
 	 */
 	public final static String CHURCH = "church";
+	
+	/**
+	 * Cinema
+	 */
+	public final static String CINEMA = "cinema";
 
 	/**
 	 * Gas station
@@ -47,6 +52,8 @@ public abstract class LandmarkCategory {
 	 */
 	public static boolean isCategory(String category) {
 		if (category.equals(CHURCH))
+			return true;
+		if (category.equals(CINEMA))
 			return true;
 		if (category.equals(GAS_STATION))
 			return true;
