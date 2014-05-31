@@ -98,6 +98,16 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	private Button btn_calculate;
 
 	/**
+	 * The "preferences" button to change the route type
+	 */
+	private Button btn_preferences;
+
+	/**
+	 * The "help" button
+	 */
+	private Button btn_help;
+
+	/**
 	 * The initial map view
 	 */
 	protected MapView map;
@@ -279,6 +289,26 @@ public class MainActivity extends MapActivity implements OnInitListener {
 					intent.putExtra("routeOptions", getRouteOptions());
 					startActivity(intent);
 				}
+			}
+		});
+
+		this.btn_preferences = (Button) findViewById(R.id.btn_preferences);
+		btn_preferences.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Display the route type dialog
+				displayRouteTypeDialog();
+			}
+		});
+
+		this.btn_help = (Button) findViewById(R.id.btn_help);
+		btn_help.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Display the help
+				displayHelp();
 			}
 		});
 	}
@@ -500,13 +530,13 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Initialize an AlertDialog.Builder and an AlertDialog
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		AlertDialog dialog;
-
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.menu_about:
+			// Initialize an AlertDialog.Builder and an AlertDialog
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			AlertDialog dialog;
+
 			// Inform the user about this application
 			builder.setMessage("This is the Bachelor Thesis of Marius Runde");
 			builder.setPositiveButton("Awesome!",
@@ -521,76 +551,96 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			dialog.show();
 			return true;
 		case R.id.menu_help:
-			// Inform the user about this application
-			builder.setMessage("Coming soon...");
-			builder.setPositiveButton("OK",
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// User clicked the "OK" button
-						}
-					});
-			dialog = builder.create();
-			dialog.show();
+			displayHelp();
 			return true;
 		case R.id.menu_routeTypes:
-			// If the route has been calculated before change the text
-			// of the button so the route has to be calculated again and
-			// clear the route from the RouteManager
-			if (btn_calculate.getText() == getResources().getString(
-					R.string.start)) {
-				btn_calculate.setText(R.string.calculate);
-				rm.clearRoute();
-			}
-
-			// Change the route type in the settings
-			builder.setTitle(R.string.routeType);
-			builder.setItems(R.array.routeTypes,
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							switch (which) {
-							case 0:
-								// Fastest selected
-								routeType = ROUTETYPE_FASTEST;
-								Toast.makeText(MainActivity.this,
-										"Fastest route type selected",
-										Toast.LENGTH_SHORT).show();
-								break;
-							case 1:
-								// Shortest selected
-								routeType = ROUTETYPE_SHORTEST;
-								Toast.makeText(MainActivity.this,
-										"Shortest route type selected",
-										Toast.LENGTH_SHORT).show();
-								break;
-							case 2:
-								// Pedestrian selected
-								routeType = ROUTETYPE_PEDESTRIAN;
-								Toast.makeText(MainActivity.this,
-										"Pedestrian route type selected",
-										Toast.LENGTH_SHORT).show();
-								break;
-							case 3:
-								// Bicycle selected
-								routeType = ROUTETYPE_BICYCLE;
-								Toast.makeText(MainActivity.this,
-										"Bicycle route type selected",
-										Toast.LENGTH_SHORT).show();
-								break;
-							default:
-								break;
-							}
-						}
-					});
-			dialog = builder.create();
-			dialog.show();
+			displayRouteTypeDialog();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	/**
+	 * Display the route type dialog so that the user can change it
+	 */
+	private void displayRouteTypeDialog() {
+		// Initialize an AlertDialog.Builder and an AlertDialog
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		AlertDialog dialog;
+
+		// If the route has been calculated before change the text
+		// of the button so the route has to be calculated again and
+		// clear the route from the RouteManager
+		if (btn_calculate.getText() == getResources().getString(R.string.start)) {
+			btn_calculate.setText(R.string.calculate);
+			rm.clearRoute();
+		}
+
+		// Change the route type in the settings
+		builder.setTitle(R.string.routeType);
+		builder.setItems(R.array.routeTypes,
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+						case 0:
+							// Fastest selected
+							routeType = ROUTETYPE_FASTEST;
+							Toast.makeText(MainActivity.this,
+									"Fastest route type selected",
+									Toast.LENGTH_SHORT).show();
+							break;
+						case 1:
+							// Shortest selected
+							routeType = ROUTETYPE_SHORTEST;
+							Toast.makeText(MainActivity.this,
+									"Shortest route type selected",
+									Toast.LENGTH_SHORT).show();
+							break;
+						case 2:
+							// Pedestrian selected
+							routeType = ROUTETYPE_PEDESTRIAN;
+							Toast.makeText(MainActivity.this,
+									"Pedestrian route type selected",
+									Toast.LENGTH_SHORT).show();
+							break;
+						case 3:
+							// Bicycle selected
+							routeType = ROUTETYPE_BICYCLE;
+							Toast.makeText(MainActivity.this,
+									"Bicycle route type selected",
+									Toast.LENGTH_SHORT).show();
+							break;
+						default:
+							break;
+						}
+					}
+				});
+		dialog = builder.create();
+		dialog.show();
+	}
+
+	/**
+	 * Display the help
+	 */
+	private void displayHelp() {
+		// Initialize an AlertDialog.Builder and an AlertDialog
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		AlertDialog dialog;
+
+		// Inform the user about this application
+		builder.setMessage("Coming soon...");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// User clicked the "OK" button
+			}
+		});
+		dialog = builder.create();
+		dialog.show();
 	}
 
 	/**
