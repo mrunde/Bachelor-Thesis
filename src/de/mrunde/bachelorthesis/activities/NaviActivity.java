@@ -327,7 +327,6 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		// Initialize a new RouteManager to calculate the route
 		rm = new RouteManager(getBaseContext(), getResources().getString(
 				R.string.apiKey));
-		rm.setMapView(map);
 		// Set the route options (e.g. route type)
 		rm.setOptions(routeOptions);
 		// Set route callback
@@ -533,7 +532,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	 *            The guidance information from MapQuest
 	 */
 	private void drawRoute(JSONObject json) {
-		// Set custom line style
+		// Set custom line style TODO correct color
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Paint.Style.STROKE);
@@ -544,9 +543,6 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 				Arrays.asList(this.im.getShapePoints()));
 		LineOverlay drawnRoute = new LineOverlay(paint);
 		drawnRoute.setData(shapePoints);
-
-		// Clear the generated route
-		rm.clearRoute();
 
 		// Add the drawn route to the map
 		Log.d("NaviActivity", "Adding route overlay...");
@@ -591,22 +587,28 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 			tts.speak(getResources().getString(R.string.recalculate),
 					TextToSpeech.QUEUE_FLUSH, null);
 			Log.w("NaviActivity.DrivingError", "Recalculating route...");
+			
+			// Restart activity
+			Intent intent = getIntent();
+			intent.putExtra("str_currentLocation", str_currentLocation);
+			finish();
+			startActivity(intent);
 
-			// Reset driving errors and the last distance
-			this.drivingErrors = 0;
-			this.lastDistance = -1;
-
-			// Recalculate route
-			calculateRoute();
-
-			// Get the guidance information and create the instructions
-			// getGuidance(); TODO seems like an error is happening here
-
-			// Zoom to current location (just to make sure the map displays the
-			// user location because the calculateRoute() method sometimes does
-			// not do this)
-			map.getController().animateTo(myLocationOverlay.getMyLocation());
-			map.getController().setZoom(18);
+//			// Reset driving errors and the last distance
+//			this.drivingErrors = 0;
+//			this.lastDistance = -1;
+//
+//			// Recalculate route
+//			calculateRoute();
+//
+//			// Get the guidance information and create the instructions
+//			// getGuidance(); TODO seems like an error is happening here
+//
+//			// Zoom to current location (just to make sure the map displays the
+//			// user location because the calculateRoute() method sometimes does
+//			// not do this)
+//			map.getController().animateTo(myLocationOverlay.getMyLocation());
+//			map.getController().setZoom(18);
 		}
 	}
 
