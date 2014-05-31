@@ -26,6 +26,11 @@ public abstract class LandmarkCategory {
 	 * Hospital
 	 */
 	public final static String HOSPITAL = "hospital";
+	
+	/**
+	 * Lake or water body in general
+	 */
+	public final static String LAKE = "lake";
 
 	/**
 	 * Monument - should be always replaced with the real name of the landmark
@@ -58,6 +63,8 @@ public abstract class LandmarkCategory {
 		if (category.equals(GAS_STATION))
 			return true;
 		if (category.equals(HOSPITAL))
+			return true;
+		if (category.equals(LAKE))
 			return true;
 		if (category.equals(MONUMENT))
 			return true;
