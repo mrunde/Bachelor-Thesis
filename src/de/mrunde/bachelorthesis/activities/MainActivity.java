@@ -159,8 +159,8 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	 */
 	private void setupGUI() {
 		this.edt_destination = (EditText) findViewById(R.id.edt_destination);
-		edt_destination.setText("Berlin"); // TODO just for testing, must be
-											// deleted...
+		// TODO just for testing, must be deleted...
+		edt_destination.setText("Cineplex, Münster");
 
 		this.btn_search = (Button) findViewById(R.id.btn_search);
 		btn_search.setOnClickListener(new OnClickListener() {
@@ -182,15 +182,28 @@ public class MainActivity extends MapActivity implements OnInitListener {
 								Locale.getDefault());
 						addresses = geocoder.getFromLocationName(
 								str_destination, MAX_RESULTS);
-					} catch (IOException e) {
-						// Destination could not be located
-						Log.e("MainActivity",
-								"IO Exception in searching for destination. This is the error message: "
-										+ e.getMessage());
-						Toast.makeText(MainActivity.this,
-								R.string.noDestinationFound, Toast.LENGTH_SHORT)
-								.show();
-						return;
+					} catch (IOException e1) {
+						// Destination could not be located but try again once
+						// because sometimes it works at the second try
+						Log.d("MainActivity",
+								"First try to locate destination failed. Starting second try...");
+						try {
+							// Create a geocoder to locate the destination
+							Geocoder geocoder = new Geocoder(MainActivity.this,
+									Locale.getDefault());
+							addresses = geocoder.getFromLocationName(
+									str_destination, MAX_RESULTS);
+						} catch (IOException e2) {
+							// Seems like the destination could really not be
+							// found, so send the user a message about the error
+							Log.e("MainActivity",
+									"IO Exception in searching for destination. This is the error message: "
+											+ e2.getMessage());
+							Toast.makeText(MainActivity.this,
+									R.string.noDestinationFound,
+									Toast.LENGTH_SHORT).show();
+							return;
+						}
 					}
 
 					if (addresses.isEmpty()) {
@@ -199,6 +212,10 @@ public class MainActivity extends MapActivity implements OnInitListener {
 								R.string.noDestinationFound, Toast.LENGTH_SHORT)
 								.show();
 						return;
+					} else {
+						// Destination could be located
+						Log.d("MainActivity",
+								"Located destination sucessfully.");
 					}
 
 					// Get the lat/lon values of the destination for the
