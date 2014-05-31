@@ -35,6 +35,11 @@ public class Route {
 	private int currentSegment;
 
 	/**
+	 * All shape points that create the route
+	 */
+	GeoPoint[] shapePoints;
+
+	/**
 	 * Constructor of the Route class
 	 * 
 	 * @param json
@@ -103,6 +108,9 @@ public class Route {
 
 			// Set current route segment to first segment
 			this.currentSegment = 0;
+
+			// Initialize the shapePoints
+			this.shapePoints = decisionPoints;
 
 			// Import has been successful
 			this.importSuccessful = true;
@@ -200,5 +208,14 @@ public class Route {
 	 */
 	public int getNumberOfSegments() {
 		return this.segments.size();
+	}
+
+	/**
+	 * Get all shape points that create the route
+	 * 
+	 * @return All shape points
+	 */
+	public GeoPoint[] getShapePoints() {
+		return this.shapePoints;
 	}
 }
