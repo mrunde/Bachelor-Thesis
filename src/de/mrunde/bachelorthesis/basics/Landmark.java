@@ -22,11 +22,6 @@ public class Landmark {
 	private String title;
 
 	/**
-	 * The description is optional
-	 */
-	private String description;
-
-	/**
 	 * Central position
 	 */
 	private GeoPoint center;
@@ -53,7 +48,6 @@ public class Landmark {
 			String category) {
 		this.local = local;
 		this.title = title;
-		this.description = null;
 		this.center = center;
 
 		// If the category is not correct, set it to -1
@@ -77,13 +71,6 @@ public class Landmark {
 	 */
 	public String getTitle() {
 		return title;
-	}
-
-	/**
-	 * @return The description
-	 */
-	public String getDescription() {
-		return description;
 	}
 
 	/**
