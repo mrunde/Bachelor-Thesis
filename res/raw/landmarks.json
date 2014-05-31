@@ -1,0 +1,38 @@
+{
+	"local": [
+		{
+			"title": "Cineplex Münster",
+			"center": {
+				"lat": 51.950575,
+				"lng": 7.637148
+			},
+			"category": "cinema"
+		},
+		{
+			"title": "St. Antonius-Kirche",
+			"center": {
+				"lat": 51.954814,
+				"lng": 7.620682
+			},
+			"category": "church"
+		},
+		{
+			"title": "LBS Münster",
+			"center": {
+				"lat": 51.960102,
+				"lng": 7.613258
+			},
+			"category": "monument"
+		}
+	],
+	"global": [
+		{
+			"title": "Aasee",
+			"center": {
+				"lat": 51.955910,
+				"lng": 7.614245
+			},
+			"category": "lake"
+		}
+	]
+}
