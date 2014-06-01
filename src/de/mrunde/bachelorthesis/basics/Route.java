@@ -37,7 +37,7 @@ public class Route {
 	/**
 	 * All shape points that create the route
 	 */
-	GeoPoint[] shapePoints;
+	private GeoPoint[] shapePoints;
 
 	/**
 	 * Constructor of the Route class
