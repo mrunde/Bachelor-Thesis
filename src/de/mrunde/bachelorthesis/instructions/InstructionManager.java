@@ -105,12 +105,26 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Get the current instruction, pushed to the system
+	 * Get the current instruction
 	 * 
-	 * @return The current instruction, pushed to the system
+	 * @return The current instruction
 	 */
 	public Instruction getCurrentInstruction() {
 		return this.instructions.get(this.currentInstruction);
+	}
+
+	/**
+	 * Get the next instruction
+	 * 
+	 * @return The next instruction. <code>Null</code> if last instruction has
+	 *         already been reached.
+	 */
+	public Instruction getNextInstruction() {
+		if (this.instructions.size() > this.currentInstruction + 1) {
+			return this.instructions.get(this.currentInstruction + 1);
+		} else {
+			return null;
+		}
 	}
 
 	/**
