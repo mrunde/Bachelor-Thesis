@@ -8,11 +8,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
@@ -180,70 +183,14 @@ public class MainActivity extends MapActivity implements OnInitListener {
 				// Get the entered destination
 				str_destination = edt_destination.getText().toString();
 
-				if (edt_destination.getText().toString().length() == 0) {
+				if (str_destination.length() == 0) {
 					Toast.makeText(MainActivity.this,
 							R.string.noDestinationEntered, Toast.LENGTH_SHORT)
 							.show();
 				} else {
-					List<Address> addresses;
-					try {
-						// Create a geocoder to locate the destination
-						Geocoder geocoder = new Geocoder(MainActivity.this,
-								Locale.getDefault());
-						addresses = geocoder.getFromLocationName(
-								str_destination, MAX_RESULTS);
-					} catch (IOException e1) {
-						// Destination could not be located but try again once
-						// because sometimes it works at the second try
-						Log.d("MainActivity",
-								"First try to locate destination failed. Starting second try...");
-						try {
-							// Create a geocoder to locate the destination
-							Geocoder geocoder = new Geocoder(MainActivity.this,
-									Locale.getDefault());
-							addresses = geocoder.getFromLocationName(
-									str_destination, MAX_RESULTS);
-						} catch (IOException e2) {
-							// Seems like the destination could really not be
-							// found, so send the user a message about the error
-							Log.e("MainActivity",
-									"IO Exception in searching for destination. This is the error message: "
-											+ e2.getMessage());
-							Toast.makeText(MainActivity.this,
-									R.string.noDestinationFound,
-									Toast.LENGTH_SHORT).show();
-							return;
-						}
-					}
-
-					if (addresses.isEmpty()) {
-						// Destination could not be located
-						Toast.makeText(MainActivity.this,
-								R.string.noDestinationFound, Toast.LENGTH_SHORT)
-								.show();
-						return;
-					} else {
-						// Destination could be located
-						Log.d("MainActivity",
-								"Located destination sucessfully.");
-					}
-
-					// Get the lat/lon values of the destination for the
-					// destination overlay
-					double lat = addresses.get(0).getLatitude();
-					double lng = addresses.get(0).getLongitude();
-
-					// Create the destination overlay
-					addDestinationOverlay(lat, lng);
-
-					// If the route has been calculated before change the text
-					// of the button so the route has to be calculated again and
-					// clear the route from the RouteManager
-					if (btn_calculate.getText() == getResources().getString(
-							R.string.start)) {
-						btn_calculate.setText(R.string.calculate);
-						rm.clearRoute();
-					}
+					// Search for the destination
+					SearchDestinationTask destinationTask = new SearchDestinationTask();
+					destinationTask.execute(str_destination);
 				}
 			}
 		});
@@ -314,22 +261,119 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	}
 
 	/**
+	 * This is a class to search for the destination asynchronously.
+	 * 
+	 * @author Marius Runde
+	 */
+	private class SearchDestinationTask extends
+			AsyncTask<String, Void, GeoPoint> {
+
+		/**
+		 * Progress dialog to inform the user about the searching process
+		 */
+		private ProgressDialog progressDialog = new ProgressDialog(
+				MainActivity.this);
+
+		@Override
+		protected void onPreExecute() {
+			// Display progress dialog
+			progressDialog.setMessage("Searching for destination...");
+			progressDialog.show();
+			progressDialog.setOnCancelListener(new OnCancelListener() {
+
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					// Enable canceling the search
+					SearchDestinationTask.this.cancel(true);
+				}
+			});
+		}
+
+		@Override
+		protected GeoPoint doInBackground(String... destination) {
+			String str_destination = destination[0];
+			List<Address> addresses;
+			try {
+				// Create a geocoder to locate the destination
+				Geocoder geocoder = new Geocoder(MainActivity.this,
+						Locale.getDefault());
+				addresses = geocoder.getFromLocationName(str_destination,
+						MAX_RESULTS);
+			} catch (IOException e1) {
+				// Destination could not be located but try again once
+				// because sometimes it works at the second try
+				Log.d("MainActivity",
+						"First try to locate destination failed. Starting second try...");
+				try {
+					// Create a geocoder to locate the destination
+					Geocoder geocoder = new Geocoder(MainActivity.this,
+							Locale.getDefault());
+					addresses = geocoder.getFromLocationName(str_destination,
+							MAX_RESULTS);
+				} catch (IOException e2) {
+					// Seems like the destination could really not be
+					// found, so send the user a message about the error
+					Log.e("MainActivity",
+							"IO Exception in searching for destination. This is the error message: "
+									+ e2.getMessage());
+					Toast.makeText(MainActivity.this,
+							R.string.noDestinationFound, Toast.LENGTH_SHORT)
+							.show();
+					return null;
+				}
+			}
+
+			if (addresses.isEmpty()) {
+				// Destination could not be located
+				Toast.makeText(MainActivity.this, R.string.noDestinationFound,
+						Toast.LENGTH_SHORT).show();
+				return null;
+			} else {
+				// Destination could be located
+				Log.d("MainActivity", "Located destination sucessfully.");
+				GeoPoint result = new GeoPoint(addresses.get(0).getLatitude(),
+						addresses.get(0).getLongitude());
+				return result;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(GeoPoint result) {
+			// Dismiss progress dialog
+			progressDialog.dismiss();
+
+			// Check if the search was successful
+			if (result != null) {
+				// Create the destination overlay
+				addDestinationOverlay(result);
+
+				// If the route has been calculated before change the text
+				// of the button so the route has to be calculated again and
+				// clear the route from the RouteManager
+				if (btn_calculate.getText() == getResources().getString(
+						R.string.start)) {
+					btn_calculate.setText(R.string.calculate);
+					rm.clearRoute();
+				}
+			}
+		}
+	}
+
+	/**
 	 * Add the destination overlay to the map
 	 * 
-	 * @param lat
-	 *            Latitude of the destination
-	 * @param lng
-	 *            Longitude of the destination
+	 * @param destination
+	 *            The destination
 	 */
-	private void addDestinationOverlay(double lat, double lng) {
+	private void addDestinationOverlay(GeoPoint destination) {
 		// Create a GeoPoint object of the current location and the destination
 		GeoPoint currentLocation = new GeoPoint(myLocationOverlay
 				.getMyLocation().getLatitude(), myLocationOverlay
 				.getMyLocation().getLongitude());
-		GeoPoint destination = new GeoPoint(lat, lng);
 
 		// Also set the coordinates of the destination for the NaviActivity
-		this.destination_coords = new double[] { lat, lng };
+		this.destination_coords = new double[] { destination.getLatitude(),
+				destination.getLongitude() };
 
 		// Clear previous overlays first
 		if (map.getOverlays().size() > 1) {
