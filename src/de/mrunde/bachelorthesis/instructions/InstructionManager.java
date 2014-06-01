@@ -12,7 +12,6 @@ import android.util.Log;
 import com.mapquest.android.maps.GeoPoint;
 
 import de.mrunde.bachelorthesis.basics.Landmark;
-import de.mrunde.bachelorthesis.basics.LandmarkCategory;
 import de.mrunde.bachelorthesis.basics.Route;
 import de.mrunde.bachelorthesis.basics.RouteSegment;
 import de.mrunde.bachelorthesis.basics.StreetFurniture;
@@ -145,9 +144,9 @@ public class InstructionManager {
 			// Remove "no-turn" instructions
 			if (instruction.toString() != null) {
 				this.instructions.add(instruction);
-				// TODO Log all instructions for testing
-				Log.d("InstructionManager", "Instruction " + j + ": "
-						+ this.instructions.get(j).toString()
+				// Log all instructions
+				Log.v("InstructionManager.createInstructions", "Instruction "
+						+ j + ": " + this.instructions.get(j).toString()
 						+ " | Maneuver Type: "
 						+ this.instructions.get(j).getManeuverType());
 				j++;
@@ -272,8 +271,9 @@ public class InstructionManager {
 			this.importSuccessful = false;
 		}
 
+		// Log the landmarks
 		for (int i = 0; i < this.landmarks.size(); i++) {
-			Log.v("InstructionManager", "Landmark " + i + ": "
+			Log.v("InstructionManager.initLandmarks", "Landmark " + i + ": "
 					+ this.landmarks.get(i).toString());
 		}
 	}
