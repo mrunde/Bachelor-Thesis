@@ -42,9 +42,10 @@ public class StreetFurniture {
 	}
 
 	public String toString() {
-		return "Landmark({\"center\":{\"lat\":\"" + this.center.getLatitude()
-				+ "\",\"lng\":\"" + this.center.getLongitude()
-				+ "\"},\"category\":\"" + this.category + "\"});";
+		return "StreetFurniture({\"center\":{\"lat\":\""
+				+ this.center.getLatitude() + "\",\"lng\":\""
+				+ this.center.getLongitude() + "\"},\"category\":\""
+				+ this.category + "\"});";
 	}
 
 	/**
