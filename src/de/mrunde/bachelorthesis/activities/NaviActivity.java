@@ -29,6 +29,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -60,7 +61,8 @@ import de.mrunde.bachelorthesis.instructions.InstructionManager;
  * 
  * @author Marius Runde
  */
-public class NaviActivity extends MapActivity implements OnInitListener {
+public class NaviActivity extends MapActivity implements OnInitListener,
+		LocationListener {
 
 	// --- The graphical user interface (GUI) ---
 	/**
@@ -117,6 +119,16 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	 */
 	private InstructionManager im;
 
+	/**
+	 * Location manager to monitor the user's location
+	 */
+	private LocationManager lm;
+
+	/**
+	 * Location provider of the LocationManager
+	 */
+	private String provider;
+
 	// --- End of route and instruction objects ---
 
 	/**
@@ -146,36 +158,6 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 	private TextToSpeech tts;
 
 	/**
-	 * This class handles changes of the user's location.
-	 * 
-	 * @author Marius Runde
-	 */
-	private final class MyLocationListener implements LocationListener {
-
-		@Override
-		public void onLocationChanged(Location location) {
-			// Check for driving errors when the location changed
-			// checkForDrivingError(location); TODO
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// GPS provider status changed. Do nothing
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-			// GPS is turned on. Do nothing
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-			// GPS is turned off. Do nothing. User should have been informed
-			// already before
-		}
-	}
-
-	/**
 	 * This method is called when the application has been started
 	 */
 	@Override
@@ -194,13 +176,19 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		// Initialize the TextToSpeech
 		tts = new TextToSpeech(this, this);
 
-		// Initialize the MyLocationListener
-		this.locationListener = new MyLocationListener();
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		// Request location changes every 5 seconds (5000ms) and use a minimum
-		// distance of 10 meters
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10,
-				this.locationListener);
+		// Initialize the LocationManager
+		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		// Choose the location provider
+		Criteria criteria = new Criteria();
+		provider = lm.getBestProvider(criteria, false);
+		Location location = lm.getLastKnownLocation(provider);
+
+		if (location != null) {
+			Log.e("Test", "Provider " + provider + " has been selected.");
+			onLocationChanged(location);
+		} else {
+			Log.e("Test", "Location not available");
+		}
 
 		// Setup the whole GUI and map
 		setupGUI();
@@ -272,6 +260,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 			dialog.show();
 		}
 
+		// Set up the myLocationOverlay
 		this.myLocationOverlay = new MyLocationOverlay(this, map);
 		myLocationOverlay.enableMyLocation();
 		myLocationOverlay.setMarker(
@@ -284,7 +273,7 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 				map.getController().animateTo(currentLocation);
 				map.getController().setZoom(18);
 				map.getOverlays().add(myLocationOverlay);
-				myLocationOverlay.setFollowing(true);
+				myLocationOverlay.setFollowing(false);
 			}
 		});
 	}
@@ -560,9 +549,20 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		drawnRoute.setData(shapePoints);
 
 		// Add the drawn route to the map
-		Log.d("NaviActivity", "Adding route overlay...");
 		map.getOverlays().add(drawnRoute);
-		map.getController().setZoom(15); // TODO test
+		Log.d("NaviActivity", "Route overlay added");
+	}
+
+	/**
+	 * Animate the map to the desired destination
+	 * 
+	 * @param destination
+	 *            Destination
+	 */
+	private void animateTo(GeoPoint destination) {
+		Log.v("NaviActivity", "Animating to " + destination.toString() + "...");
+		this.map.getController().animateTo(destination);
+		this.tv_instruction.setText(destination.toString()); // TODO test
 	}
 
 	/**
@@ -652,31 +652,59 @@ public class NaviActivity extends MapActivity implements OnInitListener {
 		return false;
 	}
 
-	/**
-	 * Enable features of the MyLocationOverlay
-	 */
 	@Override
 	protected void onResume() {
+		// Enable features of the MyLocationOverlay
 		myLocationOverlay.enableMyLocation();
+		// Request location updates at startup every 500ms for changes of 1m
+		lm.requestLocationUpdates(provider, 500, 1, this);
 		super.onResume();
 	}
 
-	/**
-	 * Disable features of the MyLocationOverlay when in the background
-	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
+		// Disable features of the MyLocationOverlay when in the background
 		myLocationOverlay.disableMyLocation();
+		// Disable the LocationManager when in the background
+		lm.removeUpdates(this);
 	}
 
 	@Override
 	public void onInit(int status) {
+		// Initialize the TextToSpeech engine
 		if (status == TextToSpeech.SUCCESS) {
 			tts.setLanguage(Locale.ENGLISH);
 		} else {
 			tts = null;
-			Log.e("MainActivity", "Failed to initialize the TextToSpeech");
+			Log.e("MainActivity",
+					"Failed to initialize the TextToSpeech engine");
 		}
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		double lat = location.getLatitude();
+		double lng = location.getLongitude();
+		Log.e("Test.LocationChanged", String.valueOf(lat));
+		Log.e("Test.LocationChanged", String.valueOf(lng));
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+
 	}
 }
