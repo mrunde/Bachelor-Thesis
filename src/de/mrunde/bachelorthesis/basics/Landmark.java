@@ -54,7 +54,7 @@ public class Landmark {
 		if (LandmarkCategory.isCategory(category)) {
 			this.category = category;
 		} else {
-			Log.e("Landmark", "Category is not correct and will be set to -1");
+			Log.e("Landmark", "Category is not correct and will be set to null");
 			this.category = null;
 		}
 	}

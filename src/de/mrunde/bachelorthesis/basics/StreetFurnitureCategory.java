@@ -5,7 +5,7 @@ package de.mrunde.bachelorthesis.basics;
  * 
  * @author Marius Runde
  */
-public class StreetFurnitureCategory {
+public abstract class StreetFurnitureCategory {
 
 	/**
 	 * Bridge

@@ -18,6 +18,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -483,8 +484,22 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 							+ e.getMessage());
 		}
 
+		// Load the street furniture as a JSONArray from
+		// res/raw/streetfurniture.json
+		is = getResources().openRawResource(R.raw.landmarks);
+		JSONArray streetFurniture = null;
+		try {
+			String rawJson = IOUtils.toString(is, "UTF-8");
+			streetFurniture = new JSONArray(rawJson);
+		} catch (Exception e) {
+			// Could not load landmarks
+			Log.e("NaviActivity",
+					"Could not load street furniture. This is the error message: "
+							+ e.getMessage());
+		}
+
 		// Create the instruction manager
-		im = new InstructionManager(guidance, landmarks);
+		im = new InstructionManager(guidance, landmarks, streetFurniture);
 		// Check if the import was successful
 		if (im.isImportSuccessful()) {
 			// Create the instructions

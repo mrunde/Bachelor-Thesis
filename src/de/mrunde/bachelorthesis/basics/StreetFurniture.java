@@ -1,33 +1,63 @@
 package de.mrunde.bachelorthesis.basics;
 
+import android.util.Log;
+
+import com.mapquest.android.maps.GeoPoint;
+
 /**
- * A StreetFurniture can be e.g. a traffic light or stop sign.
+ * A StreetFurniture can be e.g. a roundabout or stop sign.
  * 
  * @author Marius Runde
  */
 public class StreetFurniture {
 
 	/**
-	 * Crosswalk
+	 * Central position
 	 */
-	public final static int CROSSWALK = 0;
+	private GeoPoint center;
 
 	/**
-	 * Roundabout
+	 * Category (must be from list of categories from StreetFurnitureCategory)
 	 */
-	public final static int ROUNDABOUT = 1;
+	private String category;
 
 	/**
-	 * Stop sign
+	 * Constructor of the StreetFurniture class
+	 * 
+	 * @param center
+	 *            Central position
+	 * @param category
+	 *            Category (must be from list of categories from
+	 *            LandmarkCategory)
 	 */
-	public final static int STOP_SIGN = 2;
+	public StreetFurniture(GeoPoint center, String category) {
+		this.center = center;
+		if (StreetFurnitureCategory.isCategory(category)) {
+			this.category = category;
+		} else {
+			Log.e("StreetFurniture",
+					"Category is not correct and will be set to null");
+			this.category = null;
+		}
+	}
+
+	public String toString() {
+		return "Landmark({\"center\":{\"lat\":\"" + this.center.getLatitude()
+				+ "\",\"lng\":\"" + this.center.getLongitude()
+				+ "\"},\"category\":\"" + this.category + "\"});";
+	}
 
 	/**
-	 * Traffic light
+	 * @return The central position
 	 */
-	public final static int TRAFFIC_LIGHT = 3;
+	public GeoPoint getCenter() {
+		return center;
+	}
 
-	public StreetFurniture(int category) {
-
+	/**
+	 * @return The category
+	 */
+	public String getCategory() {
+		return category;
 	}
 }
