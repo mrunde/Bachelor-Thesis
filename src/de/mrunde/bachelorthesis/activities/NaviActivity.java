@@ -132,27 +132,6 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	// --- End of route and instruction objects ---
 
 	/**
-	 * LocationListener of the NaviActivity
-	 */
-	private LocationListener locationListener;
-
-	/**
-	 * Maximum amount of tolerated driving errors
-	 */
-	private final int MAX_DRIVING_ERRORS = 5;
-
-	/**
-	 * Store the number of driving errors
-	 */
-	private int drivingErrors = 0;
-
-	/**
-	 * Store the last distance to the next decision point to recognize driving
-	 * errors
-	 */
-	private double lastDistance = -1;
-
-	/**
 	 * TextToSpeech for audio output
 	 */
 	private TextToSpeech tts;
@@ -273,7 +252,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				map.getController().animateTo(currentLocation);
 				map.getController().setZoom(18);
 				map.getOverlays().add(myLocationOverlay);
-				myLocationOverlay.setFollowing(false);
+				myLocationOverlay.setFollowing(true);
 			}
 		});
 	}
@@ -516,9 +495,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			tv_instruction.setText(instruction);
 
 			// Speak out the first instruction
-			tts.setSpeechRate((float) 0.85);
-			tts.speak(tv_instruction.getText().toString(),
-					TextToSpeech.QUEUE_FLUSH, null);
+			speakInstruction();
 		} else {
 			// Import was not successful
 			Toast.makeText(this,
@@ -553,81 +530,71 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		Log.d("NaviActivity", "Route overlay added");
 	}
 
-	/**
-	 * Animate the map to the desired destination
-	 * 
-	 * @param destination
-	 *            Destination
-	 */
-	private void animateTo(GeoPoint destination) {
-		Log.v("NaviActivity", "Animating to " + destination.toString() + "...");
-		this.map.getController().animateTo(destination);
-		this.tv_instruction.setText(destination.toString()); // TODO test
-	}
-
-	/**
-	 * This method compares the distance between the user and the next decision
-	 * point. If this distance increases MAX_DRIVING_ERRORS times in a row, the
-	 * route will be recalculated.
-	 * 
-	 * @param lastLocation
-	 *            The user location
-	 */
-	private void checkForDrivingError(Location lastLocation) {
-		// Get the last decision point
-		GeoPoint lastDecisionPoint = im.getCurrentInstruction()
-				.getDecisionPoint();
-
-		// Calculate the distance to the next decision point
-		float[] results = new float[1];
-		Location.distanceBetween(lastLocation.getLatitude(),
-				lastLocation.getLongitude(), lastDecisionPoint.getLatitude(),
-				lastDecisionPoint.getLongitude(), results);
-
-		// Compare the distances and increase or decrease driving error counter
-		if (this.lastDistance < results[0]) {
-			this.drivingErrors++;
-			Log.w("NaviActivity.DrivingError", "Driving errors increased to "
-					+ this.drivingErrors);
-		} else if (this.drivingErrors > 0) {
-			this.drivingErrors--;
-			Log.i("NaviActivity.DrivingError", "Driving errors decreased to "
-					+ this.drivingErrors);
-		}
-
-		if (this.drivingErrors >= this.MAX_DRIVING_ERRORS) {
-			// This is supposed to be a driving error
-			Toast.makeText(this, R.string.recalculate, Toast.LENGTH_SHORT)
-					.show();
-			tts.speak(getResources().getString(R.string.recalculate),
-					TextToSpeech.QUEUE_FLUSH, null);
-			Log.w("NaviActivity.DrivingError", "Recalculating route...");
-
-			// Restart activity
-			Intent intent = getIntent();
-			intent.putExtra("str_currentLocation", str_currentLocation);
-			finish();
-			startActivity(intent);
-
-			// // Reset driving errors and the last distance
-			// this.drivingErrors = 0;
-			// this.lastDistance = -1;
-			//
-			// // Recalculate route
-			// calculateRoute();
-			//
-			// // Get the guidance information and create the instructions
-			// // getGuidance(); TODO seems like an error is happening here
-			//
-			// // Zoom to current location (just to make sure the map displays
-			// the
-			// // user location because the calculateRoute() method sometimes
-			// does
-			// // not do this)
-			// map.getController().animateTo(myLocationOverlay.getMyLocation());
-			// map.getController().setZoom(18);
-		}
-	}
+	// /**
+	// * This method compares the distance between the user and the next
+	// decision
+	// * point. If this distance increases MAX_DRIVING_ERRORS times in a row,
+	// the
+	// * route will be recalculated.
+	// *
+	// * @param lastLocation
+	// * The user location
+	// */
+	// private void checkForDrivingError(Location lastLocation) {
+	// // Get the last decision point
+	// GeoPoint lastDecisionPoint = im.getCurrentInstruction()
+	// .getDecisionPoint();
+	//
+	// // Calculate the distance to the next decision point
+	// float[] results = new float[1];
+	// Location.distanceBetween(lastLocation.getLatitude(),
+	// lastLocation.getLongitude(), lastDecisionPoint.getLatitude(),
+	// lastDecisionPoint.getLongitude(), results);
+	//
+	// // Compare the distances and increase or decrease driving error counter
+	// if (this.lastDistance < results[0]) {
+	// this.drivingErrors++;
+	// Log.w("NaviActivity.DrivingError", "Driving errors increased to "
+	// + this.drivingErrors);
+	// } else if (this.drivingErrors > 0) {
+	// this.drivingErrors--;
+	// Log.i("NaviActivity.DrivingError", "Driving errors decreased to "
+	// + this.drivingErrors);
+	// }
+	//
+	// if (this.drivingErrors >= this.MAX_DRIVING_ERRORS) {
+	// // This is supposed to be a driving error
+	// Toast.makeText(this, R.string.recalculate, Toast.LENGTH_SHORT)
+	// .show();
+	// tts.speak(getResources().getString(R.string.recalculate),
+	// TextToSpeech.QUEUE_FLUSH, null);
+	// Log.w("NaviActivity.DrivingError", "Recalculating route...");
+	//
+	// // Restart activity
+	// Intent intent = getIntent();
+	// intent.putExtra("str_currentLocation", str_currentLocation);
+	// finish();
+	// startActivity(intent);
+	//
+	// // // Reset driving errors and the last distance
+	// // this.drivingErrors = 0;
+	// // this.lastDistance = -1;
+	// //
+	// // // Recalculate route
+	// // calculateRoute();
+	// //
+	// // // Get the guidance information and create the instructions
+	// // // getGuidance(); TODO seems like an error is happening here
+	// //
+	// // // Zoom to current location (just to make sure the map displays
+	// // the
+	// // // user location because the calculateRoute() method sometimes
+	// // does
+	// // // not do this)
+	// // map.getController().animateTo(myLocationOverlay.getMyLocation());
+	// // map.getController().setZoom(18);
+	// }
+	// }
 
 	@Override
 	public void onBackPressed() {
@@ -686,25 +653,59 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	public void onLocationChanged(Location location) {
 		double lat = location.getLatitude();
 		double lng = location.getLongitude();
-		Log.e("Test.LocationChanged", String.valueOf(lat));
-		Log.e("Test.LocationChanged", String.valueOf(lng));
+		Log.e("Test.LocationChanged", String.valueOf(lat)); // TODO test
+		Log.e("Test.LocationChanged", String.valueOf(lng)); // TODO test
+
+		// Check if the instruction manager has been initialized already
+		if (im != null) {
+			// Get the coordinates of the current decision point
+			double dpLat = im.getCurrentInstruction().getDecisionPoint()
+					.getLatitude();
+			double dpLng = im.getCurrentInstruction().getDecisionPoint()
+					.getLongitude();
+
+			// Update the instruction, if the decision point has been reached
+			float[] results = new float[1];
+			Location.distanceBetween(lat, lng, dpLat, dpLng, results);
+			if (results[0] < 20) {
+				updateInstruction();
+			}
+		}
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-
+		// Do nothing here
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-
+		// Do nothing here
 	}
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
+		// Do nothing here
+	}
 
+	/**
+	 * Called when the next decision point has been reached to update the
+	 * current instruction to the following instruction.
+	 */
+	private void updateInstruction() {
+		// Get the next instruction
+		String nextInstruction = im.getNextInstruction().toString();
+		// Display the instruction and speak it out
+		this.tv_instruction.setText(nextInstruction);
+		speakInstruction();
+	}
+
+	/**
+	 * Speak out the current instruction
+	 */
+	private void speakInstruction() {
+		tts.setSpeechRate((float) 0.85);
+		tts.speak(tv_instruction.getText().toString(),
+				TextToSpeech.QUEUE_FLUSH, null);
 	}
 }
