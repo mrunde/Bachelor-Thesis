@@ -42,7 +42,7 @@ public class InstructionManager {
 	private List<Instruction> instructions;
 
 	/**
-	 * Store the current instruction, pushed to the system. Default = 0
+	 * Store the current instruction. Default = 0
 	 */
 	private int currentInstruction;
 
@@ -121,8 +121,12 @@ public class InstructionManager {
 	 */
 	public Instruction getNextInstruction() {
 		if (this.instructions.size() > this.currentInstruction + 1) {
-			return this.instructions.get(this.currentInstruction + 1);
+			// Increase the pointer
+			this.currentInstruction++;
+			// Return the next instruction
+			return this.instructions.get(this.currentInstruction);
 		} else {
+			// Return null when last instruction has already been reached
 			return null;
 		}
 	}
