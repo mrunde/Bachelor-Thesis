@@ -13,10 +13,16 @@ public abstract class StreetFurnitureCategory {
 	 * Bridge
 	 */
 	public final static String BRIDGE = "bridge";
+
 	/**
 	 * Crosswalk
 	 */
 	public final static String CROSSWALK = "crosswalk";
+
+	/**
+	 * Railway bridge
+	 */
+	public final static String RAILWAY_BRIDGE = "railway_bridge";
 
 	/**
 	 * Stop sign
@@ -40,6 +46,8 @@ public abstract class StreetFurnitureCategory {
 		if (category.equals(BRIDGE))
 			return true;
 		if (category.equals(CROSSWALK))
+			return true;
+		if (category.equals(RAILWAY_BRIDGE))
 			return true;
 		if (category.equals(STOP_SIGN))
 			return true;
