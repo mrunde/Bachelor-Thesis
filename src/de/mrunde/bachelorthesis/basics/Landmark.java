@@ -104,9 +104,10 @@ public class Landmark {
 	}
 
 	/**
-	 * @return the category
+	 * @return The category formatted so that "_" are replaced with spaces
 	 */
 	public String getCategory() {
-		return category;
+		String formattedCategory = category.replace("_", " ");
+		return formattedCategory;
 	}
 }

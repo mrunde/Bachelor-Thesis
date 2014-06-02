@@ -20,7 +20,7 @@ public abstract class LandmarkCategory {
 	/**
 	 * Gas station
 	 */
-	public final static String GAS_STATION = "gas station";
+	public final static String GAS_STATION = "gas_station";
 
 	/**
 	 * Hospital
@@ -40,12 +40,12 @@ public abstract class LandmarkCategory {
 	/**
 	 * Post office
 	 */
-	public final static String POST_OFFICE = "post office";
+	public final static String POST_OFFICE = "post_office";
 
 	/**
 	 * Train station
 	 */
-	public final static String TRAIN_STATION = "train station";
+	public final static String TRAIN_STATION = "train_station";
 
 	/**
 	 * Check if a category is a valid Landmark category
