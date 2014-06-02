@@ -3,7 +3,7 @@
 
     <string name="app_name">Bachelor Thesis</string>
     <string name="apiKey">Fmjtd%7Cluur2q0rn9%2C8w%3Do5-9aawg4</string>
-    <string name="search">Search</string>
+    <string name="helpPage">https://github.com/mrunde/Bachelor-Thesis/wiki/Help</string><string name="search">Search</string>
     <string name="destination_hint">Your destination</string>
     <string name="calculate">Calculate Route</string>
     <string name="noDestinationEntered">Please enter a destination first and click on Search.</string>
@@ -29,6 +29,7 @@
     <string name="openSettings">Open settings</string>
     <string name="cancel">Cancel</string>
     <string name="closeActivity_title">Stopping Navigation</string><string name="closeActivity_message">Are you sure you want to stop the navigation?</string>
+    
     
     
     

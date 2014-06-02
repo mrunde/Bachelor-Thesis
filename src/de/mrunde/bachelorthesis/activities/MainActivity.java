@@ -255,7 +255,11 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			@Override
 			public void onClick(View v) {
 				// Display the help
-				displayHelp();
+//				displayHelp(); TODO
+				// Create an Intent to start the HelpActivity
+				Intent intent = new Intent(MainActivity.this,
+						HelpActivity.class);
+				startActivity(intent);
 			}
 		});
 	}
