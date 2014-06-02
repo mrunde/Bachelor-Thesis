@@ -48,13 +48,25 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/btn_preferences"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@android:drawable/ic_menu_preferences" />
 
         <Button
             android:id="@+id/btn_calculate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/calculate" />
+        
+        <Button
+            android:id="@+id/btn_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@android:drawable/ic_menu_help" />
     </LinearLayout>
 
 </LinearLayout>
