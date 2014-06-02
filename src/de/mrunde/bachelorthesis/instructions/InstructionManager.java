@@ -26,6 +26,23 @@ import de.mrunde.bachelorthesis.basics.StreetFurniture;
 public class InstructionManager {
 
 	/**
+	 * This is the maximal distance between the decision point and a street
+	 * furniture
+	 */
+	private final int MAX_DISTANCE_TO_STREET_FURNITURE = 20;
+
+	/**
+	 * This is the maximal distance between the decision point and an
+	 * intersection
+	 */
+	private final int MAX_DISTANCE_TO_INTERSECTION = 10;
+
+	/**
+	 * This is the maximal number of intersections to be used for an instruction
+	 */
+	private final int MAX_NUMBER_OF_INTERSECTIONS = 3;
+
+	/**
 	 * Value to check if the JSON import succeeded
 	 */
 	private boolean importSuccessful;
@@ -323,13 +340,18 @@ public class InstructionManager {
 		StreetFurniture streetFurniture;
 		int intersections;
 		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
+			// Create a LandmarkInstruction
 			instruction = new LandmarkInstruction(decisionPoint, maneuverType,
 					localLandmark);
 		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint)) != null) {
+			// Create a StreetFurnitureInstruction
 			instruction = new StreetFurnitureInstruction(decisionPoint,
 					maneuverType, streetFurniture);
-		} else if ((intersections = searchForIntersections(decisionPoint)) > 0) {
-			// TODO Create IntersectionInstruction
+		} else if ((intersections = searchForIntersections(decisionPoint,
+				previousDecisionPoint)) > 0) {
+			// Create an IntersectionInstruction
+			instruction = new IntersectionInstruction(decisionPoint,
+					maneuverType, intersections);
 		}
 
 		// Create a DistanceInstruction if all other options failed
@@ -401,7 +423,7 @@ public class InstructionManager {
 					this.streetFurniture.get(i).getCenter().getLongitude());
 			double distance = geoPointFromOsmdroid
 					.distanceTo(streetFurnitureGeoPoint);
-			if (distance <= 50) {
+			if (distance <= this.MAX_DISTANCE_TO_STREET_FURNITURE) {
 				result = this.streetFurniture.get(i);
 			}
 		}
@@ -414,11 +436,82 @@ public class InstructionManager {
 	 * 
 	 * @param decisionPoint
 	 *            Decision point
+	 * @param previousDecisionPoint
+	 *            Previous decision point
 	 * @return Number of intersections
 	 */
-	private int searchForIntersections(GeoPoint decisionPoint) {
+	private int searchForIntersections(GeoPoint decisionPoint,
+			GeoPoint previousDecisionPoint) {
 		int result = 0;
 
+		// Get the shape points from the route
+		GeoPoint[] shapePoints = this.route.getShapePoints();
+
+		// Find the indexes of the current and the previous decision points
+		int indexCurrent = searchDecisionPointIndex(decisionPoint, shapePoints);
+		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
+				shapePoints);
+
+		for (int i = 0; i < this.intersections.size(); i++) {
+			// Get the intersection location
+			org.osmdroid.util.GeoPoint intersectionGeoPoint = new org.osmdroid.util.GeoPoint(
+					this.intersections.get(i).getLatitude(), this.intersections
+							.get(i).getLongitude());
+
+			// Iterate through all shape points that lay between the current and
+			// the previous decision points
+			for (int j = indexCurrent; j > indexPrevious; j--) {
+				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+						shapePoints[j].getLatitude(),
+						shapePoints[j].getLongitude());
+
+				double distance = currentShapePoint
+						.distanceTo(intersectionGeoPoint);
+				if (distance <= this.MAX_DISTANCE_TO_INTERSECTION) {
+					result++;
+					break;
+				}
+			}
+
+			// Check if the number of intersections is higher than the maximal
+			// allowed number
+			if (result > this.MAX_NUMBER_OF_INTERSECTIONS) {
+				result = 0;
+				break;
+			}
+		}
+
 		return result;
+	}
+
+	/**
+	 * Search the index of the given decision point
+	 * 
+	 * @param decisionPoint
+	 *            The decision point
+	 * @param shapePoints
+	 *            The shape points that create the route
+	 * @return Index of the decision point. -1 if decision point could not be
+	 *         found or is <code>null</code>
+	 */
+	private int searchDecisionPointIndex(GeoPoint decisionPoint,
+			GeoPoint[] shapePoints) {
+		int index = -1;
+
+		if (decisionPoint == null) {
+			// If the decision point is null it seems to be the first
+			// instruction being created
+			index = 0;
+		} else {
+			// Iterate through all shape points until the correct one has been
+			// found
+			for (int i = 0; i < shapePoints.length; i++) {
+				if (decisionPoint.equals(shapePoints[i])) {
+					index = i;
+					break;
+				}
+			}
+		}
+		return index;
 	}
 }
