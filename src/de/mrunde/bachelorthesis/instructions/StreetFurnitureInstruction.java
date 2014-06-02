@@ -34,7 +34,7 @@ public class StreetFurnitureInstruction extends Instruction {
 	}
 
 	/**
-	 * @return The Instruction as a verbal text
+	 * @return The instruction as a verbal text
 	 */
 	public String toString() {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {

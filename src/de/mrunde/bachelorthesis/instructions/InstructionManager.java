@@ -287,7 +287,16 @@ public class InstructionManager {
 	/**
 	 * This is the super-method to create instructions of any type. The
 	 * InstructionManager automatically finds out which type of instruction has
-	 * to be created and returns it as a verbal text.
+	 * to be created and returns it.<br/>
+	 * <br/>
+	 * The different types of instructions are created by this priority order:
+	 * <ul>
+	 * <li>LandmarkInstruction</li>
+	 * <li>StreetFurnitureInstruction</li>
+	 * <li>IntersectionInstruction</li>
+	 * <li>DistanceInstruction</li>
+	 * </ul>
+	 * Global landmarks are used in the instructions if available.
 	 * 
 	 * @param decisionPoint
 	 *            Decision point where the maneuver has to be done
@@ -295,7 +304,7 @@ public class InstructionManager {
 	 *            Previous decision point. <code>Null</code> if first
 	 *            instruction. Used to find global landmarks
 	 * @param maneuverType
-	 *            Maneuver type
+	 *            The maneuver type
 	 * @param distance
 	 *            Distance to decision point (only used for
 	 *            <code>DistanceInstruction</code> objects)
@@ -314,7 +323,8 @@ public class InstructionManager {
 		StreetFurniture streetFurniture;
 		int intersections;
 		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
-			// TODO Create LandmarkInstruction
+			instruction = new LandmarkInstruction(decisionPoint, maneuverType,
+					localLandmark);
 		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint)) != null) {
 			instruction = new StreetFurnitureInstruction(decisionPoint,
 					maneuverType, streetFurniture);
