@@ -27,6 +27,11 @@ public class Landmark {
 	private GeoPoint center;
 
 	/**
+	 * Radius of visibility in meters
+	 */
+	private int radius;
+
+	/**
 	 * Category (must be from list of categories from LandmarkCategory)
 	 */
 	private String category;
@@ -40,15 +45,18 @@ public class Landmark {
 	 *            Title
 	 * @param center
 	 *            Central position
+	 * @param radius
+	 *            Radius of visibility in meters
 	 * @param category
 	 *            Category (must be from list of categories from
 	 *            LandmarkCategory)
 	 */
-	public Landmark(boolean local, String title, GeoPoint center,
+	public Landmark(boolean local, String title, GeoPoint center, int radius,
 			String category) {
 		this.local = local;
 		this.title = title;
 		this.center = center;
+		this.radius = radius;
 
 		// If the category is not correct, set it to -1
 		if (LandmarkCategory.isCategory(category)) {
@@ -58,13 +66,13 @@ public class Landmark {
 			this.category = null;
 		}
 	}
-	
+
 	public String toString() {
 		return "Landmark({\"local\":\"" + this.local + "\",\"title\":\""
 				+ this.title + "\",\"center\":{\"lat\":\""
 				+ this.center.getLatitude() + "\",\"lng\":\""
-				+ this.center.getLongitude() + "\"},\"category\":\""
-				+ this.category + "\"});";
+				+ this.center.getLongitude() + "\"},\"radius\":" + this.radius
+				+ ",\"category\":\"" + this.category + "\"});";
 	}
 
 	/**
@@ -86,6 +94,13 @@ public class Landmark {
 	 */
 	public GeoPoint getCenter() {
 		return center;
+	}
+
+	/**
+	 * @return The radius of visibility in meters
+	 */
+	public int getRadius() {
+		return radius;
 	}
 
 	/**
