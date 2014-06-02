@@ -4,7 +4,6 @@ import com.mapquest.android.maps.GeoPoint;
 
 import de.mrunde.bachelorthesis.basics.Maneuver;
 import de.mrunde.bachelorthesis.basics.StreetFurniture;
-import de.mrunde.bachelorthesis.basics.StreetFurnitureCategory;
 
 /**
  * This is a "street furniture"-based instruction.
@@ -40,7 +39,7 @@ public class StreetFurnitureInstruction extends Instruction {
 	public String toString() {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
 			String instruction = super.getManeuver() + " after the "
-					+ this.streetFurniture.toString();
+					+ this.streetFurniture.getCategory();
 			return instruction;
 		} else {
 			return null;
