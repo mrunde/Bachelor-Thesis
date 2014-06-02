@@ -154,9 +154,9 @@ public class InstructionManager {
 		}
 
 		// Log the street furniture
-		for (int i = 0; i < this.landmarks.size(); i++) {
-			Log.v("InstructionManager.initLandmarks", "Street furniture " + i
-					+ ": " + this.streetFurniture.get(i).toString());
+		for (int i = 0; i < this.streetFurniture.size(); i++) {
+			Log.v("InstructionManager.initStreetFurniture", "Street furniture "
+					+ i + ": " + this.streetFurniture.get(i).toString());
 		}
 	}
 
@@ -230,7 +230,7 @@ public class InstructionManager {
 		for (int i = 0; i < this.route.getNumberOfSegments(); i++) {
 			RouteSegment rs = this.route.getNextSegment();
 			Instruction instruction = createInstruction(rs.getEndPoint(),
-					rs.getManeuverType(), rs.getDistance());
+					rs.getStartPoint(), rs.getManeuverType(), rs.getDistance());
 
 			// Remove "no-turn" instructions
 			if (instruction.toString() != null) {
@@ -252,6 +252,9 @@ public class InstructionManager {
 	 * 
 	 * @param decisionPoint
 	 *            Decision point where the maneuver has to be done
+	 * @param previousDecisionPoint
+	 *            Previous decision point. <code>Null</code> if first
+	 *            instruction. Used to find global landmarks
 	 * @param maneuverType
 	 *            Maneuver type
 	 * @param distance
@@ -260,8 +263,11 @@ public class InstructionManager {
 	 * @return The instruction
 	 */
 	private Instruction createInstruction(GeoPoint decisionPoint,
-			Integer maneuverType, Integer distance) {
+			GeoPoint previousDecisionPoint, Integer maneuverType,
+			Integer distance) {
 		Instruction instruction = null;
+
+		// Get the route segment
 
 		// Search for global landmark
 		Landmark globalLandmark = searchForGlobalLandmark(decisionPoint);
@@ -272,7 +278,8 @@ public class InstructionManager {
 		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
 			// TODO Create LandmarkInstruction
 		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint)) != null) {
-			// TODO Create StreetFurnitureInstruction
+			instruction = new StreetFurnitureInstruction(decisionPoint,
+					maneuverType, streetFurniture);
 		} else {
 			instruction = new DistanceInstruction(decisionPoint, maneuverType,
 					distance);
@@ -308,15 +315,30 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Search for a street furniture close to the given location
+	 * Search for a street furniture close to the given location (max. 50m)
 	 * 
-	 * @param location
+	 * @param decisionPoint
 	 *            Decision point
 	 * @return <code>StreetFurniture</code> object if available. Otherwise
 	 *         <code>null</code> will be returned.
 	 */
-	private StreetFurniture searchForStreetFurniture(GeoPoint location) {
-		// TODO
-		return null;
+	private StreetFurniture searchForStreetFurniture(GeoPoint decisionPoint) {
+		StreetFurniture result = null;
+
+		org.osmdroid.util.GeoPoint geoPointFromOsmdroid = new org.osmdroid.util.GeoPoint(
+				decisionPoint.getLatitude(), decisionPoint.getLongitude());
+
+		for (int i = 0; i < this.streetFurniture.size(); i++) {
+			org.osmdroid.util.GeoPoint streetFurnitureGeoPoint = new org.osmdroid.util.GeoPoint(
+					this.streetFurniture.get(i).getCenter().getLatitude(),
+					this.streetFurniture.get(i).getCenter().getLongitude());
+			double distance = geoPointFromOsmdroid
+					.distanceTo(streetFurnitureGeoPoint);
+			if (distance <= 0.05) {
+				result = this.streetFurniture.get(i);
+			}
+		}
+
+		return result;
 	}
 }
