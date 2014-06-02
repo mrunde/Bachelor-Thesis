@@ -6,14 +6,16 @@
 				"lat": 51.950575,
 				"lng": 7.637148
 			},
+			"radius": 50,
 			"category": "cinema"
 		},
 		{
 			"title": "St. Antonius-Kirche",
 			"center": {
-				"lat": 51.954814,
-				"lng": 7.620682
+				"lat": 51.954837,
+				"lng": 7.620182
 			},
+			"radius": 50,
 			"category": "church"
 		},
 		{
@@ -22,6 +24,7 @@
 				"lat": 51.960102,
 				"lng": 7.613258
 			},
+			"radius": 100,
 			"category": "monument"
 		}
 	],
@@ -29,9 +32,10 @@
 		{
 			"title": "Aasee",
 			"center": {
-				"lat": 51.955910,
-				"lng": 7.614245
+				"lat": 51.956642,
+				"lng": 7.615504
 			},
+			"radius": 200,
 			"category": "lake"
 		}
 	]
