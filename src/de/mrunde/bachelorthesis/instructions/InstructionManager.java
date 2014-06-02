@@ -56,6 +56,11 @@ public class InstructionManager {
 	private List<StreetFurniture> streetFurniture;
 
 	/**
+	 * Intersections to be used
+	 */
+	private List<GeoPoint> intersections;
+
+	/**
 	 * Constructor of the InstructionManager class
 	 * 
 	 * @param guidance
@@ -64,7 +69,7 @@ public class InstructionManager {
 	 *            The landmarks from res/raw/landmarks.json
 	 */
 	public InstructionManager(JSONObject guidance, JSONObject landmarks,
-			JSONArray streetFurniture) {
+			JSONArray streetFurniture, JSONArray intersections) {
 		// Initialize the route
 		this.route = new Route(guidance);
 
@@ -76,6 +81,9 @@ public class InstructionManager {
 
 		// Initialize the street furniture
 		initStreetFurniture(streetFurniture);
+
+		// Initialize the intersections
+		initIntersections(intersections);
 	}
 
 	/**
@@ -92,12 +100,14 @@ public class InstructionManager {
 			for (int i = 0; i < local.length(); i++) {
 				String title = ((JSONObject) local.get(i)).getString("title");
 				GeoPoint center = new GeoPoint(((JSONObject) local.get(i))
-						.getJSONObject("center").getDouble("lng"),
+						.getJSONObject("center").getDouble("lat"),
 						((JSONObject) local.get(i)).getJSONObject("center")
 								.getDouble("lng"));
+				int radius = ((JSONObject) local.get(i)).getInt("radius");
 				String category = ((JSONObject) local.get(i))
 						.getString("category");
-				this.landmarks.add(new Landmark(true, title, center, category));
+				this.landmarks.add(new Landmark(true, title, center, radius,
+						category));
 			}
 
 			// Initialize all global landmarks
@@ -105,13 +115,14 @@ public class InstructionManager {
 			for (int i = 0; i < global.length(); i++) {
 				String title = ((JSONObject) global.get(i)).getString("title");
 				GeoPoint center = new GeoPoint(((JSONObject) global.get(i))
-						.getJSONObject("center").getDouble("lng"),
+						.getJSONObject("center").getDouble("lat"),
 						((JSONObject) global.get(i)).getJSONObject("center")
 								.getDouble("lng"));
+				int radius = ((JSONObject) local.get(i)).getInt("radius");
 				String category = ((JSONObject) global.get(i))
 						.getString("category");
-				this.landmarks
-						.add(new Landmark(false, title, center, category));
+				this.landmarks.add(new Landmark(false, title, center, radius,
+						category));
 			}
 		} catch (JSONException e) {
 			// Error while parsing JSONObject
@@ -139,7 +150,7 @@ public class InstructionManager {
 			for (int i = 0; i < streetFurniture.length(); i++) {
 				GeoPoint center = new GeoPoint(
 						((JSONObject) streetFurniture.get(i)).getJSONObject(
-								"center").getDouble("lng"),
+								"center").getDouble("lat"),
 						((JSONObject) streetFurniture.get(i)).getJSONObject(
 								"center").getDouble("lng"));
 				String category = ((JSONObject) streetFurniture.get(i))
@@ -147,7 +158,7 @@ public class InstructionManager {
 				this.streetFurniture.add(new StreetFurniture(center, category));
 			}
 		} catch (JSONException e) {
-			// Error while parsing JSONObject
+			// Error while parsing JSONArray
 			Log.e("InstructionManager",
 					"Error while parsing JSONArray to initialize the street furniture.");
 			this.importSuccessful = false;
@@ -157,6 +168,34 @@ public class InstructionManager {
 		for (int i = 0; i < this.streetFurniture.size(); i++) {
 			Log.v("InstructionManager.initStreetFurniture", "Street furniture "
 					+ i + ": " + this.streetFurniture.get(i).toString());
+		}
+	}
+
+	/**
+	 * Initialize the intersections
+	 * 
+	 * @param intersections
+	 *            The intersections from res/raw/intersections.json
+	 */
+	private void initIntersections(JSONArray intersections) {
+		this.intersections = new ArrayList<GeoPoint>();
+		try {
+			for (int i = 0; i < intersections.length(); i++) {
+				this.intersections.add(new GeoPoint(((JSONObject) intersections
+						.get(i)).getDouble("lat"), ((JSONObject) intersections
+						.get(i)).getDouble("lng")));
+			}
+		} catch (JSONException e) {
+			// Error while parsing JSONArray
+			Log.e("InstructionManager",
+					"Error while parsing JSONArray to initialize the intersections.");
+			this.importSuccessful = false;
+		}
+
+		// Log the intersections
+		for (int i = 0; i < this.intersections.size(); i++) {
+			Log.v("InstructionManager.initIntersections", "Intersection " + i
+					+ ": " + this.intersections.get(i).toString());
 		}
 	}
 
@@ -267,20 +306,24 @@ public class InstructionManager {
 			Integer distance) {
 		Instruction instruction = null;
 
-		// Get the route segment
-
 		// Search for global landmark
 		Landmark globalLandmark = searchForGlobalLandmark(decisionPoint);
 
 		// Search for local landmark or street furniture
 		Landmark localLandmark;
 		StreetFurniture streetFurniture;
+		int intersections;
 		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
 			// TODO Create LandmarkInstruction
 		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint)) != null) {
 			instruction = new StreetFurnitureInstruction(decisionPoint,
 					maneuverType, streetFurniture);
-		} else {
+		} else if ((intersections = searchForIntersections(decisionPoint)) > 0) {
+			// TODO Create IntersectionInstruction
+		}
+
+		// Create a DistanceInstruction if all other options failed
+		if (instruction == null) {
 			instruction = new DistanceInstruction(decisionPoint, maneuverType,
 					distance);
 		}
@@ -304,14 +347,28 @@ public class InstructionManager {
 	/**
 	 * Search for a local landmark close to the given location
 	 * 
-	 * @param location
+	 * @param decisionPoint
 	 *            Decision point
 	 * @return <code>Landmark</code> object if available. Otherwise
 	 *         <code>null</code> will be returned.
 	 */
-	private Landmark searchForLocalLandmark(GeoPoint location) {
-		// TODO
-		return null;
+	private Landmark searchForLocalLandmark(GeoPoint decisionPoint) {
+		Landmark result = null;
+
+		org.osmdroid.util.GeoPoint geoPointFromOsmdroid = new org.osmdroid.util.GeoPoint(
+				decisionPoint.getLatitude(), decisionPoint.getLongitude());
+
+		for (int i = 0; i < this.landmarks.size(); i++) {
+			org.osmdroid.util.GeoPoint landmarkGeoPoint = new org.osmdroid.util.GeoPoint(
+					this.landmarks.get(i).getCenter().getLatitude(),
+					this.landmarks.get(i).getCenter().getLongitude());
+			double distance = geoPointFromOsmdroid.distanceTo(landmarkGeoPoint);
+			if (distance <= this.landmarks.get(i).getRadius()) {
+				result = this.landmarks.get(i);
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -334,10 +391,23 @@ public class InstructionManager {
 					this.streetFurniture.get(i).getCenter().getLongitude());
 			double distance = geoPointFromOsmdroid
 					.distanceTo(streetFurnitureGeoPoint);
-			if (distance <= 0.05) {
+			if (distance <= 50) {
 				result = this.streetFurniture.get(i);
 			}
 		}
+
+		return result;
+	}
+
+	/**
+	 * Search for intersections on this route segment
+	 * 
+	 * @param decisionPoint
+	 *            Decision point
+	 * @return Number of intersections
+	 */
+	private int searchForIntersections(GeoPoint decisionPoint) {
+		int result = 0;
 
 		return result;
 	}
