@@ -486,7 +486,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 		// Load the street furniture as a JSONArray from
 		// res/raw/streetfurniture.json
-		is = getResources().openRawResource(R.raw.landmarks);
+		is = getResources().openRawResource(R.raw.streetfurniture);
 		JSONArray streetFurniture = null;
 		try {
 			String rawJson = IOUtils.toString(is, "UTF-8");
