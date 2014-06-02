@@ -492,14 +492,28 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			String rawJson = IOUtils.toString(is, "UTF-8");
 			streetFurniture = new JSONArray(rawJson);
 		} catch (Exception e) {
-			// Could not load landmarks
+			// Could not load street furniture
 			Log.e("NaviActivity",
 					"Could not load street furniture. This is the error message: "
 							+ e.getMessage());
 		}
 
+		// Load the intersections as a JSONArray from res/raw/intersections.json
+		is = getResources().openRawResource(R.raw.intersections);
+		JSONArray intersections = null;
+		try {
+			String rawJson = IOUtils.toString(is, "UTF-8");
+			intersections = new JSONArray(rawJson);
+		} catch (Exception e) {
+			// Could not load intersections
+			Log.e("NaviActivity",
+					"Could not load intersections. This is the error message: "
+							+ e.getMessage());
+		}
+
 		// Create the instruction manager
-		im = new InstructionManager(guidance, landmarks, streetFurniture);
+		im = new InstructionManager(guidance, landmarks, streetFurniture,
+				intersections);
 		// Check if the import was successful
 		if (im.isImportSuccessful()) {
 			// Create the instructions
