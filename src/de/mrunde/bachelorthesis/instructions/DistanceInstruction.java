@@ -19,7 +19,9 @@ public class DistanceInstruction extends Instruction {
 	/**
 	 * Constructor of the DistanceInstruction class
 	 * 
-	 * @param maneuver
+	 * @param decisionPoint
+	 *            The decision point
+	 * @param maneuverType
 	 *            The maneuver type
 	 * @param distance
 	 *            Distance to the decision point
