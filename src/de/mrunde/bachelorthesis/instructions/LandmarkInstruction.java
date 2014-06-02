@@ -13,7 +13,7 @@ import de.mrunde.bachelorthesis.basics.Maneuver;
 public class LandmarkInstruction extends Instruction {
 
 	/**
-	 * The local landmark at the position
+	 * The local landmark at the decision point
 	 */
 	private Landmark local;
 
