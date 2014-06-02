@@ -1,7 +1,9 @@
 package de.mrunde.bachelorthesis.basics;
 
 /**
- * Categories of street furniture (e.g. roundabout, stop sign)
+ * Categories of street furniture (e.g. stop sign)<br/>
+ * Roundabouts are already covered by the MapQuest Directions service so there
+ * is no need for a special category.
  * 
  * @author Marius Runde
  */
@@ -15,11 +17,6 @@ public abstract class StreetFurnitureCategory {
 	 * Crosswalk
 	 */
 	public final static String CROSSWALK = "crosswalk";
-
-	/**
-	 * Roundabout
-	 */
-	public final static String ROUNDABOUT = "roundabout";
 
 	/**
 	 * Stop sign
@@ -40,21 +37,14 @@ public abstract class StreetFurnitureCategory {
 	 *         FALSE: <code>category</code> is not valid
 	 */
 	public static boolean isCategory(String category) {
-		if (category.equals(BRIDGE)) {
+		if (category.equals(BRIDGE))
 			return true;
-		}
-		if (category.equals(CROSSWALK)) {
+		if (category.equals(CROSSWALK))
 			return true;
-		}
-		if (category.equals(ROUNDABOUT)) {
+		if (category.equals(STOP_SIGN))
 			return true;
-		}
-		if (category.equals(STOP_SIGN)) {
+		if (category.equals(TRAFFIC_LIGHT))
 			return true;
-		}
-		if (category.equals(TRAFFIC_LIGHT)) {
-			return true;
-		}
 		return false;
 	}
 }

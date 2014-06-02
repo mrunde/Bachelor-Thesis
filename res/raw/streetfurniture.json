@@ -12,12 +12,5 @@
 			"lng": 7.635529
 		},
 		"category": "bridge"
-	},
-	{
-		"center": {
-			"lat": 51.955768,
-			"lng": 7.626484
-		},
-		"category": "roundabout"
 	}
 ]
