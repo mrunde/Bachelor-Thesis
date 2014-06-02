@@ -254,8 +254,6 @@ public class MainActivity extends MapActivity implements OnInitListener {
 
 			@Override
 			public void onClick(View v) {
-				// Display the help
-//				displayHelp(); TODO
 				// Create an Intent to start the HelpActivity
 				Intent intent = new Intent(MainActivity.this,
 						HelpActivity.class);
@@ -599,7 +597,9 @@ public class MainActivity extends MapActivity implements OnInitListener {
 			dialog.show();
 			return true;
 		case R.id.menu_help:
-			displayHelp();
+			// Create an Intent to start the HelpActivity
+			Intent intent = new Intent(MainActivity.this, HelpActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.menu_routeTypes:
 			displayRouteTypeDialog();
@@ -666,27 +666,6 @@ public class MainActivity extends MapActivity implements OnInitListener {
 						}
 					}
 				});
-		dialog = builder.create();
-		dialog.show();
-	}
-
-	/**
-	 * Display the help
-	 */
-	private void displayHelp() {
-		// Initialize an AlertDialog.Builder and an AlertDialog
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		AlertDialog dialog;
-
-		// Inform the user about this application
-		builder.setMessage("Coming soon...");
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// User clicked the "OK" button
-			}
-		});
 		dialog = builder.create();
 		dialog.show();
 	}
