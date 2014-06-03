@@ -3,7 +3,6 @@ package de.mrunde.bachelorthesis.instructions;
 import com.mapquest.android.maps.GeoPoint;
 
 import de.mrunde.bachelorthesis.basics.Maneuver;
-import de.mrunde.bachelorthesis.basics.StreetFurniture;
 
 /**
  * This is a "street furniture"-based instruction.
@@ -13,78 +12,54 @@ import de.mrunde.bachelorthesis.basics.StreetFurniture;
 public class StreetFurnitureInstruction extends Instruction {
 
 	/**
-	 * Street furniture at the decision point
+	 * Number of street furniture
 	 */
-	private StreetFurniture streetFurniture;
+	private int number;
 
 	/**
-	 * Second street furniture before the decision point (optional)
+	 * Street furniture category
 	 */
-	private StreetFurniture secondStreetFurniture;
+	private String category;
 
 	/**
-	 * Constructor of the StreetFurnitureInstruction class for an instruction
-	 * from one street furniture
+	 * Constructor of the StreetFurnitureInstruction class
 	 * 
 	 * @param decisionPoint
 	 *            The decision point
 	 * @param maneuverType
 	 *            The maneuver type
-	 * @param streetFurniture
-	 *            The street furniture at the decision point
+	 * @param number
+	 *            Number of street furniture
+	 * @param category
+	 *            Street furniture category (already formatted so that "_" are
+	 *            replaced with spaces)
 	 */
 	public StreetFurnitureInstruction(GeoPoint decisionPoint, int maneuverType,
-			StreetFurniture streetFurniture) {
+			int number, String category) {
 		super(decisionPoint, maneuverType);
-		this.streetFurniture = streetFurniture;
-	}
-
-	/**
-	 * Constructor of the StreetFurnitureInstruction class for an instruction
-	 * from two street furniture
-	 * 
-	 * @param decisionPoint
-	 *            The decision point
-	 * @param maneuverType
-	 *            The maneuver type
-	 * @param streetFurniture
-	 *            The street furniture at the decision point
-	 * @param secondStreetFurniture
-	 *            The street furniture before the decision point
-	 */
-	public StreetFurnitureInstruction(GeoPoint decisionPoint, int maneuverType,
-			StreetFurniture streetFurniture,
-			StreetFurniture secondStreetFurniture) {
-		super(decisionPoint, maneuverType);
-		this.streetFurniture = streetFurniture;
-		// Check if the street furniture have the same category
-		if (this.streetFurniture.getCategory().equals(
-				secondStreetFurniture.getCategory())) {
-			this.secondStreetFurniture = secondStreetFurniture;
-		} else {
-			this.secondStreetFurniture = null;
-		}
+		this.number = number;
+		this.category = category;
 	}
 
 	/**
 	 * @return The instruction as a verbal text
 	 */
 	public String toString() {
+		String instruction = null;
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
-			String instruction;
-			// Check if the second street furniture is set
-			if (this.secondStreetFurniture != null) {
-				// Create an instruction with two street furniture
-				instruction = super.getManeuver() + " after the second "
-						+ this.streetFurniture.getCategory();
-			} else {
-				// Create an instruction with one street furniture
-				instruction = super.getManeuver() + " after the "
-						+ this.streetFurniture.getCategory();
+			switch (this.number) {
+			case 1:
+				instruction = super.getManeuver() + " after the 1st "
+						+ this.category;
+				break;
+			case 2:
+				instruction = super.getManeuver() + " after the 2nd "
+						+ this.category;
+				break;
+			default:
+				break;
 			}
-			return instruction;
-		} else {
-			return null;
 		}
+		return instruction;
 	}
 }

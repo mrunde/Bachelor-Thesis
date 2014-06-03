@@ -15,6 +15,7 @@ import de.mrunde.bachelorthesis.basics.Landmark;
 import de.mrunde.bachelorthesis.basics.Route;
 import de.mrunde.bachelorthesis.basics.RouteSegment;
 import de.mrunde.bachelorthesis.basics.StreetFurniture;
+import de.mrunde.bachelorthesis.basics.StreetFurnitureCategory;
 
 /**
  * The InstructionManager handles turn events in the navigation process. It can
@@ -30,6 +31,11 @@ public class InstructionManager {
 	 * furniture
 	 */
 	private final int MAX_DISTANCE_TO_STREET_FURNITURE = 20;
+
+	/**
+	 * This is the maximal number of intersections to be used for an instruction
+	 */
+	private final int MAX_NUMBER_OF_STREET_FURNITURE = 2;
 
 	/**
 	 * This is the maximal distance between the decision point and an
@@ -293,9 +299,14 @@ public class InstructionManager {
 				this.instructions.add(instruction);
 				// Log all instructions
 				Log.v("InstructionManager.createInstructions", "Instruction "
-						+ j + ": " + this.instructions.get(j).toString()
+						+ j
+						+ ": "
+						+ this.instructions.get(j).toString()
 						+ " | Maneuver Type: "
-						+ this.instructions.get(j).getManeuverType());
+						+ this.instructions.get(j).getManeuverType()
+						+ " | "
+						+ this.instructions.get(j).getDecisionPoint()
+								.toString());
 				j++;
 			}
 		}
@@ -337,16 +348,18 @@ public class InstructionManager {
 
 		// Search for local landmark or street furniture
 		Landmark localLandmark;
-		StreetFurniture streetFurniture;
+		String[] streetFurniture;
 		int intersections;
 		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
 			// Create a LandmarkInstruction
 			instruction = new LandmarkInstruction(decisionPoint, maneuverType,
 					localLandmark);
-		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint)) != null) {
-			// Create a StreetFurnitureInstruction
+		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint,
+				previousDecisionPoint)) != null) {
+			// Create a StreetFurnitureInstruction from one street furniture
 			instruction = new StreetFurnitureInstruction(decisionPoint,
-					maneuverType, streetFurniture);
+					maneuverType, Integer.valueOf(streetFurniture[0]),
+					streetFurniture[1]);
 		} else if ((intersections = searchForIntersections(decisionPoint,
 				previousDecisionPoint)) > 0) {
 			// Create an IntersectionInstruction
@@ -404,27 +417,96 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Search for a street furniture close to the given location (max. 50m)
+	 * Search for a street furniture on this route segment
 	 * 
 	 * @param decisionPoint
 	 *            Decision point
-	 * @return <code>StreetFurniture</code> object if available. Otherwise
-	 *         <code>null</code> will be returned.
+	 * @param previousDecisionPoint
+	 *            Previous decision point
+	 * @return Number of street furniture and index of the street furniture
+	 *         category
 	 */
-	private StreetFurniture searchForStreetFurniture(GeoPoint decisionPoint) {
-		StreetFurniture result = null;
+	private String[] searchForStreetFurniture(GeoPoint decisionPoint,
+			GeoPoint previousDecisionPoint) {
+		// Street furniture categories
+		String[] categories = StreetFurnitureCategory.getCategories();
+		// Number of the found street furniture for each category
+		int[] numberOfStreetFurniture = new int[categories.length];
+		for (int temp = 0; temp < numberOfStreetFurniture.length; temp++) {
+			numberOfStreetFurniture[temp] = 0;
+		}
+		// Index of the shape point of the last street furniture for each
+		// category
+		int[] indexLastStreetFurniture = new int[categories.length];
 
-		org.osmdroid.util.GeoPoint geoPointFromOsmdroid = new org.osmdroid.util.GeoPoint(
-				decisionPoint.getLatitude(), decisionPoint.getLongitude());
+		// Get the shape points from the route
+		GeoPoint[] shapePoints = this.route.getShapePoints();
 
-		for (int i = 0; i < this.streetFurniture.size(); i++) {
+		// Find the indexes of the current and the previous decision points
+		int indexCurrent = searchDecisionPointIndex(decisionPoint, shapePoints);
+		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
+				shapePoints);
+
+		for (int j = 0; j < this.streetFurniture.size(); j++) {
+			// Get the street furniture category and store its index
+			int indexCategory = 0;
+			StreetFurniture currentStreetFurniture = this.streetFurniture
+					.get(j);
+			while (!categories[indexCategory].replace("_", " ").equals(
+					currentStreetFurniture.getCategory())) {
+				indexCategory++;
+			}
+			// Get the street furniture location
 			org.osmdroid.util.GeoPoint streetFurnitureGeoPoint = new org.osmdroid.util.GeoPoint(
-					this.streetFurniture.get(i).getCenter().getLatitude(),
-					this.streetFurniture.get(i).getCenter().getLongitude());
-			double distance = geoPointFromOsmdroid
-					.distanceTo(streetFurnitureGeoPoint);
-			if (distance <= this.MAX_DISTANCE_TO_STREET_FURNITURE) {
-				result = this.streetFurniture.get(i);
+					currentStreetFurniture.getCenter().getLatitude(),
+					currentStreetFurniture.getCenter().getLongitude());
+
+			// Iterate through all shape points that lay between the current and
+			// the previous decision points
+			for (int k = indexCurrent; k > indexPrevious + 1; k--) {
+				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+						shapePoints[k].getLatitude(),
+						shapePoints[k].getLongitude());
+
+				double distance = currentShapePoint
+						.distanceTo(streetFurnitureGeoPoint);
+				if (distance <= this.MAX_DISTANCE_TO_STREET_FURNITURE) {
+					if (numberOfStreetFurniture[indexCategory] == 0) {
+						// Store the index of the shape point
+						indexLastStreetFurniture[indexCategory] = k;
+					}
+					numberOfStreetFurniture[indexCategory]++;
+					break;
+				}
+			}
+		}
+
+		// Store the results (number of street furniture is converted to String
+		// and must be reconverted when creating the StreetFurnitureInstruction)
+		String[] result = null;
+
+		// Find a street furniture category that can be used for the instruction
+		for (int j = 0; j < categories.length; j++) {
+			// Check if the number of street furniture of this category is
+			// higher than the maximal allowed number
+			if (0 < numberOfStreetFurniture[j]
+					&& numberOfStreetFurniture[j] <= this.MAX_NUMBER_OF_STREET_FURNITURE) {
+				if (result == null) {
+					result = new String[2];
+				}
+				// Store the number of street furniture
+				result[0] = String.valueOf(numberOfStreetFurniture[j]);
+				// Store the category
+				result[1] = categories[j].replace("_", " ");
+
+				// Check if any street furniture has been found or any
+				// intersections lay between the last street furniture and
+				// current decision point
+				if (searchForIntersections(decisionPoint,
+						shapePoints[indexLastStreetFurniture[j]]) > 0) {
+					result = null;
+					break;
+				}
 			}
 		}
 

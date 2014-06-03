@@ -23,9 +23,9 @@ public abstract class LandmarkCategory {
 	public final static String GAS_STATION = "gas_station";
 
 	/**
-	 * Hospital
+	 * Harbour
 	 */
-	public final static String HOSPITAL = "hospital";
+	public final static String HARBOUR = "harbour";
 
 	/**
 	 * Lake or water body in general
@@ -62,7 +62,7 @@ public abstract class LandmarkCategory {
 			return true;
 		if (category.equals(GAS_STATION))
 			return true;
-		if (category.equals(HOSPITAL))
+		if (category.equals(HARBOUR))
 			return true;
 		if (category.equals(LAKE))
 			return true;
@@ -81,7 +81,7 @@ public abstract class LandmarkCategory {
 	 * @return All categories
 	 */
 	public static String[] getCategories() {
-		String[] categories = { CHURCH, CINEMA, GAS_STATION, HOSPITAL, LAKE,
+		String[] categories = { CHURCH, CINEMA, GAS_STATION, HARBOUR, LAKE,
 				MONUMENT, POST_OFFICE, TRAIN_STATION };
 		return categories;
 	}
