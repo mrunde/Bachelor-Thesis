@@ -550,14 +550,14 @@ public class MainActivity extends MapActivity implements OnInitListener {
 				map.getController().animateTo(currentLocation);
 				map.getController().setZoom(14);
 				map.getOverlays().add(myLocationOverlay);
-				myLocationOverlay.setFollowing(true);
+				myLocationOverlay.setFollowing(false);
 			}
 		});
 	}
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		return false;
 	}
 
@@ -576,29 +576,18 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+
 		// Handle item selection
 		switch (item.getItemId()) {
 		case R.id.menu_about:
-			// Initialize an AlertDialog.Builder and an AlertDialog
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			AlertDialog dialog;
-
-			// Inform the user about this application
-			builder.setMessage("This is the Bachelor Thesis of Marius Runde");
-			builder.setPositiveButton("Awesome!",
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// User clicked the "Awesome!" button
-						}
-					});
-			dialog = builder.create();
-			dialog.show();
+			// Create an Intent to start the AboutActivity
+			intent = new Intent(MainActivity.this, AboutActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.menu_help:
 			// Create an Intent to start the HelpActivity
-			Intent intent = new Intent(MainActivity.this, HelpActivity.class);
+			intent = new Intent(MainActivity.this, HelpActivity.class);
 			startActivity(intent);
 			return true;
 		case R.id.menu_routeTypes:
