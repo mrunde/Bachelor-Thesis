@@ -55,4 +55,15 @@ public abstract class StreetFurnitureCategory {
 			return true;
 		return false;
 	}
+
+	/**
+	 * Get all street furniture categories
+	 * 
+	 * @return All categories
+	 */
+	public static String[] getCategories() {
+		String[] categories = { BRIDGE, CROSSWALK, RAILWAY_BRIDGE, STOP_SIGN,
+				TRAFFIC_LIGHT };
+		return categories;
+	}
 }
