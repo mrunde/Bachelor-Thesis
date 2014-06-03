@@ -37,6 +37,15 @@
 			},
 			"radius": 200,
 			"category": "lake"
+		},
+		{
+			"title": "Hafen",
+			"center": {
+				"lat": 51.951634,
+				"lng": 7.640764
+			},
+			"radius": 500,
+			"category": "harbour"
 		}
 	]
 }
