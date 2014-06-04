@@ -36,8 +36,8 @@ public class IntersectionInstruction extends Instruction {
 	 * @return The instruction as a verbal text
 	 */
 	public String toString() {
+		String instruction = null;
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
-			String instruction;
 			switch (this.intersections) {
 			case 1:
 				instruction = super.getManeuver() + " at the next intersection";
@@ -49,12 +49,9 @@ public class IntersectionInstruction extends Instruction {
 				instruction = super.getManeuver() + " at the 3rd intersection";
 				break;
 			default:
-				instruction = null;
 				break;
 			}
-			return instruction;
-		} else {
-			return null;
 		}
+		return instruction;
 	}
 }
