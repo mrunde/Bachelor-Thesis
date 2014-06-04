@@ -306,7 +306,8 @@ public class InstructionManager {
 						+ this.instructions.get(j).getManeuverType()
 						+ " | "
 						+ this.instructions.get(j).getDecisionPoint()
-								.toString());
+								.toString() + " | Instruction Type: "
+						+ this.instructions.get(j).getClass());
 				j++;
 			}
 		}
@@ -346,10 +347,11 @@ public class InstructionManager {
 		// Search for global landmark
 		Landmark globalLandmark = searchForGlobalLandmark(decisionPoint);
 
-		// Search for local landmark or street furniture
 		Landmark localLandmark;
 		String[] streetFurniture;
 		int intersections;
+
+		// Search for local landmark or street furniture to create instruction
 		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
 			// Create a LandmarkInstruction
 			instruction = new LandmarkInstruction(decisionPoint, maneuverType,
@@ -360,8 +362,14 @@ public class InstructionManager {
 			instruction = new StreetFurnitureInstruction(decisionPoint,
 					maneuverType, Integer.valueOf(streetFurniture[0]),
 					streetFurniture[1]);
-		} else if ((intersections = searchForIntersections(decisionPoint,
-				previousDecisionPoint)) > 0) {
+		}
+
+		// Check if the instruction is null in case the
+		// StreetFurnitureInstruction could not be created due to an
+		// intersection crossing the last route segment
+		if (instruction == null
+				&& (intersections = searchForIntersections(decisionPoint,
+						previousDecisionPoint)) > 0) {
 			// Create an IntersectionInstruction
 			instruction = new IntersectionInstruction(decisionPoint,
 					maneuverType, intersections);

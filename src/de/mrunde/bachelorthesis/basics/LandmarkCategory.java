@@ -33,11 +33,6 @@ public abstract class LandmarkCategory {
 	public final static String LAKE = "lake";
 
 	/**
-	 * Monument - should be always replaced with the real name of the landmark
-	 */
-	public final static String MONUMENT = "monument";
-
-	/**
 	 * Post office
 	 */
 	public final static String POST_OFFICE = "post_office";
@@ -66,8 +61,6 @@ public abstract class LandmarkCategory {
 			return true;
 		if (category.equals(LAKE))
 			return true;
-		if (category.equals(MONUMENT))
-			return true;
 		if (category.equals(POST_OFFICE))
 			return true;
 		if (category.equals(TRAIN_STATION))
@@ -82,7 +75,7 @@ public abstract class LandmarkCategory {
 	 */
 	public static String[] getCategories() {
 		String[] categories = { CHURCH, CINEMA, GAS_STATION, HARBOUR, LAKE,
-				MONUMENT, POST_OFFICE, TRAIN_STATION };
+				POST_OFFICE, TRAIN_STATION };
 		return categories;
 	}
 }

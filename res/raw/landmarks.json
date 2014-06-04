@@ -17,15 +17,6 @@
 			},
 			"radius": 50,
 			"category": "church"
-		},
-		{
-			"title": "LBS Münster",
-			"center": {
-				"lat": 51.960102,
-				"lng": 7.613258
-			},
-			"radius": 100,
-			"category": "monument"
 		}
 	],
 	"global": [
