@@ -25,11 +25,6 @@ public abstract class StreetFurnitureCategory {
 	public final static String RAILWAY_BRIDGE = "railway_bridge";
 
 	/**
-	 * Stop sign
-	 */
-	public final static String STOP_SIGN = "stop_sign";
-
-	/**
 	 * Traffic light
 	 */
 	public final static String TRAFFIC_LIGHT = "traffic_light";
@@ -49,8 +44,6 @@ public abstract class StreetFurnitureCategory {
 			return true;
 		if (category.equals(RAILWAY_BRIDGE))
 			return true;
-		if (category.equals(STOP_SIGN))
-			return true;
 		if (category.equals(TRAFFIC_LIGHT))
 			return true;
 		return false;
@@ -62,7 +55,7 @@ public abstract class StreetFurnitureCategory {
 	 * @return All categories
 	 */
 	public static String[] getCategories() {
-		String[] categories = { BRIDGE, CROSSWALK, RAILWAY_BRIDGE, STOP_SIGN,
+		String[] categories = { BRIDGE, CROSSWALK, RAILWAY_BRIDGE,
 				TRAFFIC_LIGHT };
 		return categories;
 	}
