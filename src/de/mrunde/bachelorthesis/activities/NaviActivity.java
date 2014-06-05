@@ -54,7 +54,11 @@ import com.mapquest.android.maps.RouteManager;
 import com.mapquest.android.maps.RouteResponse;
 
 import de.mrunde.bachelorthesis.R;
+import de.mrunde.bachelorthesis.basics.Landmark;
+import de.mrunde.bachelorthesis.basics.LandmarkCategory;
+import de.mrunde.bachelorthesis.instructions.Instruction;
 import de.mrunde.bachelorthesis.instructions.InstructionManager;
+import de.mrunde.bachelorthesis.instructions.LandmarkInstruction;
 
 /**
  * This is the navigational activity which is started by the MainActivity. It
@@ -198,8 +202,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void setupMapView() {
 		this.map = (MapView) findViewById(R.id.map);
 		map.setBuiltInZoomControls(false);
-		map.setClickable(false);
-		map.setLongClickable(false);
+		map.setClickable(true); // TODO for testing, must be changed to false
+		map.setLongClickable(true); // TODO for testing, must be changed to
+									// false
 	}
 
 	/**
@@ -269,11 +274,6 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void addDestinationOverlay(double lat, double lng) {
 		// Create a GeoPoint object of the destination
 		GeoPoint destination = new GeoPoint(lat, lng);
-
-		// Clear previous overlays first
-		if (map.getOverlays().size() > 1) {
-			map.getOverlays().remove(1);
-		}
 
 		// Create the destination overlay
 		OverlayItem oi_destination = new OverlayItem(destination,
@@ -719,14 +719,61 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 	/**
 	 * Called when the next decision point has been reached to update the
-	 * current instruction to the following instruction.
+	 * current instruction to the following instruction. Also the map is being
+	 * updated so that the old landmarks are removed and the new ones are
+	 * displayed.
 	 */
 	private void updateInstruction() {
 		// Get the next instruction
-		String nextInstruction = im.getNextInstruction().toString();
-		// Display the instruction and speak it out
-		this.tv_instruction.setText(nextInstruction);
-		speakInstruction();
+		Instruction nextInstruction = im.getNextInstruction();
+
+		// --- Update the instruction view ---
+		// Get the next verbal instruction
+		String nextVerbalInstruction = nextInstruction.toString();
+		// Display the verbal instruction
+		this.tv_instruction.setText(nextVerbalInstruction);
+
+		// Get the corresponding instruction image
+		// TODO
+
+		// --- Update the landmarks on the map (if available) ---
+		// Remove previous landmarks (if available)
+		while (map.getOverlays().size() > 2) {
+			map.getOverlays().remove(2);
+		}
+
+		// Add new global landmark (if available)
+		if (nextInstruction.getGlobal() != null) {
+			Landmark newGlobalLandmark = nextInstruction.getGlobal();
+			OverlayItem oi_newGlobalLandmark = new OverlayItem(
+					newGlobalLandmark.getCenter(),
+					newGlobalLandmark.getTitle(),
+					newGlobalLandmark.getCategory());
+			DefaultItemizedOverlay newGlobalLandmarkOverlay = new DefaultItemizedOverlay(
+					getResources().getDrawable(
+							LandmarkCategory.getDrawableId(newGlobalLandmark
+									.getCategory())));
+			newGlobalLandmarkOverlay.addItem(oi_newGlobalLandmark);
+			this.map.getOverlays().add(newGlobalLandmarkOverlay);
+		}
+
+		// Add new local landmark (if available)
+		if (nextInstruction.getClass().equals(LandmarkInstruction.class)) {
+			Landmark newLocalLandmark = ((LandmarkInstruction) nextInstruction)
+					.getLocal();
+			OverlayItem oi_newLocalLandmark = new OverlayItem(
+					newLocalLandmark.getCenter(), newLocalLandmark.getTitle(),
+					newLocalLandmark.getCategory());
+			DefaultItemizedOverlay newLocalLandmarkOverlay = new DefaultItemizedOverlay(
+					getResources().getDrawable(
+							LandmarkCategory.getDrawableId(newLocalLandmark
+									.getCategory())));
+			newLocalLandmarkOverlay.addItem(oi_newLocalLandmark);
+			this.map.getOverlays().add(newLocalLandmarkOverlay);
+
+			// Speak out the verbal instruction
+			speakInstruction();
+		}
 	}
 
 	/**
