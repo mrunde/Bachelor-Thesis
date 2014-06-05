@@ -207,9 +207,10 @@ public class MainActivity extends MapActivity implements OnInitListener {
 				} else if (btn_calculate.getText() == getResources().getString(
 						R.string.calculate)) {
 					// Inform the user about the route is being calculated
-					tts.speak("Calculating route from current location to "
-							+ edt_destination.getText().toString(),
-							TextToSpeech.QUEUE_FLUSH, null);
+					// TODO better display a progress dialog
+					// tts.speak("Calculating route from current location to "
+					// + edt_destination.getText().toString(),
+					// TextToSpeech.QUEUE_FLUSH, null);
 
 					// Transform the current location into a String
 					str_currentLocation = "{latLng:{lat:"
