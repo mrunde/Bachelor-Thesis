@@ -79,35 +79,42 @@ public class Landmark {
 	 * @return The indicator whether this is a local or global landmark
 	 */
 	public boolean isLocal() {
-		return local;
+		return this.local;
 	}
 
 	/**
 	 * @return The title
 	 */
 	public String getTitle() {
-		return title;
+		return this.title;
 	}
 
 	/**
 	 * @return The central position
 	 */
 	public GeoPoint getCenter() {
-		return center;
+		return this.center;
 	}
 
 	/**
 	 * @return The radius of visibility in meters
 	 */
 	public int getRadius() {
-		return radius;
+		return this.radius;
+	}
+
+	/**
+	 * @return The unformatted category
+	 */
+	public String getCategory() {
+		return this.category;
 	}
 
 	/**
 	 * @return The category formatted so that "_" are replaced with spaces
 	 */
-	public String getCategory() {
-		String formattedCategory = category.replace("_", " ");
+	public String getFormattedCategory() {
+		String formattedCategory = this.category.replace("_", " ");
 		return formattedCategory;
 	}
 }

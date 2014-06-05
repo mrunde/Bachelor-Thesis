@@ -39,10 +39,17 @@ public class LandmarkInstruction extends Instruction {
 	public String toString() {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
 			String instruction = super.getManeuver() + " at the "
-					+ this.local.getCategory();
+					+ this.local.getFormattedCategory();
 			return instruction;
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @return The local landmark at the decision point
+	 */
+	public Landmark getLocal() {
+		return this.local;
 	}
 }
