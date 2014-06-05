@@ -17,6 +17,15 @@
 			},
 			"radius": 50,
 			"category": "church"
+		},
+		{
+			"title": "",
+			"center": {
+				"lat": 51.957498,
+				"lng": 7.619320
+			},
+			"radius": 50,
+			"category": "restaurant"
 		}
 	],
 	"global": [

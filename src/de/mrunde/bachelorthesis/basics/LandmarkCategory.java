@@ -1,5 +1,7 @@
 package de.mrunde.bachelorthesis.basics;
 
+import de.mrunde.bachelorthesis.R;
+
 /**
  * Categories of landmarks (e.g. gas station, hospital, post office)
  * 
@@ -33,17 +35,12 @@ public abstract class LandmarkCategory {
 	public final static String LAKE = "lake";
 
 	/**
-	 * Post office
+	 * Restaurant
 	 */
-	public final static String POST_OFFICE = "post_office";
+	public final static String RESTAURANT = "restaurant";
 
 	/**
-	 * Train station
-	 */
-	public final static String TRAIN_STATION = "train_station";
-
-	/**
-	 * Check if a category is a valid Landmark category
+	 * Check if a category is a valid landmark category
 	 * 
 	 * @param category
 	 *            Category to be controlled
@@ -61,9 +58,7 @@ public abstract class LandmarkCategory {
 			return true;
 		if (category.equals(LAKE))
 			return true;
-		if (category.equals(POST_OFFICE))
-			return true;
-		if (category.equals(TRAIN_STATION))
+		if (category.equals(RESTAURANT))
 			return true;
 		return false;
 	}
@@ -75,7 +70,33 @@ public abstract class LandmarkCategory {
 	 */
 	public static String[] getCategories() {
 		String[] categories = { CHURCH, CINEMA, GAS_STATION, HARBOUR, LAKE,
-				POST_OFFICE, TRAIN_STATION };
+				RESTAURANT };
 		return categories;
+	}
+
+	/**
+	 * Get the id of the corresponding image file for this landmark category
+	 * 
+	 * @param category
+	 *            The landmark category
+	 * @return The id of the corresponding image file. -1 if
+	 *         <code>category</category> is not a valid landmark category
+	 */
+	public static int getDrawableId(String category) {
+		if (isCategory(category)) {
+			if (category.equals(CHURCH))
+				return R.drawable.landmark_church;
+			if (category.equals(CINEMA))
+				return -1; // TODO
+			if (category.equals(GAS_STATION))
+				return R.drawable.landmark_gas_station;
+			if (category.equals(HARBOUR))
+				return -1; // TODO
+			if (category.equals(LAKE))
+				return -1; // TODO
+			if (category.equals(RESTAURANT))
+				return -1; // TODO
+		}
+		return -1;
 	}
 }
