@@ -1,10 +1,107 @@
 [
 	{
-		"lat": 51.960283,
-		"lng": 7.608535
+		"lat": 51.955598,
+		"lng": 7.624603,
+		"description": "Moltkestraﬂe|Von-Kluck-Straﬂe"
 	},
 	{
-		"lat": 51.960797,
-		"lng": 7.610565
+		"lat": 51.955623,
+		"lng": 7.623874,
+		"description": "Moltkestraﬂe|Wehrstraﬂe"
+	},
+	{
+		"lat": 51.955370,
+		"lng": 7.621943,
+		"description": "Moltkestraﬂe|Hermannstraﬂe"
+	},
+	{
+		"lat": 51.955000,
+		"lng": 7.619861,
+		"description": "Moltkestraﬂe|Weseler Straﬂe"
+	},
+	{
+		"lat": 51.956195,
+		"lng": 7.619414,
+		"description": "Weseler Straﬂe|Bismarckallee"
+	},
+	{
+		"lat": 51.957285,
+		"lng": 7.619656,
+		"description": "Weseler Straﬂe|Adenaueralle"
+	},
+	{
+		"lat": 51.958067,
+		"lng": 7.613982,
+		"description": "Adenaueralle|Annette-Allee"
+	},
+	{
+		"lat": 51.959801,
+		"lng": 7.612186,
+		"description": "Himmelreichallee|"
+	},
+	{
+		"lat": 51.959800,
+		"lng": 7.612184,
+		"description": "Himmelreichallee|"
+	},
+	{
+		"lat": 51.960794,
+		"lng": 7.610570,
+		"description": "Himmelreichallee|Landoisstraﬂe"
+	},
+	{
+		"lat": 51.960281,
+		"lng": 7.608533,
+		"description": "Landroisstraﬂe|Robert-Koch-Straﬂe"
+	},
+	{
+		"lat": 51.955154,
+		"lng": 7.627691,
+		"description": "Hafenstraﬂe|S¸dstraﬂe"
+	},
+	{
+		"lat": 51.954807,
+		"lng": 7.628697,
+		"description": "Hafenstraﬂe|Graelstraﬂe"
+	},
+	{
+		"lat": 51.954452,
+		"lng": 7.629762,
+		"description": "Hafenstraﬂe|Engelstraﬂe"
+	},
+	{
+		"lat": 51.954328,
+		"lng": 7.630151,
+		"description": "Hafenstraﬂe|Junkerstraﬂe"
+	},
+	{
+		"lat": 51.953986,
+		"lng": 7.631360,
+		"description": "Hafenstraﬂe|Von-Steuben-Straﬂe"
+	},
+	{
+		"lat": 51.953743,
+		"lng": 7.632647,
+		"description": "Hafenstraﬂe|Bahnhofsstraﬂe"
+	},
+	{
+		"lat": 51.953022,
+		"lng": 7.634422,
+		"description": "Hafenstraﬂe|Hafenstraﬂe"
+	},
+	{
+		"lat": 51.952848,
+		"lng": 7.636579,
+		"description": "Hafenstraﬂe|Albersloher Weg"
+	},
+	{
+		"lat": 51.952595,
+		"lng": 7.636443,
+		"description": "Albersloher Weg|Bernhard-Ernst-Straﬂe"
+	},
+	{
+		"lat": 51.950887,
+		"lng": 7.636928,
+		"description": "Albersloher Weg|Hafenweg"
 	}
 ]
