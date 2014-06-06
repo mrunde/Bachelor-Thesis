@@ -12,5 +12,61 @@
 			"lng": 7.635529
 		},
 		"category": "railway_bridge"
+	},
+	{
+		"center": {
+			"lat": 51.955000,
+			"lng": 7.619861
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.956195,
+			"lng": 7.619414
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.958067,
+			"lng": 7.613982
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.954452,
+			"lng": 7.629762
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.953986,
+			"lng": 7.631360
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.953743,
+			"lng": 7.632647
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.952848,
+			"lng": 7.636579
+		},
+		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.950887,
+			"lng": 7.636928
+		},
+		"category": "traffic_light"
 	}
 ]
