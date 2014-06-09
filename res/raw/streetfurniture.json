@@ -68,5 +68,12 @@
 			"lng": 7.636928
 		},
 		"category": "traffic_light"
+	},
+	{
+		"center": {
+			"lat": 51.955433,
+			"lng": 7.619720
+		},
+		"category": "traffic_light"
 	}
 ]

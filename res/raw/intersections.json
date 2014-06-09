@@ -20,6 +20,11 @@
 		"description": "Moltkestraﬂe|Weseler Straﬂe"
 	},
 	{
+		"lat": 51.955433,
+		"lng": 7.619720,
+		"description": "Moltkestraﬂe|Scharnhorststraﬂe"
+	},
+	{
 		"lat": 51.956195,
 		"lng": 7.619414,
 		"description": "Weseler Straﬂe|Bismarckallee"
