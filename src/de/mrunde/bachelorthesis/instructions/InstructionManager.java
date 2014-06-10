@@ -239,6 +239,21 @@ public class InstructionManager {
 	}
 
 	/**
+	 * Get all verbal instructions
+	 * 
+	 * @return All verbal instructions
+	 */
+	public String[] getVerbalInstructions() {
+		String[] result = new String[this.instructions.size()];
+
+		for (int i = 0; i < result.length; i++) {
+			result[i] = this.instructions.get(i).toString();
+		}
+
+		return result;
+	}
+
+	/**
 	 * Get the instruction at the desired index
 	 * 
 	 * @param index

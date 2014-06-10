@@ -40,6 +40,9 @@ import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -646,6 +649,41 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	protected boolean isRouteDisplayed() {
 		// Do nothing
 		return false;
+	}
+
+	/**
+	 * Called when the OptionsMenu is created
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.navi, menu);
+		return true;
+	}
+
+	/**
+	 * Called when an item of the OptionsMenu is clicked
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_allInstructions:
+			// Create an array of all verbal instructions
+			String[] allInstructions = im.getVerbalInstructions();
+
+			// Display all instructions in a list
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					NaviActivity.this);
+			builder.setTitle(R.string.allInstructions);
+			builder.setItems(allInstructions, null);
+
+			AlertDialog alertDialog = builder.create();
+			alertDialog.show();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override

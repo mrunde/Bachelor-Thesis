@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -5,15 +6,12 @@
 
     <item
         android:id="@+id/menu_routeTypes"
-        android:title="@string/menu_routeTypes">
-    </item>
+        android:title="@string/menu_routeTypes" />
     <item
         android:id="@+id/menu_help"
-        android:title="@string/menu_help">
-    </item>
+        android:title="@string/menu_help" />
     <item
         android:id="@+id/menu_about"
-        android:title="@string/menu_about">
-    </item>
+        android:title="@string/menu_about" />
 
 </menu>
