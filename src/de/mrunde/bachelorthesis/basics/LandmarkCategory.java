@@ -20,11 +20,6 @@ public abstract class LandmarkCategory {
 	public final static String CINEMA = "cinema";
 
 	/**
-	 * Gas station
-	 */
-	public final static String GAS_STATION = "gas_station";
-
-	/**
 	 * Harbour
 	 */
 	public final static String HARBOUR = "harbour";
@@ -52,8 +47,6 @@ public abstract class LandmarkCategory {
 			return true;
 		if (category.equals(CINEMA))
 			return true;
-		if (category.equals(GAS_STATION))
-			return true;
 		if (category.equals(HARBOUR))
 			return true;
 		if (category.equals(LAKE))
@@ -69,8 +62,7 @@ public abstract class LandmarkCategory {
 	 * @return All categories
 	 */
 	public static String[] getCategories() {
-		String[] categories = { CHURCH, CINEMA, GAS_STATION, HARBOUR, LAKE,
-				RESTAURANT };
+		String[] categories = { CHURCH, CINEMA, HARBOUR, LAKE, RESTAURANT };
 		return categories;
 	}
 
@@ -88,8 +80,6 @@ public abstract class LandmarkCategory {
 				return R.drawable.landmark_church;
 			if (category.equals(CINEMA))
 				return -1; // TODO
-			if (category.equals(GAS_STATION))
-				return R.drawable.landmark_gas_station;
 			if (category.equals(HARBOUR))
 				return -1; // TODO
 			if (category.equals(LAKE))
