@@ -72,6 +72,18 @@ import de.mrunde.bachelorthesis.instructions.LandmarkInstruction;
 public class NaviActivity extends MapActivity implements OnInitListener,
 		LocationListener {
 
+	// --- The indexes of the overlays ---
+	/**
+	 * Index of the local landmark overlay
+	 */
+	private final int INDEX_OF_LOCAL_LANDMARK_OVERLAY = 3;
+
+	/**
+	 * Index of the global landmark overlay
+	 */
+	private final int INDEX_OF_GLOBAL_LANDMARK_OVERLAY = 4;
+	// --- End of indexes ---
+
 	// --- The graphical user interface (GUI) ---
 	/**
 	 * Instruction view
@@ -771,10 +783,18 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		// Get the corresponding instruction image
 		// TODO
 
+		Log.v("Test", "Overlays size: " + this.map.getOverlays().size());
+
 		// --- Update the landmarks on the map (if available) ---
 		// Remove previous landmarks (if available)
-		while (map.getOverlays().size() > 2) {
-			map.getOverlays().remove(2);
+		// Remove global landmark
+		if (this.map.getOverlays().size() > this.INDEX_OF_GLOBAL_LANDMARK_OVERLAY) {
+			this.map.getOverlays()
+					.remove(this.INDEX_OF_GLOBAL_LANDMARK_OVERLAY);
+		}
+		// Remove local landmark
+		if (this.map.getOverlays().size() > this.INDEX_OF_LOCAL_LANDMARK_OVERLAY) {
+			this.map.getOverlays().remove(this.INDEX_OF_LOCAL_LANDMARK_OVERLAY);
 		}
 
 		// Add new global landmark (if available)
@@ -789,7 +809,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 							LandmarkCategory.getDrawableId(newGlobalLandmark
 									.getCategory())));
 			newGlobalLandmarkOverlay.addItem(oi_newGlobalLandmark);
-			this.map.getOverlays().add(newGlobalLandmarkOverlay);
+			this.map.getOverlays().add(this.INDEX_OF_GLOBAL_LANDMARK_OVERLAY,
+					newGlobalLandmarkOverlay);
 		}
 
 		// Add new local landmark (if available)
@@ -804,7 +825,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 							LandmarkCategory.getDrawableId(newLocalLandmark
 									.getCategory())));
 			newLocalLandmarkOverlay.addItem(oi_newLocalLandmark);
-			this.map.getOverlays().add(newLocalLandmarkOverlay);
+			this.map.getOverlays().add(this.INDEX_OF_LOCAL_LANDMARK_OVERLAY,
+					newLocalLandmarkOverlay);
 
 			// Speak out the verbal instruction
 			speakInstruction();
