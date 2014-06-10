@@ -205,9 +205,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void setupMapView() {
 		this.map = (MapView) findViewById(R.id.map);
 		map.setBuiltInZoomControls(false);
-		map.setClickable(true); // TODO for testing, must be changed to false
-		map.setLongClickable(true); // TODO for testing, must be changed to
-									// false
+		map.setClickable(true);
+		map.setLongClickable(true);
 	}
 
 	/**
@@ -720,8 +719,6 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	public void onLocationChanged(Location location) {
 		double lat = location.getLatitude();
 		double lng = location.getLongitude();
-		Log.e("Test.LocationChanged", String.valueOf(lat)); // TODO test
-		Log.e("Test.LocationChanged", String.valueOf(lng)); // TODO test
 
 		// Check if the instruction manager has been initialized already
 		if (im != null) {
