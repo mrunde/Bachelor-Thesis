@@ -334,13 +334,23 @@ public class InstructionManager {
 				// Add the global instruction
 				if (instruction[0] != null) {
 					this.instructions.add(instruction[0]);
+					// Log all global instructions
+					Log.v("InstructionManager.createInstructions",
+							"(Global) Instruction "
+									+ j
+									+ ": "
+									+ this.instructions.get(j).toString()
+									+ " | "
+									+ this.instructions.get(j)
+											.getDecisionPoint().toString());
+					j++;
 				}
 				// Remove "no-turn" instructions by ignoring them
 				if (instruction[1].toString() != null) {
 					this.instructions.add(instruction[1]);
-					// Log all instructions at decision points
+					// Log all local instructions
 					Log.v("InstructionManager.createInstructions",
-							"Instruction "
+							"(Local) Instruction "
 									+ j
 									+ ": "
 									+ this.instructions.get(j).toString()
@@ -453,7 +463,7 @@ public class InstructionManager {
 					// Create an IntersectionInstruction
 					instruction[1] = new IntersectionInstruction(decisionPoint,
 							maneuverType, intersections);
-				} else {
+				} else if (instruction[1] == null) {
 					// Create a DistanceInstruction if all other options failed
 					instruction[1] = new DistanceInstruction(decisionPoint,
 							maneuverType, distance);
