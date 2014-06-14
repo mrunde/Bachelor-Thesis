@@ -12,6 +12,7 @@ import android.util.Log;
 import com.mapquest.android.maps.GeoPoint;
 
 import de.mrunde.bachelorthesis.basics.Landmark;
+import de.mrunde.bachelorthesis.basics.Maneuver;
 import de.mrunde.bachelorthesis.basics.Route;
 import de.mrunde.bachelorthesis.basics.RouteSegment;
 import de.mrunde.bachelorthesis.basics.StreetFurniture;
@@ -69,9 +70,21 @@ public class InstructionManager {
 	private int currentInstruction;
 
 	/**
-	 * Landmarks to be used
+	 * Stores a <code>boolean</code> whether the last instruction contained
+	 * information of a roundabout. Then the following instruction must be
+	 * ignored because it has the same information.
 	 */
-	private List<Landmark> landmarks;
+	private boolean lastInstructionWasForRoundabout;
+
+	/**
+	 * Local landmarks to be used
+	 */
+	private List<Landmark> localLandmarks;
+
+	/**
+	 * Global landmarks to be used
+	 */
+	private List<Landmark> globalLandmarks;
 
 	/**
 	 * Street furniture to be used
@@ -99,6 +112,9 @@ public class InstructionManager {
 		// Check if the JSON import has been successful
 		this.importSuccessful = this.route.isImportSuccessful();
 
+		// Initialize the control variable for the roundabout instructions
+		this.lastInstructionWasForRoundabout = false;
+
 		// Initialize the landmarks
 		initLandmarks(landmarks);
 
@@ -116,7 +132,8 @@ public class InstructionManager {
 	 *            The landmarks from res/raw/landmarks.json
 	 */
 	private void initLandmarks(JSONObject landmarks) {
-		this.landmarks = new ArrayList<Landmark>();
+		this.localLandmarks = new ArrayList<Landmark>();
+		this.globalLandmarks = new ArrayList<Landmark>();
 		try {
 			// Initialize all local landmarks
 			JSONArray local = landmarks.getJSONArray("local");
@@ -129,8 +146,8 @@ public class InstructionManager {
 				int radius = ((JSONObject) local.get(i)).getInt("radius");
 				String category = ((JSONObject) local.get(i))
 						.getString("category");
-				this.landmarks.add(new Landmark(true, title, center, radius,
-						category));
+				this.localLandmarks.add(new Landmark(true, title, center,
+						radius, category));
 			}
 
 			// Initialize all global landmarks
@@ -144,8 +161,8 @@ public class InstructionManager {
 				int radius = ((JSONObject) local.get(i)).getInt("radius");
 				String category = ((JSONObject) global.get(i))
 						.getString("category");
-				this.landmarks.add(new Landmark(false, title, center, radius,
-						category));
+				this.globalLandmarks.add(new Landmark(false, title, center,
+						radius, category));
 			}
 		} catch (JSONException e) {
 			// Error while parsing JSONObject
@@ -155,9 +172,13 @@ public class InstructionManager {
 		}
 
 		// Log the landmarks
-		for (int i = 0; i < this.landmarks.size(); i++) {
-			Log.v("InstructionManager.initLandmarks", "Landmark " + i + ": "
-					+ this.landmarks.get(i).toString());
+		for (int i = 0; i < this.localLandmarks.size(); i++) {
+			Log.v("InstructionManager.initLandmarks", "Local Landmark " + i
+					+ ": " + this.localLandmarks.get(i).toString());
+		}
+		for (int i = 0; i < this.globalLandmarks.size(); i++) {
+			Log.v("InstructionManager.initLandmarks", "Global Landmark " + i
+					+ ": " + this.globalLandmarks.get(i).toString());
 		}
 	}
 
@@ -306,24 +327,33 @@ public class InstructionManager {
 		int j = 0;
 		for (int i = 0; i < this.route.getNumberOfSegments(); i++) {
 			RouteSegment rs = this.route.getNextSegment();
-			Instruction instruction = createInstruction(rs.getEndPoint(),
+			Instruction[] instruction = createInstruction(rs.getEndPoint(),
 					rs.getStartPoint(), rs.getManeuverType(), rs.getDistance());
 
-			// Remove "no-turn" instructions
-			if (instruction.toString() != null) {
-				this.instructions.add(instruction);
-				// Log all instructions
-				Log.v("InstructionManager.createInstructions", "Instruction "
-						+ j
-						+ ": "
-						+ this.instructions.get(j).toString()
-						+ " | Maneuver Type: "
-						+ this.instructions.get(j).getManeuverType()
-						+ " | "
-						+ this.instructions.get(j).getDecisionPoint()
-								.toString() + " | Instruction Type: "
-						+ this.instructions.get(j).getClass());
-				j++;
+			if (instruction != null) {
+				// Add the global instruction
+				if (instruction[0] != null) {
+					this.instructions.add(instruction[0]);
+				}
+				// Remove "no-turn" instructions by ignoring them
+				if (instruction[1].toString() != null) {
+					this.instructions.add(instruction[1]);
+					// Log all instructions at decision points
+					Log.v("InstructionManager.createInstructions",
+							"Instruction "
+									+ j
+									+ ": "
+									+ this.instructions.get(j).toString()
+									+ " | Maneuver Type: "
+									+ this.instructions.get(j)
+											.getManeuverType()
+									+ " | "
+									+ this.instructions.get(j)
+											.getDecisionPoint().toString()
+									+ " | Instruction Type: "
+									+ this.instructions.get(j).getClass());
+					j++;
+				}
 			}
 		}
 	}
@@ -352,64 +382,187 @@ public class InstructionManager {
 	 * @param distance
 	 *            Distance to decision point (only used for
 	 *            <code>DistanceInstruction</code> objects)
-	 * @return The instruction
+	 * @return The global instruction along the route (first element in array,
+	 *         if available) and the local instruction at the decision point
+	 *         (second element in array). If the previous local instruction
+	 *         contained information about a roundabout action,
+	 *         <code>null</code> will be returned.
 	 */
-	private Instruction createInstruction(GeoPoint decisionPoint,
+	private Instruction[] createInstruction(GeoPoint decisionPoint,
 			GeoPoint previousDecisionPoint, Integer maneuverType,
 			Integer distance) {
-		Instruction instruction = null;
+		if (this.lastInstructionWasForRoundabout) {
+			this.lastInstructionWasForRoundabout = false;
+			return null;
+		} else {
+			// Check if the next instruction will be for a roundabout
+			if (Maneuver.isRoundaboutAction(maneuverType)) {
+				this.lastInstructionWasForRoundabout = true;
+			}
 
-		// Search for global landmark
-		Landmark globalLandmark = searchForGlobalLandmark(decisionPoint);
+			Instruction[] instruction = new Instruction[2];
 
-		Landmark localLandmark;
-		String[] streetFurniture;
-		int intersections;
+			// All maneuver types with ID greater or equal 23 already contain
+			// enough
+			// information in the maneuver text (e.g. a roundabout or the
+			// destination) or use the short-distance public transport so that a
+			// distance-based instruction reaches out there
+			if (maneuverType >= 23) {
+				instruction[1] = new DistanceInstruction(decisionPoint,
+						maneuverType, distance);
+			} else {
 
-		// Search for local landmark or street furniture to create instruction
-		if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
-			// Create a LandmarkInstruction
-			instruction = new LandmarkInstruction(decisionPoint, maneuverType,
-					localLandmark);
-		} else if ((streetFurniture = searchForStreetFurniture(decisionPoint,
-				previousDecisionPoint)) != null) {
-			// Create a StreetFurnitureInstruction from one street furniture
-			instruction = new StreetFurnitureInstruction(decisionPoint,
-					maneuverType, Integer.valueOf(streetFurniture[0]),
-					streetFurniture[1]);
+				// Search for global landmark along the route and create the
+				// corresponding instruction
+				instruction[0] = searchForGlobalLandmarkAlongRoute(
+						decisionPoint, previousDecisionPoint);
+				// Create a LandmarkAlongRouteInstruction if no global landmark
+				// could be
+				// found before
+				if (instruction[0] == null) {
+					instruction[0] = searchForLocalLandmarkAlongRoute(
+							decisionPoint, previousDecisionPoint);
+				}
+
+				Landmark localLandmark;
+				String[] streetFurniture;
+				int intersections;
+
+				// Search for local landmark or street furniture to create
+				// instruction
+				if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
+					// Create a LandmarkInstruction
+					instruction[1] = new LandmarkInstruction(decisionPoint,
+							maneuverType, localLandmark);
+				} else if ((streetFurniture = searchForStreetFurniture(
+						decisionPoint, previousDecisionPoint)) != null) {
+					// Create a StreetFurnitureInstruction from one street
+					// furniture
+					instruction[1] = new StreetFurnitureInstruction(
+							decisionPoint, maneuverType,
+							Integer.valueOf(streetFurniture[0]),
+							streetFurniture[1]);
+				}
+
+				// Check if the instruction is null in case the
+				// StreetFurnitureInstruction could not be created due to an
+				// intersection crossing the last route segment
+				if (instruction[1] == null
+						&& (intersections = searchForIntersections(
+								decisionPoint, previousDecisionPoint)) > 0) {
+					// Create an IntersectionInstruction
+					instruction[1] = new IntersectionInstruction(decisionPoint,
+							maneuverType, intersections);
+				} else {
+					// Create a DistanceInstruction if all other options failed
+					instruction[1] = new DistanceInstruction(decisionPoint,
+							maneuverType, distance);
+				}
+			}
+			return instruction;
 		}
-
-		// Check if the instruction is null in case the
-		// StreetFurnitureInstruction could not be created due to an
-		// intersection crossing the last route segment
-		if (instruction == null
-				&& (intersections = searchForIntersections(decisionPoint,
-						previousDecisionPoint)) > 0) {
-			// Create an IntersectionInstruction
-			instruction = new IntersectionInstruction(decisionPoint,
-					maneuverType, intersections);
-		}
-
-		// Create a DistanceInstruction if all other options failed
-		if (instruction == null) {
-			instruction = new DistanceInstruction(decisionPoint, maneuverType,
-					distance);
-		}
-
-		return instruction;
 	}
 
 	/**
-	 * Search for a global landmark close to the given location
+	 * Search for a global landmark along the route between the two given
+	 * locations. The index of the current decision point in the shape points
+	 * will be decreased by 2 so that there is still room for an instruction at
+	 * that decision point. If this was successful, a
+	 * <code>GlobalInstruction</code> object will be created.
 	 * 
-	 * @param location
+	 * @param decisionPoint
 	 *            Decision point
-	 * @return <code>Landmark</code> object if available. Otherwise
+	 * @param previousDecisionPoint
+	 *            Previous decision point
+	 * @return <code>GlobalInstruction</code> object if available. Otherwise
 	 *         <code>null</code> will be returned.
 	 */
-	private Landmark searchForGlobalLandmark(GeoPoint location) {
-		// TODO
-		return null;
+	private GlobalInstruction searchForGlobalLandmarkAlongRoute(
+			GeoPoint decisionPoint, GeoPoint previousDecisionPoint) {
+		GlobalInstruction result = null;
+
+		// Get the shape points from the route
+		GeoPoint[] shapePoints = this.route.getShapePoints();
+
+		// Find the indexes of the current and the previous decision points
+		int indexCurrent = searchDecisionPointIndex(decisionPoint, shapePoints);
+		indexCurrent = indexCurrent - 2;
+		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
+				shapePoints);
+
+		for (int i = 0; i < this.globalLandmarks.size(); i++) {
+			// Get the landmark location
+			org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
+					this.globalLandmarks.get(i).getCenter().getLatitude(),
+					this.globalLandmarks.get(i).getCenter().getLongitude());
+
+			// Iterate through all shape points that lay between the current and
+			// the previous decision points
+			for (int j = indexCurrent; j > indexPrevious + 1; j--) {
+				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+						shapePoints[j].getLatitude(),
+						shapePoints[j].getLongitude());
+
+				double distance = currentShapePoint.distanceTo(currentLandmark);
+				if (distance <= this.globalLandmarks.get(i).getRadius()) {
+					result = new GlobalInstruction(shapePoints[j],
+							this.globalLandmarks.get(i));
+					return result;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Search for a local landmark along the route between the two given
+	 * locations. The index of the current decision point in the shape points
+	 * will be decreased by 2 so that there is still room for an instruction at
+	 * that decision point. If this was successful, a
+	 * <code>GlobalInstruction</code> object will be created.
+	 * 
+	 * @param decisionPoint
+	 *            Decision point
+	 * @param previousDecisionPoint
+	 *            Previous decision point
+	 * @return <code>GlobalInstruction</code> object if available. Otherwise
+	 *         <code>null</code> will be returned.
+	 */
+	private GlobalInstruction searchForLocalLandmarkAlongRoute(
+			GeoPoint decisionPoint, GeoPoint previousDecisionPoint) {
+		GlobalInstruction result = null;
+
+		// Get the shape points from the route
+		GeoPoint[] shapePoints = this.route.getShapePoints();
+
+		// Find the indexes of the current and the previous decision points
+		int indexCurrent = searchDecisionPointIndex(decisionPoint, shapePoints);
+		indexCurrent = indexCurrent - 2;
+		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
+				shapePoints);
+
+		for (int i = 0; i < this.localLandmarks.size(); i++) {
+			// Get the landmark location
+			org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
+					this.localLandmarks.get(i).getCenter().getLatitude(),
+					this.localLandmarks.get(i).getCenter().getLongitude());
+
+			// Iterate through all shape points that lay between the current and
+			// the previous decision points
+			for (int j = indexCurrent; j > indexPrevious + 1; j--) {
+				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+						shapePoints[j].getLatitude(),
+						shapePoints[j].getLongitude());
+
+				double distance = currentShapePoint.distanceTo(currentLandmark);
+				if (distance <= this.localLandmarks.get(i).getRadius()) {
+					result = new GlobalInstruction(shapePoints[j],
+							this.localLandmarks.get(i));
+					return result;
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -423,16 +576,18 @@ public class InstructionManager {
 	private Landmark searchForLocalLandmark(GeoPoint decisionPoint) {
 		Landmark result = null;
 
-		org.osmdroid.util.GeoPoint geoPointFromOsmdroid = new org.osmdroid.util.GeoPoint(
+		org.osmdroid.util.GeoPoint decisionPointFromOsmdroid = new org.osmdroid.util.GeoPoint(
 				decisionPoint.getLatitude(), decisionPoint.getLongitude());
 
-		for (int i = 0; i < this.landmarks.size(); i++) {
-			org.osmdroid.util.GeoPoint landmarkGeoPoint = new org.osmdroid.util.GeoPoint(
-					this.landmarks.get(i).getCenter().getLatitude(),
-					this.landmarks.get(i).getCenter().getLongitude());
-			double distance = geoPointFromOsmdroid.distanceTo(landmarkGeoPoint);
-			if (distance <= this.landmarks.get(i).getRadius()) {
-				result = this.landmarks.get(i);
+		for (int i = 0; i < this.localLandmarks.size(); i++) {
+			org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
+					this.localLandmarks.get(i).getCenter().getLatitude(),
+					this.localLandmarks.get(i).getCenter().getLongitude());
+			double distance = decisionPointFromOsmdroid
+					.distanceTo(currentLandmark);
+			if (distance <= this.localLandmarks.get(i).getRadius()) {
+				result = this.localLandmarks.get(i);
+				return result;
 			}
 		}
 

@@ -17,7 +17,9 @@ import de.mrunde.bachelorthesis.basics.Maneuver;
 public abstract class Instruction {
 
 	/**
-	 * The decision point where the maneuver has to be done
+	 * The decision point where the maneuver has to be done or where the global
+	 * landmark or local landmark is along the route so the instruction has to
+	 * be spoken at that position.
 	 */
 	private GeoPoint decisionPoint;
 
@@ -47,20 +49,6 @@ public abstract class Instruction {
 		this.maneuverType = maneuverType;
 		this.maneuver = Maneuver.getManeuverText(this.maneuverType);
 		this.global = null;
-	}
-
-	/**
-	 * Super constructor for all sub-instruction classes with global landmark
-	 * 
-	 * @param maneuverType
-	 *            The maneuver type
-	 * @param global
-	 *            Global landmark off road
-	 */
-	public Instruction(GeoPoint decisionPoint, int maneuverType, Landmark global) {
-		this.decisionPoint = decisionPoint;
-		this.maneuverType = maneuverType;
-		this.global = global;
 	}
 
 	/**
