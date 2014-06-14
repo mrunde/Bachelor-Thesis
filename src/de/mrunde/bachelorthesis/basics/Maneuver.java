@@ -68,31 +68,17 @@ public abstract class Maneuver {
 	 * href="https://open.mapquestapi.com/guidance/#maneuvertypes">https:/
 	 * /open.mapquestapi.com/guidance/#maneuvertypes</a>
 	 */
-	private static final String[] maneuverTexts = new String[] {
-			null, /* 0 */
-			"Continue straight",
-			null,
-			"Make a slight left turn",
-			"Turn left",
+	private static final String[] maneuverTexts = new String[] { null, /* 0 */
+	"Continue straight", null, "Make a slight left turn", "Turn left",
 			"Make a sharp left turn", /* 5 */
-			"Make a slight right turn",
-			"Turn right",
-			"Make a sharp right turn",
-			"Stay left",
-			"Stay right", /* 10 */
-			"Stay straight",
-			"Make a U-turn",
-			"Make a left U-turn",
-			"Make a right U-turn",
-			"Exit left", /* 15 */
-			"Exit right",
-			"Take the ramp on the left",
-			"Take the ramp on the right",
-			"Take the ramp straight ahead",
+			"Make a slight right turn", "Turn right",
+			"Make a sharp right turn", "Stay left", "Stay right", /* 10 */
+			"Stay straight", "Make a U-turn", "Make a left U-turn",
+			"Make a right U-turn", "Exit left", /* 15 */
+			"Exit right", "Take the ramp on the left",
+			"Take the ramp on the right", "Take the ramp straight ahead",
 			"Merge left", /* 20 */
-			"Merge right",
-			"Merge",
-			"Enter state/province",
+			"Merge right", "Merge", "Enter state/province",
 			"Arrive at your destination",
 			"Arrive at your destination on the left", /* 25 */
 			"Arrive at your destination on the right",
@@ -109,7 +95,7 @@ public abstract class Maneuver {
 			"Enter a public transit bus or rail station",
 			"Exit a public transit bus or rail station",
 			"Remain on the current bus/rail car" /* 39 */
-		};
+	};
 
 	/**
 	 * Get the corresponding verbal maneuver instruction of the maneuver type
@@ -135,6 +121,22 @@ public abstract class Maneuver {
 			return false;
 		} else {
 			return true;
+		}
+	}
+
+	/**
+	 * Check if the maneuver is for a roundabout
+	 * 
+	 * @param maneuverType
+	 *            The maneuver type received from MapQuest
+	 * @return TRUE: Maneuver is for roundabout.<br/>
+	 *         FALSE: Maneuver is not for roundabout.
+	 */
+	public static boolean isRoundaboutAction(int maneuverType) {
+		if (maneuverType >= 27 && maneuverType <= 34) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 }
