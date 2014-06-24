@@ -586,6 +586,8 @@ public class InstructionManager {
 	private Landmark searchForLocalLandmark(GeoPoint decisionPoint) {
 		Landmark result = null;
 
+		double minDistance = Double.MAX_VALUE;
+
 		org.osmdroid.util.GeoPoint decisionPointFromOsmdroid = new org.osmdroid.util.GeoPoint(
 				decisionPoint.getLatitude(), decisionPoint.getLongitude());
 
@@ -595,7 +597,8 @@ public class InstructionManager {
 					this.localLandmarks.get(i).getCenter().getLongitude());
 			double distance = decisionPointFromOsmdroid
 					.distanceTo(currentLandmark);
-			if (distance <= this.localLandmarks.get(i).getRadius()) {
+			if (distance <= this.localLandmarks.get(i).getRadius()
+					&& distance <= minDistance) {
 				result = this.localLandmarks.get(i);
 				return result;
 			}
