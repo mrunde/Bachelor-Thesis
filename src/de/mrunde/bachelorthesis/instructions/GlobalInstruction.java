@@ -46,6 +46,23 @@ public class GlobalInstruction extends Instruction {
 	}
 
 	/**
+	 * @return The extended instruction as a verbal text which uses the title of
+	 *         the landmark instead of its category
+	 */
+	public String toExtendedString() {
+		String instruction = "You will pass ";
+		String title = this.global.getTitle();
+		if (title.startsWith("a") || title.startsWith("e")
+				|| title.startsWith("i") || title.startsWith("o")
+				|| title.startsWith("u")) {
+			instruction = "an " + title + " soon";
+		} else {
+			instruction = "a " + title + " soon";
+		}
+		return instruction;
+	}
+
+	/**
 	 * @return The global landmark along the route
 	 */
 	public Landmark getGlobal() {

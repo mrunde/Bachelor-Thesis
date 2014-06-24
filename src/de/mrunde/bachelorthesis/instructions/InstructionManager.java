@@ -260,7 +260,8 @@ public class InstructionManager {
 	}
 
 	/**
-	 * Get all verbal instructions
+	 * Get all verbal instructions as extended ones. This includes the titles of
+	 * the landmarks instead of their categories.
 	 * 
 	 * @return All verbal instructions
 	 */
@@ -268,7 +269,15 @@ public class InstructionManager {
 		String[] result = new String[this.instructions.size()];
 
 		for (int i = 0; i < result.length; i++) {
-			result[i] = this.instructions.get(i).toString();
+			if (this.instructions.get(i).getClass() == de.mrunde.bachelorthesis.instructions.GlobalInstruction.class) {
+				result[i] = ((GlobalInstruction) this.instructions.get(i))
+						.toExtendedString();
+			} else if (this.instructions.get(i).getClass() == de.mrunde.bachelorthesis.instructions.LandmarkInstruction.class) {
+				result[i] = ((LandmarkInstruction) this.instructions.get(i))
+						.toExtendedString();
+			} else {
+				result[i] = this.instructions.get(i).toString();
+			}
 		}
 
 		return result;

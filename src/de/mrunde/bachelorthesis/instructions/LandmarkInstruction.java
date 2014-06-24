@@ -47,6 +47,20 @@ public class LandmarkInstruction extends Instruction {
 	}
 
 	/**
+	 * @return The extended instruction as a verbal text which uses the title of
+	 *         the landmark instead of its category
+	 */
+	public String toExtendedString() {
+		if (Maneuver.isTurnAction(super.getManeuverType())) {
+			String instruction = super.getManeuver() + " at the "
+					+ this.local.getTitle();
+			return instruction;
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * @return The local landmark at the decision point
 	 */
 	public Landmark getLocal() {
