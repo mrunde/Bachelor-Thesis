@@ -783,8 +783,6 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		// Get the corresponding instruction image
 		// TODO
 
-		Log.v("Test", "Overlays size: " + this.map.getOverlays().size());
-
 		// --- Update the landmarks on the map (if available) ---
 		// Remove previous landmarks (if available)
 		// Remove global landmark
