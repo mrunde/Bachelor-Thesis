@@ -608,6 +608,7 @@ public class InstructionManager {
 					.distanceTo(currentLandmark);
 			if (distance <= this.localLandmarks.get(i).getRadius()
 					&& distance <= minDistance) {
+				minDistance = distance;
 				result = this.localLandmarks.get(i);
 				return result;
 			}
