@@ -15,11 +15,6 @@ public abstract class LandmarkCategory {
 	public final static String CHURCH = "church";
 
 	/**
-	 * Cinema
-	 */
-	public final static String CINEMA = "cinema";
-
-	/**
 	 * Harbour
 	 */
 	public final static String HARBOUR = "harbour";
@@ -35,6 +30,11 @@ public abstract class LandmarkCategory {
 	public final static String RESTAURANT = "restaurant";
 
 	/**
+	 * Shop
+	 */
+	public final static String SHOP = "shop";
+
+	/**
 	 * Check if a category is a valid landmark category
 	 * 
 	 * @param category
@@ -45,13 +45,13 @@ public abstract class LandmarkCategory {
 	public static boolean isCategory(String category) {
 		if (category.equals(CHURCH))
 			return true;
-		if (category.equals(CINEMA))
-			return true;
 		if (category.equals(HARBOUR))
 			return true;
 		if (category.equals(LAKE))
 			return true;
 		if (category.equals(RESTAURANT))
+			return true;
+		if (category.equals(SHOP))
 			return true;
 		return false;
 	}
@@ -62,7 +62,7 @@ public abstract class LandmarkCategory {
 	 * @return All categories
 	 */
 	public static String[] getCategories() {
-		String[] categories = { CHURCH, CINEMA, HARBOUR, LAKE, RESTAURANT };
+		String[] categories = { CHURCH, HARBOUR, LAKE, RESTAURANT, SHOP };
 		return categories;
 	}
 
@@ -78,13 +78,13 @@ public abstract class LandmarkCategory {
 		if (isCategory(category)) {
 			if (category.equals(CHURCH))
 				return R.drawable.landmark_church;
-			if (category.equals(CINEMA))
-				return -1; // TODO
 			if (category.equals(HARBOUR))
 				return -1; // TODO
 			if (category.equals(LAKE))
 				return -1; // TODO
 			if (category.equals(RESTAURANT))
+				return -1; // TODO
+			if (category.equals(SHOP))
 				return -1; // TODO
 		}
 		return -1;
