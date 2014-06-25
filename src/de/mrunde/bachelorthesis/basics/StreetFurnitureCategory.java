@@ -10,14 +10,9 @@ package de.mrunde.bachelorthesis.basics;
 public abstract class StreetFurnitureCategory {
 
 	/**
-	 * Bridge
+	 * Bus station
 	 */
-	public final static String BRIDGE = "bridge";
-
-	/**
-	 * Crosswalk
-	 */
-	public final static String CROSSWALK = "crosswalk";
+	public final static String BUS_STATION = "bus_station";
 
 	/**
 	 * Railway bridge
@@ -38,9 +33,7 @@ public abstract class StreetFurnitureCategory {
 	 *         FALSE: <code>category</code> is not valid
 	 */
 	public static boolean isCategory(String category) {
-		if (category.equals(BRIDGE))
-			return true;
-		if (category.equals(CROSSWALK))
+		if (category.equals(BUS_STATION))
 			return true;
 		if (category.equals(RAILWAY_BRIDGE))
 			return true;
@@ -55,8 +48,7 @@ public abstract class StreetFurnitureCategory {
 	 * @return All categories
 	 */
 	public static String[] getCategories() {
-		String[] categories = { BRIDGE, CROSSWALK, RAILWAY_BRIDGE,
-				TRAFFIC_LIGHT };
+		String[] categories = { BUS_STATION, RAILWAY_BRIDGE, TRAFFIC_LIGHT };
 		return categories;
 	}
 }
