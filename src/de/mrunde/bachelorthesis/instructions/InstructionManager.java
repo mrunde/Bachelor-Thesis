@@ -329,6 +329,23 @@ public class InstructionManager {
 	}
 
 	/**
+	 * Get the location (decision point) of the next instruction
+	 * 
+	 * @return The location of the next instruction. <code>Null</code> if last
+	 *         instruction has already been reached.
+	 */
+	public GeoPoint getNextInstructionLocation() {
+		if (this.instructions.size() > this.currentInstruction + 1) {
+			// Return the next instruction's decision point
+			return this.instructions.get(this.currentInstruction + 1)
+					.getDecisionPoint();
+		} else {
+			// Return null when last instruction has already been reached
+			return null;
+		}
+	}
+
+	/**
 	 * Create the instructions from the route information
 	 */
 	public void createInstructions() {

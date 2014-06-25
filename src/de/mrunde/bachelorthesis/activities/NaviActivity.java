@@ -149,6 +149,39 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 */
 	private String provider;
 
+	/**
+	 * Maximum distance to a decision point when it is supposed to be reached
+	 */
+	private final int MAX_DISTANCE_TO_DECISION_POINT = 20;
+
+	/**
+	 * Store the last distance between the next decision point and the current
+	 * location. Is set to 0 when the instruction is updated.
+	 */
+	private double lastDistanceDP1 = 0;
+
+	/**
+	 * Store the last distance between the decision point after next and the
+	 * current location. Is set to 0 when the instruction is updated.
+	 */
+	private double lastDistanceDP2 = 0;
+
+	/**
+	 * Counts the distance changes between the next decision point, the decision
+	 * point after next and the current location. Is set to 0 after the
+	 * instruction has been updated. The instruction is updated when the counter
+	 * reaches its maximum negative value (<code>(-1) * MAX_COUNTER_VALUE</code>
+	 * ) or the next decision point has been reached. If the counter reaches the
+	 * maximum positive value (<code>MAX_COUNTER_VALUE</code>), the whole
+	 * guidance will be updated.
+	 */
+	private int distanceCounter = 0;
+
+	/**
+	 * Maximum value for the <code>distanceCounter</code>.
+	 */
+	private final int MAX_COUNTER_VALUE = 5;
+
 	// --- End of route and instruction objects ---
 
 	/**
@@ -573,72 +606,6 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		Log.d("NaviActivity", "Route overlay added");
 	}
 
-	// /**
-	// * This method compares the distance between the user and the next
-	// decision
-	// * point. If this distance increases MAX_DRIVING_ERRORS times in a row,
-	// the
-	// * route will be recalculated.
-	// *
-	// * @param lastLocation
-	// * The user location
-	// */
-	// private void checkForDrivingError(Location lastLocation) {
-	// // Get the last decision point
-	// GeoPoint lastDecisionPoint = im.getCurrentInstruction()
-	// .getDecisionPoint();
-	//
-	// // Calculate the distance to the next decision point
-	// float[] results = new float[1];
-	// Location.distanceBetween(lastLocation.getLatitude(),
-	// lastLocation.getLongitude(), lastDecisionPoint.getLatitude(),
-	// lastDecisionPoint.getLongitude(), results);
-	//
-	// // Compare the distances and increase or decrease driving error counter
-	// if (this.lastDistance < results[0]) {
-	// this.drivingErrors++;
-	// Log.w("NaviActivity.DrivingError", "Driving errors increased to "
-	// + this.drivingErrors);
-	// } else if (this.drivingErrors > 0) {
-	// this.drivingErrors--;
-	// Log.i("NaviActivity.DrivingError", "Driving errors decreased to "
-	// + this.drivingErrors);
-	// }
-	//
-	// if (this.drivingErrors >= this.MAX_DRIVING_ERRORS) {
-	// // This is supposed to be a driving error
-	// Toast.makeText(this, R.string.recalculate, Toast.LENGTH_SHORT)
-	// .show();
-	// tts.speak(getResources().getString(R.string.recalculate),
-	// TextToSpeech.QUEUE_FLUSH, null);
-	// Log.w("NaviActivity.DrivingError", "Recalculating route...");
-	//
-	// // Restart activity
-	// Intent intent = getIntent();
-	// intent.putExtra("str_currentLocation", str_currentLocation);
-	// finish();
-	// startActivity(intent);
-	//
-	// // // Reset driving errors and the last distance
-	// // this.drivingErrors = 0;
-	// // this.lastDistance = -1;
-	// //
-	// // // Recalculate route
-	// // calculateRoute();
-	// //
-	// // // Get the guidance information and create the instructions
-	// // // getGuidance(); TODO seems like an error is happening here
-	// //
-	// // // Zoom to current location (just to make sure the map displays
-	// // the
-	// // // user location because the calculateRoute() method sometimes
-	// // does
-	// // // not do this)
-	// // map.getController().animateTo(myLocationOverlay.getMyLocation());
-	// // map.getController().setZoom(18);
-	// }
-	// }
-
 	@Override
 	public void onBackPressed() {
 		new AlertDialog.Builder(this)
@@ -734,16 +701,58 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 		// Check if the instruction manager has been initialized already
 		if (im != null) {
-			// Get the coordinates of the current decision point
-			double dpLat = im.getCurrentInstruction().getDecisionPoint()
+			// Get the coordinates of the next decision point
+			double dp1Lat = im.getCurrentInstruction().getDecisionPoint()
 					.getLatitude();
-			double dpLng = im.getCurrentInstruction().getDecisionPoint()
+			double dp1Lng = im.getCurrentInstruction().getDecisionPoint()
 					.getLongitude();
 
-			// Update the instruction, if the decision point has been reached
+			// Get the coordinates of the decision point after next
+			double dp2Lat = im.getNextInstructionLocation().getLatitude();
+			double dp2Lng = im.getNextInstructionLocation().getLongitude();
+
+			// Calculate the distance to the next decision point
 			float[] results = new float[1];
-			Location.distanceBetween(lat, lng, dpLat, dpLng, results);
-			if (results[0] < 20) {
+			Location.distanceBetween(lat, lng, dp1Lat, dp1Lng, results);
+			double distanceDP1 = results[0];
+
+			// Calculate the distance to the decision point after next
+			Location.distanceBetween(lat, lng, dp2Lat, dp2Lng, results);
+			double distanceDP2 = results[0];
+
+			// Check the distances with the stored ones
+			if (distanceDP1 < MAX_DISTANCE_TO_DECISION_POINT) {
+				// Distance to decision point is less than 20m so the
+				// instruction is being updated
+				updateInstruction();
+			} else if (distanceDP1 > lastDistanceDP1
+					&& distanceDP2 < lastDistanceDP2) {
+				// The distance to the next decision point has increased and the
+				// distance to the decision point after next has decreased
+				lastDistanceDP1 = distanceDP1;
+				lastDistanceDP2 = distanceDP2;
+				distanceCounter++;
+				Log.v("NaviActivity.onLocationChanged", "distanceCounter: "
+						+ distanceCounter);
+			} else if (distanceDP1 > lastDistanceDP1
+					&& distanceDP2 > lastDistanceDP2) {
+				// Distance to the next decision point and the decision point
+				// after next has increased (can lead to a driving error)
+				lastDistanceDP1 = distanceDP1;
+				lastDistanceDP2 = distanceDP2;
+				distanceCounter--;
+				Log.v("NaviActivity.onLocationChanged",
+						"distanceIncreaseCounter: " + distanceCounter);
+			}
+
+			// Check if the whole guidance needs to be reloaded due to a driving
+			// error (user seems to go away from both the decision point and the
+			// decision point after next)
+			if (distanceCounter < (-1 * MAX_COUNTER_VALUE)) {
+				updateGuidance();
+			}
+			// Check if the instruction needs to be updated
+			if (distanceCounter > MAX_COUNTER_VALUE) {
 				updateInstruction();
 			}
 		}
@@ -771,6 +780,13 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 * displayed.
 	 */
 	private void updateInstruction() {
+		Log.i("NaviActivity", "Updating Instruction...");
+
+		// Reset the distances and their counters
+		lastDistanceDP1 = 0;
+		lastDistanceDP2 = 0;
+		distanceCounter = 0;
+
 		// Get the next instruction
 		Instruction nextInstruction = im.getNextInstruction();
 
@@ -825,10 +841,10 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			newLocalLandmarkOverlay.addItem(oi_newLocalLandmark);
 			this.map.getOverlays().add(this.INDEX_OF_LOCAL_LANDMARK_OVERLAY,
 					newLocalLandmarkOverlay);
-
-			// Speak out the verbal instruction
-			speakInstruction();
 		}
+
+		// Speak out the verbal instruction
+		speakInstruction();
 	}
 
 	/**
@@ -838,5 +854,20 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		tts.setSpeechRate((float) 0.85);
 		tts.speak(tv_instruction.getText().toString(),
 				TextToSpeech.QUEUE_FLUSH, null);
+	}
+
+	/**
+	 * Update the complete guidance. This method is called when a driving error
+	 * has occurred.
+	 */
+	private void updateGuidance() {
+		// Inform the user about updating the guidance
+		Log.i("NaviActivity", "Updating guidance...");
+		tts.setSpeechRate((float) 1);
+		tts.speak("Updating guidance", TextToSpeech.QUEUE_FLUSH, null);
+
+		// Restart the activity
+		finish();
+		startActivity(getIntent());
 	}
 }
