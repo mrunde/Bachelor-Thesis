@@ -1,7 +1,5 @@
 package de.mrunde.bachelorthesis.instructions;
 
-import com.mapquest.android.maps.GeoPoint;
-
 import de.mrunde.bachelorthesis.basics.Maneuver;
 
 /**
@@ -14,13 +12,11 @@ public class NowInstruction extends Instruction {
 	/**
 	 * Constructor of the LandmarkInstruction class
 	 * 
-	 * @param decisionPoint
-	 *            The decision point
-	 * @param maneuverType
-	 *            The maneuver type
+	 * @param instruction
+	 *            The current instruction
 	 */
-	public NowInstruction(GeoPoint decisionPoint, int maneuverType) {
-		super(decisionPoint, maneuverType);
+	public NowInstruction(Instruction instruction) {
+		super(instruction.getDecisionPoint(), instruction.getManeuverType());
 	}
 
 	/**
