@@ -311,6 +311,15 @@ public class InstructionManager {
 	}
 
 	/**
+	 * Get the corresponding now instruction of the current instruction
+	 * 
+	 * @return Now instruction of current instruction
+	 */
+	public NowInstruction getNowInstruction() {
+		return new NowInstruction(this.getCurrentInstruction());
+	}
+
+	/**
 	 * Get the next instruction
 	 * 
 	 * @return The next instruction. <code>Null</code> if last instruction has

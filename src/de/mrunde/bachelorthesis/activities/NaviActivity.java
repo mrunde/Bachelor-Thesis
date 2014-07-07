@@ -150,6 +150,27 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private String provider;
 
 	/**
+	 * Minimum distance for a route segment to use a NowInstruction
+	 */
+	private final int MIN_DISTANCE_FOR_NOW_INSTRUCTION = 1000;
+
+	/**
+	 * The NowInstruction will be returned at this distance before reaching the
+	 * next decision point
+	 */
+	private final int DISTANCE_FOR_NOW_INSTRUCTION = 100;
+
+	/**
+	 * Variable to control if the usage of a NowInstruction has been checked
+	 */
+	private boolean nowInstructionChecked = false;
+
+	/**
+	 * Variable to control if a NowInstruction will be used
+	 */
+	private boolean nowInstructionUsed = false;
+
+	/**
 	 * Maximum distance to a decision point when it is supposed to be reached
 	 */
 	private final int MAX_DISTANCE_TO_DECISION_POINT = 20;
@@ -716,6 +737,14 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			Location.distanceBetween(lat, lng, dp1Lat, dp1Lng, results);
 			double distanceDP1 = results[0];
 
+			// Check whether a now instruction must be used (only once for each
+			// route segment)
+			if (nowInstructionChecked == false
+					&& distanceDP1 >= MIN_DISTANCE_FOR_NOW_INSTRUCTION) {
+				nowInstructionUsed = true;
+			}
+			nowInstructionChecked = true;
+
 			// Calculate the distance to the decision point after next
 			Location.distanceBetween(lat, lng, dp2Lat, dp2Lng, results);
 			double distanceDP2 = results[0];
@@ -725,6 +754,10 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				// Distance to decision point is less than 20m so the
 				// instruction is being updated
 				updateInstruction();
+			} else if (distanceDP1 < DISTANCE_FOR_NOW_INSTRUCTION
+					&& nowInstructionUsed == true) {
+				// Distance to
+				updateNowInstruction();
 			} else if (distanceDP1 > lastDistanceDP1
 					&& distanceDP2 < lastDistanceDP2) {
 				// The distance to the next decision point has increased and the
@@ -782,10 +815,13 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void updateInstruction() {
 		Log.i("NaviActivity", "Updating Instruction...");
 
-		// Reset the distances and their counters
+		// Reset the distances, their counters, and the NowInstruction
+		// controllers
 		lastDistanceDP1 = 0;
 		lastDistanceDP2 = 0;
 		distanceCounter = 0;
+		nowInstructionChecked = false;
+		nowInstructionUsed = false;
 
 		// Get the next instruction
 		Instruction nextInstruction = im.getNextInstruction();
@@ -854,6 +890,29 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		tts.setSpeechRate((float) 0.85);
 		tts.speak(tv_instruction.getText().toString(),
 				TextToSpeech.QUEUE_FLUSH, null);
+	}
+
+	/**
+	 * Called when the next decision point will be reached in
+	 * <code>DISTANCE_FOR_NOW_INSTRUCTION</code> and a
+	 * <code>NowInstruction</code> is used to update the current instruction to
+	 * the instruction. The map is not changed as in the
+	 * <code>updateInstruction</code> method.
+	 */
+	private void updateNowInstruction() {
+		// Get the now instruction
+		Instruction nowInstruction = im.getNowInstruction();
+
+		// --- Update the instruction view ---
+		// Get the verbal instruction
+		String verbalInstruction = nowInstruction.toString();
+		// Display the verbal instruction
+		this.tv_instruction.setText(verbalInstruction);
+
+		// The instruction image stays the same
+
+		// Speak out the verbal instruction
+		speakInstruction();
 	}
 
 	/**
