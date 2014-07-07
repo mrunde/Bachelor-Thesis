@@ -31,7 +31,7 @@ public class InstructionManager {
 	 * This is the maximal distance between the decision point and a street
 	 * furniture
 	 */
-	private final int MAX_DISTANCE_TO_STREET_FURNITURE = 20;
+	private final int MAX_DISTANCE_TO_STREET_FURNITURE = 16;
 
 	/**
 	 * This is the maximal number of intersections to be used for an instruction
@@ -42,7 +42,7 @@ public class InstructionManager {
 	 * This is the maximal distance between the decision point and an
 	 * intersection
 	 */
-	private final int MAX_DISTANCE_TO_INTERSECTION = 10;
+	private final int MAX_DISTANCE_TO_INTERSECTION = 16;
 
 	/**
 	 * This is the maximal number of intersections to be used for an instruction
