@@ -365,6 +365,12 @@ public class InstructionManager {
 			Instruction[] instruction = createInstruction(rs.getEndPoint(),
 					rs.getStartPoint(), rs.getManeuverType(), rs.getDistance());
 
+			// The first instruction will be ignored, if it is of maneuver type
+			// STRAIGHT so the user gets immediately the required instruction
+			if (i == 0 && rs.getManeuverType() == Maneuver.STRAIGHT) {
+				instruction = null;
+			}
+
 			if (instruction != null) {
 				// Add the global instruction
 				if (instruction[0] != null) {
