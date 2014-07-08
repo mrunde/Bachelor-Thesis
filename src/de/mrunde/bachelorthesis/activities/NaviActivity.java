@@ -43,6 +43,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +60,7 @@ import com.mapquest.android.maps.RouteResponse;
 import de.mrunde.bachelorthesis.R;
 import de.mrunde.bachelorthesis.basics.Landmark;
 import de.mrunde.bachelorthesis.basics.LandmarkCategory;
+import de.mrunde.bachelorthesis.basics.Maneuver;
 import de.mrunde.bachelorthesis.instructions.Instruction;
 import de.mrunde.bachelorthesis.instructions.InstructionManager;
 import de.mrunde.bachelorthesis.instructions.LandmarkInstruction;
@@ -86,9 +88,14 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 	// --- The graphical user interface (GUI) ---
 	/**
-	 * Instruction view
+	 * Instruction view (verbal)
 	 */
 	private TextView tv_instruction;
+
+	/**
+	 * Instruction view (image)
+	 */
+	private ImageView iv_instruction;
 
 	/**
 	 * Map view
@@ -263,6 +270,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 */
 	private void setupGUI() {
 		this.tv_instruction = (TextView) findViewById(R.id.tv_instruction);
+		this.iv_instruction = (ImageView) findViewById(R.id.iv_instruction);
 	}
 
 	/**
@@ -612,9 +620,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void drawRoute(JSONObject json) {
 		// Set custom line style TODO correct color
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		paint.setColor(Color.BLACK);
+		paint.setColor(Color.BLUE);
 		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeWidth(3);
+		paint.setStrokeWidth(5);
 
 		// Initialize the route overlay
 		List<GeoPoint> shapePoints = new ArrayList<GeoPoint>(
@@ -832,8 +840,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		// Display the verbal instruction
 		this.tv_instruction.setText(nextVerbalInstruction);
 
-		// Get the corresponding instruction image
-		// TODO
+		// Get the corresponding instruction image and display it
+		this.iv_instruction.setImageDrawable(getResources().getDrawable(
+				Maneuver.getDrawableId(nextInstruction.getManeuverType())));
 
 		// --- Update the landmarks on the map (if available) ---
 		// Remove previous landmarks (if available)

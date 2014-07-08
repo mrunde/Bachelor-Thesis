@@ -1,5 +1,7 @@
 package de.mrunde.bachelorthesis.basics;
 
+import de.mrunde.bachelorthesis.R;
+
 /**
  * This is the Maneuver class that converts the maneuver types of MapQuest into
  * the verbal instructions.<br/>
@@ -137,6 +139,77 @@ public abstract class Maneuver {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	public static int getDrawableId(int maneuverType) {
+		switch (maneuverType) {
+		case NONE:
+			return R.drawable.ii_none;
+		case STRAIGHT:
+			return R.drawable.ii_straight;
+		case BECOMES:
+			return R.drawable.ii_none;
+		case SLIGHT_LEFT:
+			return R.drawable.ii_slight_left;
+		case LEFT:
+			return R.drawable.ii_left;
+		case SHARP_LEFT:
+			return R.drawable.ii_sharp_left;
+		case SLIGHT_RIGHT:
+			return R.drawable.ii_slight_right;
+		case RIGHT:
+			return R.drawable.ii_right;
+		case SHARP_RIGHT:
+			return R.drawable.ii_sharp_right;
+		case STAY_LEFT:
+			return R.drawable.ii_stay_left;
+		case STAY_RIGHT:
+			return R.drawable.ii_stay_right;
+		case STAY_STRAIGHT:
+			return R.drawable.ii_stay_straight;
+		case MERGE_LEFT:
+			return R.drawable.ii_merge_left;
+		case MERGE_RIGHT:
+			return R.drawable.ii_merge_right;
+		case MERGE_STRAIGHT:
+			return R.drawable.ii_merge_straight;
+		case ENTERING:
+			return R.drawable.ii_entering;
+		case DESTINATION:
+			return R.drawable.ii_destination;
+		case DESTINATION_LEFT:
+			return R.drawable.ii_destination_left;
+		case DESTINATION_RIGHT:
+			return R.drawable.ii_destination_right;
+		case ROUNDABOUT1:
+			return R.drawable.ii_roundabout1;
+		case ROUNDABOUT2:
+			return R.drawable.ii_roundabout2;
+		case ROUNDABOUT3:
+			return R.drawable.ii_roundabout3;
+		case ROUNDABOUT4:
+			return R.drawable.ii_roundabout4;
+		case ROUNDABOUT5:
+			return R.drawable.ii_roundabout5;
+		case ROUNDABOUT6:
+			return R.drawable.ii_roundabout6;
+		case ROUNDABOUT7:
+			return R.drawable.ii_roundabout7;
+		case ROUNDABOUT8:
+			return R.drawable.ii_roundabout8;
+		case TRANSIT_TAKE:
+			return R.drawable.ii_none;
+		case TRANSIT_TRANSFER:
+			return R.drawable.ii_none;
+		case TRANSIT_ENTER:
+			return R.drawable.ii_none;
+		case TRANSIT_EXIT:
+			return R.drawable.ii_none;
+		case TRANSIT_REMAIN_ON:
+			return R.drawable.ii_none;
+		default:
+			return R.drawable.ii_none;
 		}
 	}
 }
