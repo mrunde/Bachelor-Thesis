@@ -536,6 +536,20 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 				// Draw the route
 				drawRoute(result);
+
+				if (im.isImportSuccessful()) {
+					// Get the first instruction and display it
+					displayInstruction(im.getInstruction(0));
+				} else {
+					// Import was not successful
+					Toast.makeText(
+							NaviActivity.this,
+							getResources().getString(
+									R.string.jsonImportNotSuccessful),
+							Toast.LENGTH_SHORT).show();
+					// Finish the activity to return to MainActivity
+					finish();
+				}
 			}
 		}
 	}
@@ -594,10 +608,6 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		if (im.isImportSuccessful()) {
 			// Create the instructions
 			im.createInstructions();
-
-			// Get the first instruction and display it
-			Instruction firstInstruction = im.getInstruction(0);
-			displayInstruction(firstInstruction);
 		} else {
 			// Import was not successful
 			Toast.makeText(this,
@@ -615,7 +625,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 *            The guidance information from MapQuest
 	 */
 	private void drawRoute(JSONObject json) {
-		// Set custom line style TODO correct color
+		// Set custom line style
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setColor(Color.BLUE);
 		paint.setStyle(Paint.Style.STROKE);
