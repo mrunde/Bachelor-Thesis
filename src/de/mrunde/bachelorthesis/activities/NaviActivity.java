@@ -595,12 +595,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			// Create the instructions
 			im.createInstructions();
 
-			// Display the first instruction in the TextView
-			String instruction = im.getInstruction(0).toString();
-			tv_instruction.setText(instruction);
-
-			// Speak out the first instruction
-			speakInstruction();
+			// Get the first instruction and display it
+			Instruction firstInstruction = im.getInstruction(0);
+			displayInstruction(firstInstruction);
 		} else {
 			// Import was not successful
 			Toast.makeText(this,
@@ -816,9 +813,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 	/**
 	 * Called when the next decision point has been reached to update the
-	 * current instruction to the following instruction. Also the map is being
-	 * updated so that the old landmarks are removed and the new ones are
-	 * displayed.
+	 * current instruction to the following instruction.
 	 */
 	private void updateInstruction() {
 		Log.i("NaviActivity", "Updating Instruction...");
@@ -831,18 +826,29 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		nowInstructionChecked = false;
 		nowInstructionUsed = false;
 
-		// Get the next instruction
+		// Get the next instruction and display it
 		Instruction nextInstruction = im.getNextInstruction();
+		displayInstruction(nextInstruction);
+	}
 
+	/**
+	 * Called when a new instruction shall be displayed. Also the map is being
+	 * updated so that the old landmarks are removed and the new ones are
+	 * displayed.
+	 * 
+	 * @param instruction
+	 *            The instruction to be displayed
+	 */
+	private void displayInstruction(Instruction instruction) {
 		// --- Update the instruction view ---
 		// Get the next verbal instruction
-		String nextVerbalInstruction = nextInstruction.toString();
+		String nextVerbalInstruction = instruction.toString();
 		// Display the verbal instruction
 		this.tv_instruction.setText(nextVerbalInstruction);
 
 		// Get the corresponding instruction image and display it
 		this.iv_instruction.setImageDrawable(getResources().getDrawable(
-				Maneuver.getDrawableId(nextInstruction.getManeuverType())));
+				Maneuver.getDrawableId(instruction.getManeuverType())));
 
 		// --- Update the landmarks on the map (if available) ---
 		// Remove previous landmarks (if available)
@@ -857,8 +863,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		}
 
 		// Add new global landmark (if available)
-		if (nextInstruction.getGlobal() != null) {
-			Landmark newGlobalLandmark = nextInstruction.getGlobal();
+		if (instruction.getGlobal() != null) {
+			Landmark newGlobalLandmark = instruction.getGlobal();
 			OverlayItem oi_newGlobalLandmark = new OverlayItem(
 					newGlobalLandmark.getCenter(),
 					newGlobalLandmark.getTitle(),
@@ -873,8 +879,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		}
 
 		// Add new local landmark (if available)
-		if (nextInstruction.getClass().equals(LandmarkInstruction.class)) {
-			Landmark newLocalLandmark = ((LandmarkInstruction) nextInstruction)
+		if (instruction.getClass().equals(LandmarkInstruction.class)) {
+			Landmark newLocalLandmark = ((LandmarkInstruction) instruction)
 					.getLocal();
 			OverlayItem oi_newLocalLandmark = new OverlayItem(
 					newLocalLandmark.getCenter(), newLocalLandmark.getTitle(),
