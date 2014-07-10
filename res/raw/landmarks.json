@@ -1,51 +1,96 @@
 {
 	"local": [
 		{
+			"title": "St. Antonius Church",
+			"center": {
+				"lat": 51.954810,
+				"lng": 7.620609
+			},
+			"radius": 75,
+			"category": "church"
+		},
+		{
 			"title": "Cineplex Münster",
 			"center": {
-				"lat": 51.950575,
-				"lng": 7.637148
+				"lat": 51.950578,
+				"lng": 7.636925
 			},
 			"radius": 50,
 			"category": "cinema"
 		},
 		{
-			"title": "St. Antonius-Kirche",
+			"title": "Kruse Baimken Restaurant",
 			"center": {
-				"lat": 51.954837,
-				"lng": 7.620182
-			},
-			"radius": 50,
-			"category": "church"
-		},
-		{
-			"title": "",
-			"center": {
-				"lat": 51.957498,
-				"lng": 7.619320
+				"lat": 51.957532,
+				"lng": 7.619357
 			},
 			"radius": 50,
 			"category": "restaurant"
+		},
+		{
+			"title": "Tombstone Store",
+			"center": {
+				"lat": 51.960432,
+				"lng": 7.608723
+			},
+			"radius": 25,
+			"category": "shop"
+		},
+		{
+			"title": "Aaseekugeln",
+			"center": {
+				"lat": 51.956978,
+				"lng": 7.618208
+			},
+			"radius": 110,
+			"category": "sightseeing"
+		},
+		{
+			"title": "LBS Building",
+			"center": {
+				"lat": 51.959267,
+				"lng": 7.613599
+			},
+			"radius": 150,
+			"category": "sightseeing
+		},
+		{
+			"title": "Münster Schloss",
+			"center": {
+				"lat": 51.963561,
+				"lng": 7.613183
+			},
+			"radius": 115,
+			"category": "sightseeing"
 		}
 	],
 	"global": [
 		{
-			"title": "Aasee",
+			"title": "Central Cemetery",
 			"center": {
-				"lat": 51.956642,
-				"lng": 7.615504
+				"lat": 51.958702,
+				"lng": 7.609642
+			},
+			"radius": 220,
+			"category": "cemetery"
+		},
+		{
+			"title": "Harbour",
+			"center": {
+				"lat": 51.951346,
+				"lng": 7.639050
+			},
+			"radius": 170,
+			"category": "harbour"
+		},
+		{
+			"title": "Lake Aa",
+			"center": {
+				"lat": 51.956973,
+				"lng": 7.616911
 			},
 			"radius": 200,
 			"category": "lake"
-		},
-		{
-			"title": "Hafen",
-			"center": {
-				"lat": 51.951634,
-				"lng": 7.640764
-			},
-			"radius": 500,
-			"category": "harbour"
 		}
 	]
 }
