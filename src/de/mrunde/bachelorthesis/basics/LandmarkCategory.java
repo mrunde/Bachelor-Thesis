@@ -10,19 +10,29 @@ import de.mrunde.bachelorthesis.R;
 public abstract class LandmarkCategory {
 
 	/**
+	 * Cemetery (global)
+	 */
+	public final static String CEMETERY = "cemetery";
+
+	/**
+	 * Harbour (global)
+	 */
+	public final static String HARBOUR = "harbour";
+
+	/**
+	 * Lake (global)
+	 */
+	public final static String LAKE = "lake";
+
+	/**
 	 * Church
 	 */
 	public final static String CHURCH = "church";
 
 	/**
-	 * Harbour
+	 * Cinema
 	 */
-	public final static String HARBOUR = "harbour";
-
-	/**
-	 * Lake or water body in general
-	 */
-	public final static String LAKE = "lake";
+	public final static String CINEMA = "cinema";
 
 	/**
 	 * Restaurant
@@ -35,6 +45,11 @@ public abstract class LandmarkCategory {
 	public final static String SHOP = "shop";
 
 	/**
+	 * Sightseeing
+	 */
+	public final static String SIGHTSEEING = "sightseeing";
+
+	/**
 	 * Check if a category is a valid landmark category
 	 * 
 	 * @param category
@@ -43,15 +58,21 @@ public abstract class LandmarkCategory {
 	 *         FALSE: <code>category</code> is not valid
 	 */
 	public static boolean isCategory(String category) {
-		if (category.equals(CHURCH))
+		if (category.equals(CEMETERY))
 			return true;
 		if (category.equals(HARBOUR))
 			return true;
 		if (category.equals(LAKE))
 			return true;
+		if (category.equals(CHURCH))
+			return true;
+		if (category.equals(CINEMA))
+			return true;
 		if (category.equals(RESTAURANT))
 			return true;
 		if (category.equals(SHOP))
+			return true;
+		if (category.equals(SIGHTSEEING))
 			return true;
 		return false;
 	}
@@ -62,7 +83,8 @@ public abstract class LandmarkCategory {
 	 * @return All categories
 	 */
 	public static String[] getCategories() {
-		String[] categories = { CHURCH, HARBOUR, LAKE, RESTAURANT, SHOP };
+		String[] categories = { CEMETERY, HARBOUR, LAKE, CHURCH, CINEMA,
+				RESTAURANT, SHOP, SIGHTSEEING };
 		return categories;
 	}
 
@@ -76,15 +98,21 @@ public abstract class LandmarkCategory {
 	 */
 	public static int getDrawableId(String category) {
 		if (isCategory(category)) {
-			if (category.equals(CHURCH))
-				return R.drawable.landmark_church;
+			if (category.equals(CEMETERY))
+				return -1; // TODO
 			if (category.equals(HARBOUR))
 				return -1; // TODO
 			if (category.equals(LAKE))
 				return -1; // TODO
-			if (category.equals(RESTAURANT))
+			if (category.equals(CHURCH))
+				return R.drawable.landmark_church;
+			if (category.equals(CINEMA))
 				return -1; // TODO
+			if (category.equals(RESTAURANT))
+				return R.drawable.landmark_restaurant;
 			if (category.equals(SHOP))
+				return -1; // TODO
+			if (category.equals(SIGHTSEEING))
 				return -1; // TODO
 		}
 		return -1;
