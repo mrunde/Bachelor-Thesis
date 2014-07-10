@@ -372,24 +372,32 @@ public class InstructionManager {
 			}
 
 			if (instruction != null) {
-				// Add the global instruction
+				// Add the global instruction (if available)
 				if (instruction[0] != null) {
-					this.instructions.add(instruction[0]);
-					// Log all global instructions
-					Log.v("InstructionManager.createInstructions",
-							"(Global) Instruction "
-									+ j
-									+ ": "
-									+ this.instructions.get(j).toString()
-									+ " | "
-									+ this.instructions.get(j)
-											.getDecisionPoint().toString());
-					j++;
+					// Check if the global instruction does not use the same
+					// landmark as the landmark-based instruction
+					if (instruction[1].getClass() != LandmarkInstruction.class
+							|| (instruction[1].getClass() == LandmarkInstruction.class && !((GlobalInstruction) instruction[0])
+									.getGlobal()
+									.equals(((LandmarkInstruction) instruction[1])
+											.getLocal()))) {
+						this.instructions.add(instruction[0]);
+						// Log global instruction
+						Log.v("InstructionManager.createInstructions",
+								"(Global) Instruction "
+										+ j
+										+ ": "
+										+ this.instructions.get(j).toString()
+										+ " | "
+										+ this.instructions.get(j)
+												.getDecisionPoint().toString());
+						j++;
+					}
 				}
 				// Remove "no-turn" instructions by ignoring them
 				if (instruction[1].toString() != null) {
 					this.instructions.add(instruction[1]);
-					// Log all local instructions
+					// Log local instruction
 					Log.v("InstructionManager.createInstructions",
 							"(Local) Instruction "
 									+ j
@@ -454,8 +462,7 @@ public class InstructionManager {
 			Instruction[] instruction = new Instruction[2];
 
 			// All maneuver types with ID greater or equal 23 already contain
-			// enough
-			// information in the maneuver text (e.g. a roundabout or the
+			// enough information in the maneuver text (e.g. a roundabout or the
 			// destination) or use the short-distance public transport so that a
 			// distance-based instruction reaches out there
 			if (maneuverType >= 23) {
