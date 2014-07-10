@@ -2,7 +2,6 @@ package de.mrunde.bachelorthesis.instructions;
 
 import com.mapquest.android.maps.GeoPoint;
 
-import de.mrunde.bachelorthesis.basics.Landmark;
 import de.mrunde.bachelorthesis.basics.Maneuver;
 
 /**
@@ -34,11 +33,6 @@ public abstract class Instruction {
 	private String maneuver;
 
 	/**
-	 * Global landmark off road (optional)
-	 */
-	private Landmark global;
-
-	/**
 	 * Super constructor for all sub-instruction classes
 	 * 
 	 * @param maneuverType
@@ -48,7 +42,6 @@ public abstract class Instruction {
 		this.decisionPoint = decisionPoint;
 		this.maneuverType = maneuverType;
 		this.maneuver = Maneuver.getManeuverText(this.maneuverType);
-		this.global = null;
 	}
 
 	/**
@@ -70,12 +63,5 @@ public abstract class Instruction {
 	 */
 	public String getManeuver() {
 		return this.maneuver;
-	}
-
-	/**
-	 * @return The global landmark off road
-	 */
-	public Landmark getGlobal() {
-		return global;
 	}
 }
