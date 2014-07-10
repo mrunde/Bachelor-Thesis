@@ -38,9 +38,9 @@ public class GlobalInstruction extends Instruction {
 		if (category.startsWith("a") || category.startsWith("e")
 				|| category.startsWith("i") || category.startsWith("o")
 				|| category.startsWith("u")) {
-			instruction = "an " + category + " soon";
+			instruction += "an " + category + " soon";
 		} else {
-			instruction = "a " + category + " soon";
+			instruction += "a " + category + " soon";
 		}
 		return instruction;
 	}
@@ -55,9 +55,9 @@ public class GlobalInstruction extends Instruction {
 		if (title.startsWith("a") || title.startsWith("e")
 				|| title.startsWith("i") || title.startsWith("o")
 				|| title.startsWith("u")) {
-			instruction = "an " + title + " soon";
+			instruction += "an " + title + " soon";
 		} else {
-			instruction = "a " + title + " soon";
+			instruction += "a " + title + " soon";
 		}
 		return instruction;
 	}
