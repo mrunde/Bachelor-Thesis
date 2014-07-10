@@ -148,6 +148,11 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	private TextToSpeech tts;
 
 	/**
+	 * The Hitchhiker's Guide to the Galaxy :D
+	 */
+	private boolean time = false;
+
+	/**
 	 * This method is called when the application has been started
 	 */
 	@Override
@@ -620,9 +625,17 @@ public class MainActivity extends MapActivity implements OnInitListener {
 						case 0:
 							// Fastest selected
 							routeType = ROUTETYPE_FASTEST;
-							Toast.makeText(MainActivity.this,
-									"Fastest route type selected",
-									Toast.LENGTH_SHORT).show();
+							if (time) {
+								Toast.makeText(
+										MainActivity.this,
+										"Time is an illusion. Lunchtime doubly so.",
+										Toast.LENGTH_SHORT).show();
+							} else {
+								Toast.makeText(MainActivity.this,
+										"Fastest route type selected",
+										Toast.LENGTH_SHORT).show();
+								time = true;
+							}
 							break;
 						case 1:
 							// Shortest selected
