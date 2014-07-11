@@ -635,12 +635,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			do {
 				// Route is not displayed yet
 			} while (!this.isRouteDisplayed());
-			// Toast.makeText(NaviActivity.this,
-			// getResources().getString(R.string.routeNotDisplayed),
-			// Toast.LENGTH_SHORT).show();
-			// // Finish the activity to return to the MainActivity
-			// finish();
-			// } else {
+
 			// Get the first instruction and display it
 			displayInstruction(im.getInstruction(0));
 		}

@@ -23,13 +23,13 @@
     <string name="start">Start Guidance</string>
     <string name="routeNotCalculated">Route could not be calculated. Please try again or use another destination.</string><string name="routeNotCalculated_500">Route could not be calculated. Please change your destination. If you are using the pedestrian route type, please use a closer destination.</string>
     <string name="routeCalculated">Route has been calculated successfully.</string>
-    <string name="jsonImportNotSuccessful">The guidance information could not be imported. Please try again.</string>
-    <string name="gpsDisabled">GPS is disabled</string>
+    <string name="jsonImportNotSuccessful">The guidance information could not be imported. Please try again.</string><string name="gpsDisabled">GPS is disabled</string>
     <string name="recalculate">Recalculating route</string>
     <string name="openSettings">Open settings</string>
     <string name="cancel">Cancel</string>
     <string name="closeActivity_title">Stopping Navigation</string><string name="closeActivity_message">Are you sure you want to stop the navigation?</string>
     <string name="allInstructions">All route instructions</string>
+    
     
     
     
