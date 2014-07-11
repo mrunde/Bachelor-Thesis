@@ -61,6 +61,7 @@ import de.mrunde.bachelorthesis.R;
 import de.mrunde.bachelorthesis.basics.Landmark;
 import de.mrunde.bachelorthesis.basics.LandmarkCategory;
 import de.mrunde.bachelorthesis.basics.Maneuver;
+import de.mrunde.bachelorthesis.instructions.GlobalInstruction;
 import de.mrunde.bachelorthesis.instructions.Instruction;
 import de.mrunde.bachelorthesis.instructions.InstructionManager;
 import de.mrunde.bachelorthesis.instructions.LandmarkInstruction;
@@ -78,12 +79,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	/**
 	 * Index of the local landmark overlay
 	 */
-	private final int INDEX_OF_LOCAL_LANDMARK_OVERLAY = 3;
+	private final int INDEX_OF_LANDMARK_OVERLAY = 3;
 
-	/**
-	 * Index of the global landmark overlay
-	 */
-	private final int INDEX_OF_GLOBAL_LANDMARK_OVERLAY = 4;
 	// --- End of indexes ---
 
 	// --- The graphical user interface (GUI) ---
@@ -534,22 +531,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				// Create the instructions
 				createInstructions(result);
 
-				// Draw the route
+				// Draw the route and display the first instruction
 				drawRoute(result);
-
-				if (im.isImportSuccessful()) {
-					// Get the first instruction and display it
-					displayInstruction(im.getInstruction(0));
-				} else {
-					// Import was not successful
-					Toast.makeText(
-							NaviActivity.this,
-							getResources().getString(
-									R.string.jsonImportNotSuccessful),
-							Toast.LENGTH_SHORT).show();
-					// Finish the activity to return to MainActivity
-					finish();
-				}
 			}
 		}
 	}
@@ -640,6 +623,27 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		// Add the drawn route to the map
 		map.getOverlays().add(drawnRoute);
 		Log.d("NaviActivity", "Route overlay added");
+
+		if (!im.isImportSuccessful()) {
+			// Import was not successful
+			Toast.makeText(NaviActivity.this,
+					getResources().getString(R.string.jsonImportNotSuccessful),
+					Toast.LENGTH_SHORT).show();
+			// Finish the activity to return to the MainActivity
+			finish();
+		} else {
+			do {
+				// Route is not displayed yet
+			} while (!this.isRouteDisplayed());
+			// Toast.makeText(NaviActivity.this,
+			// getResources().getString(R.string.routeNotDisplayed),
+			// Toast.LENGTH_SHORT).show();
+			// // Finish the activity to return to the MainActivity
+			// finish();
+			// } else {
+			// Get the first instruction and display it
+			displayInstruction(im.getInstruction(0));
+		}
 	}
 
 	@Override
@@ -661,8 +665,11 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// Do nothing
-		return false;
+		if (this.map.getOverlays().size() > 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -861,31 +868,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				Maneuver.getDrawableId(instruction.getManeuverType())));
 
 		// --- Update the landmarks on the map (if available) ---
-		// Remove previous landmarks (if available)
-		// Remove global landmark
-		if (this.map.getOverlays().size() > this.INDEX_OF_GLOBAL_LANDMARK_OVERLAY) {
-			this.map.getOverlays()
-					.remove(this.INDEX_OF_GLOBAL_LANDMARK_OVERLAY);
-		}
-		// Remove local landmark
-		if (this.map.getOverlays().size() > this.INDEX_OF_LOCAL_LANDMARK_OVERLAY) {
-			this.map.getOverlays().remove(this.INDEX_OF_LOCAL_LANDMARK_OVERLAY);
-		}
-
-		// Add new global landmark (if available)
-		if (instruction.getGlobal() != null) {
-			Landmark newGlobalLandmark = instruction.getGlobal();
-			OverlayItem oi_newGlobalLandmark = new OverlayItem(
-					newGlobalLandmark.getCenter(),
-					newGlobalLandmark.getTitle(),
-					newGlobalLandmark.getCategory());
-			DefaultItemizedOverlay newGlobalLandmarkOverlay = new DefaultItemizedOverlay(
-					getResources().getDrawable(
-							LandmarkCategory.getDrawableId(newGlobalLandmark
-									.getCategory())));
-			newGlobalLandmarkOverlay.addItem(oi_newGlobalLandmark);
-			this.map.getOverlays().add(this.INDEX_OF_GLOBAL_LANDMARK_OVERLAY,
-					newGlobalLandmarkOverlay);
+		// Remove previous landmark (if available)
+		if (this.map.getOverlays().size() > this.INDEX_OF_LANDMARK_OVERLAY) {
+			this.map.getOverlays().remove(this.INDEX_OF_LANDMARK_OVERLAY);
 		}
 
 		// Add new local landmark (if available)
@@ -900,8 +885,25 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 							LandmarkCategory.getDrawableId(newLocalLandmark
 									.getCategory())));
 			newLocalLandmarkOverlay.addItem(oi_newLocalLandmark);
-			this.map.getOverlays().add(this.INDEX_OF_LOCAL_LANDMARK_OVERLAY,
+			this.map.getOverlays().add(this.INDEX_OF_LANDMARK_OVERLAY,
 					newLocalLandmarkOverlay);
+		}
+
+		// Add new global landmark (if available)
+		if (instruction.getClass().equals(GlobalInstruction.class)) {
+			Landmark newGlobalLandmark = ((GlobalInstruction) instruction)
+					.getGlobal();
+			OverlayItem oi_newGlobalLandmark = new OverlayItem(
+					newGlobalLandmark.getCenter(),
+					newGlobalLandmark.getTitle(),
+					newGlobalLandmark.getCategory());
+			DefaultItemizedOverlay newGlobalLandmarkOverlay = new DefaultItemizedOverlay(
+					getResources().getDrawable(
+							LandmarkCategory.getDrawableId(newGlobalLandmark
+									.getCategory())));
+			newGlobalLandmarkOverlay.addItem(oi_newGlobalLandmark);
+			this.map.getOverlays().add(this.INDEX_OF_LANDMARK_OVERLAY,
+					newGlobalLandmarkOverlay);
 		}
 
 		// Speak out the verbal instruction
