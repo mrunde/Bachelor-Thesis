@@ -3,6 +3,7 @@ package de.mrunde.bachelorthesis.instructions;
 import com.mapquest.android.maps.GeoPoint;
 
 import de.mrunde.bachelorthesis.basics.Landmark;
+import de.mrunde.bachelorthesis.basics.LandmarkCategory;
 import de.mrunde.bachelorthesis.basics.Maneuver;
 
 /**
@@ -38,8 +39,14 @@ public class LandmarkInstruction extends Instruction {
 	 */
 	public String toString() {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
-			String instruction = super.getManeuver() + " at the "
-					+ this.local.getFormattedCategory();
+			String instruction = super.getManeuver() + " at the ";
+			if (LandmarkCategory.SIGHTSEEING.equals(this.local.getCategory())) {
+				// Use landmark title for landmarks of the category SIGHTSEEING
+				instruction += this.local.getTitle();
+			} else {
+				// Use landmark category for all other landmarks
+				instruction += this.local.getFormattedCategory();
+			}
 			return instruction;
 		} else {
 			return null;
