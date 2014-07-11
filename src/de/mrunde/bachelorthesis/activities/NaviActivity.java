@@ -61,6 +61,7 @@ import de.mrunde.bachelorthesis.R;
 import de.mrunde.bachelorthesis.basics.Landmark;
 import de.mrunde.bachelorthesis.basics.LandmarkCategory;
 import de.mrunde.bachelorthesis.basics.Maneuver;
+import de.mrunde.bachelorthesis.basics.MyDefaultItemizedOverlay;
 import de.mrunde.bachelorthesis.instructions.GlobalInstruction;
 import de.mrunde.bachelorthesis.instructions.Instruction;
 import de.mrunde.bachelorthesis.instructions.InstructionManager;
@@ -876,7 +877,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			OverlayItem oi_newLocalLandmark = new OverlayItem(
 					newLocalLandmark.getCenter(), newLocalLandmark.getTitle(),
 					newLocalLandmark.getCategory());
-			DefaultItemizedOverlay newLocalLandmarkOverlay = new DefaultItemizedOverlay(
+			MyDefaultItemizedOverlay newLocalLandmarkOverlay = new MyDefaultItemizedOverlay(
 					getResources().getDrawable(
 							LandmarkCategory.getDrawableId(newLocalLandmark
 									.getCategory())));
@@ -893,7 +894,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 					newGlobalLandmark.getCenter(),
 					newGlobalLandmark.getTitle(),
 					newGlobalLandmark.getCategory());
-			DefaultItemizedOverlay newGlobalLandmarkOverlay = new DefaultItemizedOverlay(
+			MyDefaultItemizedOverlay newGlobalLandmarkOverlay = new MyDefaultItemizedOverlay(
 					getResources().getDrawable(
 							LandmarkCategory.getDrawableId(newGlobalLandmark
 									.getCategory())));
