@@ -192,14 +192,25 @@ public class InstructionManager {
 		this.streetFurniture = new ArrayList<StreetFurniture>();
 		try {
 			for (int i = 0; i < streetFurniture.length(); i++) {
-				GeoPoint center = new GeoPoint(
-						((JSONObject) streetFurniture.get(i)).getJSONObject(
-								"center").getDouble("lat"),
-						((JSONObject) streetFurniture.get(i)).getJSONObject(
-								"center").getDouble("lng"));
-				String category = ((JSONObject) streetFurniture.get(i))
-						.getString("category");
-				this.streetFurniture.add(new StreetFurniture(center, category));
+				GeoPoint center = new GeoPoint(streetFurniture.getJSONObject(i)
+						.getJSONObject("center").getDouble("lat"),
+						streetFurniture.getJSONObject(i)
+								.getJSONObject("center").getDouble("lng"));
+				String category = streetFurniture.getJSONObject(i).getString(
+						"category");
+				// Has the street furniture an individual radius of visual
+				// salience?
+				if (streetFurniture.getJSONObject(i).has("radius")) {
+					int radius = streetFurniture.getJSONObject(i).getInt(
+							"radius");
+					// Add a street furniture with individual radius
+					this.streetFurniture.add(new StreetFurniture(center,
+							category, radius));
+				} else {
+					// Add a street furniture with default radius
+					this.streetFurniture.add(new StreetFurniture(center,
+							category, MAX_DISTANCE_TO_STREET_FURNITURE));
+				}
 			}
 		} catch (JSONException e) {
 			// Error while parsing JSONArray
@@ -710,7 +721,7 @@ public class InstructionManager {
 
 				double distance = currentShapePoint
 						.distanceTo(streetFurnitureGeoPoint);
-				if (distance <= this.MAX_DISTANCE_TO_STREET_FURNITURE) {
+				if (distance <= this.streetFurniture.get(j).getRadius()) {
 					if (numberOfStreetFurniture[indexCategory] == 0) {
 						// Store the index of the shape point
 						indexLastStreetFurniture[indexCategory] = k;
