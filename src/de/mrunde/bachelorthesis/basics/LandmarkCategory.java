@@ -99,21 +99,37 @@ public abstract class LandmarkCategory {
 	public static int getDrawableId(String category) {
 		if (isCategory(category)) {
 			if (category.equals(CEMETERY))
-				return -1; // TODO
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/halloween-cemetery_12010
+				return R.drawable.landmark_cemetery;
 			if (category.equals(HARBOUR))
-				return -1; // TODO
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/anchor-white-shape-inside-a-black-rounded-square_27592
+				return R.drawable.landmark_harbour;
 			if (category.equals(LAKE))
-				return -1; // TODO
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/sea_3491
+				return R.drawable.landmark_lake;
 			if (category.equals(CHURCH))
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/church-black-silhouette-with-a-cross-on-top_34127
 				return R.drawable.landmark_church;
 			if (category.equals(CINEMA))
-				return -1; // TODO
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/film-strip-with-play-symbol_48406
+				return R.drawable.landmark_cinema;
 			if (category.equals(RESTAURANT))
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/fork-and-knife-cutlery-circle-interface-symbol-for-restaurant_45605
 				return R.drawable.landmark_restaurant;
 			if (category.equals(SHOP))
-				return -1; // TODO
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/shopping-cart-1_2772
+				return R.drawable.landmark_shop;
 			if (category.equals(SIGHTSEEING))
-				return -1; // TODO
+				// Source of image file:
+				// http://www.flaticon.com/free-icon/greek-temple-monument_482
+				return R.drawable.landmark_sightseeing;
 		}
 		return -1;
 	}
