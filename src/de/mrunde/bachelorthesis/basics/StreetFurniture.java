@@ -22,6 +22,11 @@ public class StreetFurniture {
 	private String category;
 
 	/**
+	 * Radius of visual salience
+	 */
+	private int radius;
+
+	/**
 	 * Constructor of the StreetFurniture class
 	 * 
 	 * @param center
@@ -29,8 +34,10 @@ public class StreetFurniture {
 	 * @param category
 	 *            Category (must be from list of categories from
 	 *            LandmarkCategory)
+	 * @param radius
+	 *            Radius of visual salience
 	 */
-	public StreetFurniture(GeoPoint center, String category) {
+	public StreetFurniture(GeoPoint center, String category, int radius) {
 		this.center = center;
 		if (StreetFurnitureCategory.isCategory(category)) {
 			this.category = category;
@@ -39,6 +46,7 @@ public class StreetFurniture {
 					"Category is not correct and will be set to null");
 			this.category = null;
 		}
+		this.radius = radius;
 	}
 
 	public String toString() {
@@ -61,5 +69,12 @@ public class StreetFurniture {
 	public String getCategory() {
 		String formattedCategory = category.replace("_", " ");
 		return formattedCategory;
+	}
+
+	/**
+	 * @return The radius of visual salience
+	 */
+	public int getRadius() {
+		return radius;
 	}
 }
