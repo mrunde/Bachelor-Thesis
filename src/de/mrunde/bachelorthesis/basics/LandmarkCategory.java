@@ -45,7 +45,7 @@ public abstract class LandmarkCategory {
 	public final static String SHOP = "shop";
 
 	/**
-	 * Sightseeing
+	 * Sightseeing (must always be replaced with the real name in the guidance)
 	 */
 	public final static String SIGHTSEEING = "sightseeing";
 
