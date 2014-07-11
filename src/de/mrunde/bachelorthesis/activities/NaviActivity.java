@@ -861,6 +861,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		// Get the corresponding instruction image and display it
 		this.iv_instruction.setImageDrawable(getResources().getDrawable(
 				Maneuver.getDrawableId(instruction.getManeuverType())));
+		// --- End of update the instruction view ---
 
 		// --- Update the landmarks on the map (if available) ---
 		// Remove previous landmark (if available)
@@ -900,6 +901,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			this.map.getOverlays().add(this.INDEX_OF_LANDMARK_OVERLAY,
 					newGlobalLandmarkOverlay);
 		}
+		// --- End of updating map ---
 
 		// Speak out the verbal instruction
 		speakInstruction();
