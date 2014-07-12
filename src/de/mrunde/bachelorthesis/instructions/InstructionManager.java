@@ -559,23 +559,22 @@ public class InstructionManager {
 		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
 				shapePoints);
 
-		for (int i = 0; i < this.globalLandmarks.size(); i++) {
-			// Get the landmark location
-			org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
-					this.globalLandmarks.get(i).getCenter().getLatitude(),
-					this.globalLandmarks.get(i).getCenter().getLongitude());
+		// Iterate through all shape points that lay between the current and
+		// the previous decision points beginning with the first of this segment
+		for (int i = indexPrevious + 2; i <= indexCurrent; i++) {
+			org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+					shapePoints[i].getLatitude(), shapePoints[i].getLongitude());
 
-			// Iterate through all shape points that lay between the current and
-			// the previous decision points
-			for (int j = indexCurrent; j > indexPrevious + 1; j--) {
-				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
-						shapePoints[j].getLatitude(),
-						shapePoints[j].getLongitude());
+			for (int j = 0; j < this.globalLandmarks.size(); j++) {
+				// Get the landmark location
+				org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
+						this.globalLandmarks.get(j).getCenter().getLatitude(),
+						this.globalLandmarks.get(j).getCenter().getLongitude());
 
 				double distance = currentShapePoint.distanceTo(currentLandmark);
-				if (distance <= this.globalLandmarks.get(i).getRadius()) {
-					result = new GlobalInstruction(shapePoints[j],
-							this.globalLandmarks.get(i));
+				if (distance <= this.globalLandmarks.get(j).getRadius()) {
+					result = new GlobalInstruction(shapePoints[i],
+							this.globalLandmarks.get(j));
 					return result;
 				}
 			}
@@ -610,23 +609,22 @@ public class InstructionManager {
 		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
 				shapePoints);
 
-		for (int i = 0; i < this.localLandmarks.size(); i++) {
-			// Get the landmark location
-			org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
-					this.localLandmarks.get(i).getCenter().getLatitude(),
-					this.localLandmarks.get(i).getCenter().getLongitude());
+		// Iterate through all shape points that lay between the current and
+		// the previous decision points beginning with the first of this segment
+		for (int i = indexPrevious + 2; i <= indexCurrent; i++) {
+			org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+					shapePoints[i].getLatitude(), shapePoints[i].getLongitude());
 
-			// Iterate through all shape points that lay between the current and
-			// the previous decision points
-			for (int j = indexCurrent; j > indexPrevious + 1; j--) {
-				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
-						shapePoints[j].getLatitude(),
-						shapePoints[j].getLongitude());
+			for (int j = 0; j < this.localLandmarks.size(); j++) {
+				// Get the landmark location
+				org.osmdroid.util.GeoPoint currentLandmark = new org.osmdroid.util.GeoPoint(
+						this.localLandmarks.get(j).getCenter().getLatitude(),
+						this.localLandmarks.get(j).getCenter().getLongitude());
 
 				double distance = currentShapePoint.distanceTo(currentLandmark);
-				if (distance <= this.localLandmarks.get(i).getRadius()) {
-					result = new GlobalInstruction(shapePoints[j],
-							this.localLandmarks.get(i));
+				if (distance <= this.localLandmarks.get(j).getRadius()) {
+					result = new GlobalInstruction(shapePoints[i],
+							this.localLandmarks.get(j));
 					return result;
 				}
 			}
@@ -698,33 +696,32 @@ public class InstructionManager {
 		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
 				shapePoints);
 
-		for (int j = 0; j < this.streetFurniture.size(); j++) {
-			// Get the street furniture category and store its index
-			int indexCategory = 0;
-			StreetFurniture currentStreetFurniture = this.streetFurniture
-					.get(j);
-			while (!categories[indexCategory].replace("_", " ").equals(
-					currentStreetFurniture.getCategory())) {
-				indexCategory++;
-			}
-			// Get the street furniture location
-			org.osmdroid.util.GeoPoint streetFurnitureGeoPoint = new org.osmdroid.util.GeoPoint(
-					currentStreetFurniture.getCenter().getLatitude(),
-					currentStreetFurniture.getCenter().getLongitude());
+		// Iterate through all shape points that lay between the current and
+		// the previous decision points beginning with the first of this segment
+		for (int i = indexPrevious + 2; i <= indexCurrent; i++) {
+			org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+					shapePoints[i].getLatitude(), shapePoints[i].getLongitude());
 
-			// Iterate through all shape points that lay between the current and
-			// the previous decision points
-			for (int k = indexCurrent; k > indexPrevious + 1; k--) {
-				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
-						shapePoints[k].getLatitude(),
-						shapePoints[k].getLongitude());
+			for (int j = 0; j < this.streetFurniture.size(); j++) {
+				// Get the street furniture category and store its index
+				int indexCategory = 0;
+				StreetFurniture currentStreetFurniture = this.streetFurniture
+						.get(j);
+				while (!categories[indexCategory].replace("_", " ").equals(
+						currentStreetFurniture.getCategory())) {
+					indexCategory++;
+				}
+				// Get the street furniture location
+				org.osmdroid.util.GeoPoint streetFurnitureGeoPoint = new org.osmdroid.util.GeoPoint(
+						currentStreetFurniture.getCenter().getLatitude(),
+						currentStreetFurniture.getCenter().getLongitude());
 
 				double distance = currentShapePoint
 						.distanceTo(streetFurnitureGeoPoint);
 				if (distance <= this.streetFurniture.get(j).getRadius()) {
 					if (numberOfStreetFurniture[indexCategory] == 0) {
 						// Store the index of the shape point
-						indexLastStreetFurniture[indexCategory] = k;
+						indexLastStreetFurniture[indexCategory] = i;
 					}
 					numberOfStreetFurniture[indexCategory]++;
 					break;
@@ -737,24 +734,24 @@ public class InstructionManager {
 		String[] result = null;
 
 		// Find a street furniture category that can be used for the instruction
-		for (int j = 0; j < categories.length; j++) {
+		for (int k = 0; k < categories.length; k++) {
 			// Check if the number of street furniture of this category is
 			// higher than the maximal allowed number
-			if (0 < numberOfStreetFurniture[j]
-					&& numberOfStreetFurniture[j] <= this.MAX_NUMBER_OF_STREET_FURNITURE) {
+			if (0 < numberOfStreetFurniture[k]
+					&& numberOfStreetFurniture[k] <= this.MAX_NUMBER_OF_STREET_FURNITURE) {
 				if (result == null) {
 					result = new String[2];
 				}
 				// Store the number of street furniture
-				result[0] = String.valueOf(numberOfStreetFurniture[j]);
+				result[0] = String.valueOf(numberOfStreetFurniture[k]);
 				// Store the category
-				result[1] = categories[j].replace("_", " ");
+				result[1] = categories[k].replace("_", " ");
 
 				// Check if any street furniture has been found or any
 				// intersections lay between the last street furniture and
 				// current decision point
 				if (searchForIntersections(decisionPoint,
-						shapePoints[indexLastStreetFurniture[j]]) > 0) {
+						shapePoints[indexLastStreetFurniture[k]]) > 0) {
 					result = null;
 					break;
 				}
