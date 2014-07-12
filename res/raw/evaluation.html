@@ -1,0 +1,411 @@
+<html>
+<head>
+
+<title>Evaluation of the data</title>
+
+<!-- Include jQuery -->
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<!-- Include the Leaflet framework -->
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+<style>
+	#map {
+		height: 100%;
+		width: 100%;
+	}
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+<script type="text/javascript">
+	// Display the map
+	var map = L.map('map').setView([51.955745, 7.626465], 15);
+	L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+		maxZoom: 18
+	}).addTo(map);
+	
+	// Store the JSON data
+	var intersections = '[' +
+		'{' +
+			'"lat": 51.955598,' +
+			'"lng": 7.624603,' +
+			'"description": "Moltkestraﬂe|Von-Kluck-Straﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.955623,' +
+			'"lng": 7.623874,' +
+			'"description": "Moltkestraﬂe|Wehrstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.955370,' +
+			'"lng": 7.621943,' +
+			'"description": "Moltkestraﬂe|Hermannstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.955000,' +
+			'"lng": 7.619861,' +
+			'"description": "Moltkestraﬂe|Weseler Straﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.955433,' +
+			'"lng": 7.619720,' +
+			'"description": "Moltkestraﬂe|Scharnhorststraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.956195,' +
+			'"lng": 7.619414,' +
+			'"description": "Weseler Straﬂe|Bismarckallee"' +
+		'},' +
+		'{' +
+			'"lat": 51.957285,' +
+			'"lng": 7.619656,' +
+			'"description": "Weseler Straﬂe|Adenaueralle"' +
+		'},' +
+		'{' +
+			'"lat": 51.958067,' +
+			'"lng": 7.613982,' +
+			'"description": "Adenaueralle|Annette-Allee"' +
+		'},' +
+		'{' +
+			'"lat": 51.959801,' +
+			'"lng": 7.612186,' +
+			'"description": "Himmelreichallee|"' +
+		'},' +
+		'{' +
+			'"lat": 51.959800,' +
+			'"lng": 7.612184,' +
+			'"description": "Himmelreichallee|"' +
+		'},' +
+		'{' +
+			'"lat": 51.960794,' +
+			'"lng": 7.610570,' +
+			'"description": "Himmelreichallee|Landoisstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.960281,' +
+			'"lng": 7.608533,' +
+			'"description": "Landroisstraﬂe|Robert-Koch-Straﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.955154,' +
+			'"lng": 7.627691,' +
+			'"description": "Hafenstraﬂe|S¸dstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.954807,' +
+			'"lng": 7.628697,' +
+			'"description": "Hafenstraﬂe|Graelstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.954452,' +
+			'"lng": 7.629762,' +
+			'"description": "Hafenstraﬂe|Engelstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.954328,' +
+			'"lng": 7.630151,' +
+			'"description": "Hafenstraﬂe|Junkerstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.953986,' +
+			'"lng": 7.631360,' +
+			'"description": "Hafenstraﬂe|Von-Steuben-Straﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.953743,' +
+			'"lng": 7.632647,' +
+			'"description": "Hafenstraﬂe|Bahnhofsstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.953022,' +
+			'"lng": 7.634422,' +
+			'"description": "Hafenstraﬂe|Hafenstraﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.952848,' +
+			'"lng": 7.636579,' +
+			'"description": "Hafenstraﬂe|Albersloher Weg"' +
+		'},' +
+		'{' +
+			'"lat": 51.952595,' +
+			'"lng": 7.636443,' +
+			'"description": "Albersloher Weg|Bernhard-Ernst-Straﬂe"' +
+		'},' +
+		'{' +
+			'"lat": 51.950887,' +
+			'"lng": 7.636928,' +
+			'"description": "Albersloher Weg|Hafenweg"' +
+		'}' +
+	']';
+	
+	var landmarks = '{' +
+		'"local": [' +
+			'{' +
+				'"title": "St. Antonius Church",' +
+				'"center": {' +
+					'"lat": 51.954810,' +
+					'"lng": 7.620609' +
+				'},' +
+				'"radius": 75,' +
+				'"category": "church"' +
+			'},' +
+			'{' +
+				'"title": "Cineplex M¸nster",' +
+				'"center": {' +
+					'"lat": 51.950578,' +
+					'"lng": 7.636925' +
+				'},' +
+				'"radius": 50,' +
+				'"category": "cinema"' +
+			'},' +
+			'{' +
+				'"title": "Kruse Baimken Restaurant",' +
+				'"center": {' +
+					'"lat": 51.957532,' +
+					'"lng": 7.619357' +
+				'},' +
+				'"radius": 50,' +
+				'"category": "restaurant"' +
+			'},' +
+			'{' +
+				'"title": "Tombstone Store",' +
+				'"center": {' +
+					'"lat": 51.960432,' +
+					'"lng": 7.608723' +
+				'},' +
+				'"radius": 25,' +
+				'"category": "shop"' +
+			'},' +
+			'{' +
+				'"title": "Aaseekugeln",' +
+				'"center": {' +
+					'"lat": 51.956978,' +
+					'"lng": 7.618208' +
+				'},' +
+				'"radius": 110,' +
+				'"category": "sightseeing"' +
+			'},' +
+			'{' +
+				'"title": "LBS Building",' +
+				'"center": {' +
+					'"lat": 51.959267,' +
+					'"lng": 7.613599' +
+				'},' +
+				'"radius": 150,' +
+				'"category": "sightseeing"' +
+			'},' +
+			'{' +
+				'"title": "M¸nster Schloss",' +
+				'"center": {' +
+					'"lat": 51.963561,' +
+					'"lng": 7.613183' +
+				'},' +
+				'"radius": 115,' +
+				'"category": "sightseeing"' +
+			'}' +
+		'],' +
+		'"global": [' +
+			'{' +
+				'"title": "Central Cemetery",' +
+				'"center": {' +
+					'"lat": 51.958702,' +
+					'"lng": 7.609642' +
+				'},' +
+				'"radius": 220,' +
+				'"category": "cemetery"' +
+			'},' +
+			'{' +
+				'"title": "Harbour",' +
+				'"center": {' +
+					'"lat": 51.951346,' +
+					'"lng": 7.639050' +
+				'},' +
+				'"radius": 170,' +
+				'"category": "harbour"' +
+			'},' +
+			'{' +
+				'"title": "Lake Aa",' +
+				'"center": {' +
+					'"lat": 51.956973,' +
+					'"lng": 7.616911' +
+				'},' +
+				'"radius": 200,' +
+				'"category": "lake"' +
+			'}' +
+		']' +
+	'}';
+	
+	var streetFurniture ='[' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.953156,' +
+				'"lng": 7.633780' +
+			'},' +
+			'"category": "railway_bridge",' +
+			'"radius": 50' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.952887,' +
+				'"lng": 7.635529' +
+			'},' +
+			'"category": "railway_bridge",' +
+			'"radius": 50' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.955000,' +
+				'"lng": 7.619861' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.956195,' +
+				'"lng": 7.619414' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.958067,' +
+				'"lng": 7.613982' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.954452,' +
+				'"lng": 7.629762' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.953986,' +
+				'"lng": 7.631360' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.953743,' +
+				'"lng": 7.632647' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.952848,' +
+				'"lng": 7.636579' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.950887,' +
+				'"lng": 7.636928' +
+			'},' +
+			'"category": "traffic_light"' +
+		'},' +
+		'{' +
+			'"center": {' +
+				'"lat": 51.955433,' +
+				'"lng": 7.619720' +
+			'},' +
+			'"category": "traffic_light"' +
+		'}' +
+	']';
+	
+	// Create the intersections markers and display them
+	var json = JSON.parse(intersections);
+	$.each(json, function(index, object) {
+		var lat, lng, description;
+		$.each(object, function(key, value) {
+			if (key == 'lat') {
+				lat = value;
+			}
+			if (key == 'lng') {
+				lng = value;
+			}
+			if (key == 'description') {
+				description = value;
+			}
+		});
+		var marker = L.marker([lat, lng]).addTo(map);
+		marker.bindPopup(description);
+	});
+	
+	// Create the landmarks circles and display them
+	var json = JSON.parse(landmarks);
+	$.each(json, function(arrayIndex, array) {
+		$.each(array, function(index, object) {
+			var title, lat, lng, radius, category;
+			$.each(object, function(key, value) {
+				if (key == 'title') {
+					title = value;
+				}
+				if (key == 'center') {
+					$.each(value, function(centerKey, centerValue) {
+						if (centerKey == 'lat') {
+							lat = centerValue;
+						}
+						if (centerKey == 'lng') {
+							lng = centerValue;
+						}
+					});
+				}
+				if (key == 'radius') {
+					radius = value;
+				}
+				if (key == 'category') {
+					category = value;
+				}
+			});
+			var circle = L.circle([lat, lng], radius, {
+				color: 'red',
+				fillColor: 'red',
+				fillOpacity: 0.3
+			}).addTo(map);
+			circle.bindPopup(title + ' (' + category + ')');
+		});
+	});
+	
+	// Create the street furniture circles and display them
+	var json = JSON.parse(streetFurniture);
+	$.each(json, function(index, object) {
+		var lat, lng, radius = 16, category;
+		$.each(object, function(key, value) {
+			if (key == 'center') {
+				$.each(value, function(centerKey, centerValue) {
+					if (centerKey == 'lat') {
+						lat = centerValue;
+					}
+					if (centerKey == 'lng') {
+						lng = centerValue;
+					}
+				});
+			}
+			if (key == 'radius') {
+				radius = value;
+			}
+			if (key == 'category') {
+				category = value;
+			}
+		});
+		var circle = L.circle([lat, lng], radius, {
+			color: 'green',
+			fillColor: 'green',
+			fillOpacity: 0.3
+		}).addTo(map);
+		circle.bindPopup(category);
+	});
+</script>
+
+</body>
+</html>
