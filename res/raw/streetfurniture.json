@@ -12,7 +12,8 @@
 			"lat": 51.952887,
 			"lng": 7.635529
 		},
-		"category": "railway_bridge"
+		"category": "railway_bridge",
+		"radius": 50
 	},
 	{
 		"center": {
