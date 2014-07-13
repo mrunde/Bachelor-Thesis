@@ -709,32 +709,33 @@ public class InstructionManager {
 		int indexPrevious = searchDecisionPointIndex(previousDecisionPoint,
 				shapePoints);
 
-		// Iterate through all shape points that lay between the current and
-		// the previous decision points beginning with the first of this segment
-		for (int i = indexPrevious + 2; i <= indexCurrent; i++) {
-			org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
-					shapePoints[i].getLatitude(), shapePoints[i].getLongitude());
+		for (int i = 0; i < this.streetFurniture.size(); i++) {
+			// Get the street furniture category and store its index
+			int indexCategory = 0;
+			StreetFurniture currentStreetFurniture = this.streetFurniture
+					.get(i);
+			while (!categories[indexCategory].replace("_", " ").equals(
+					currentStreetFurniture.getCategory())) {
+				indexCategory++;
+			}
+			// Get the street furniture location
+			org.osmdroid.util.GeoPoint streetFurnitureGeoPoint = new org.osmdroid.util.GeoPoint(
+					currentStreetFurniture.getCenter().getLatitude(),
+					currentStreetFurniture.getCenter().getLongitude());
 
-			for (int j = 0; j < this.streetFurniture.size(); j++) {
-				// Get the street furniture category and store its index
-				int indexCategory = 0;
-				StreetFurniture currentStreetFurniture = this.streetFurniture
-						.get(j);
-				while (!categories[indexCategory].replace("_", " ").equals(
-						currentStreetFurniture.getCategory())) {
-					indexCategory++;
-				}
-				// Get the street furniture location
-				org.osmdroid.util.GeoPoint streetFurnitureGeoPoint = new org.osmdroid.util.GeoPoint(
-						currentStreetFurniture.getCenter().getLatitude(),
-						currentStreetFurniture.getCenter().getLongitude());
+			// Iterate through all shape points that lay between the current and
+			// the previous decision points
+			for (int j = indexCurrent; j > indexPrevious + 1; j--) {
+				org.osmdroid.util.GeoPoint currentShapePoint = new org.osmdroid.util.GeoPoint(
+						shapePoints[j].getLatitude(),
+						shapePoints[j].getLongitude());
 
 				double distance = currentShapePoint
 						.distanceTo(streetFurnitureGeoPoint);
-				if (distance <= this.streetFurniture.get(j).getRadius()) {
+				if (distance <= this.streetFurniture.get(i).getRadius()) {
 					if (numberOfStreetFurniture[indexCategory] == 0) {
 						// Store the index of the shape point
-						indexLastStreetFurniture[indexCategory] = i;
+						indexLastStreetFurniture[indexCategory] = j;
 					}
 					numberOfStreetFurniture[indexCategory]++;
 					break;
@@ -760,12 +761,12 @@ public class InstructionManager {
 				// Store the category
 				result[1] = categories[k].replace("_", " ");
 
-				// Check if any street furniture has been found or any
-				// intersections lay between the last street furniture and
-				// current decision point
+				// Check if any intersections lay between the last street
+				// furniture and current decision point
 				if (searchForIntersections(decisionPoint,
 						shapePoints[indexLastStreetFurniture[k]]) > 0) {
 					result = null;
+				} else {
 					break;
 				}
 			}
