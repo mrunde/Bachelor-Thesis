@@ -19,6 +19,11 @@ public class LandmarkInstruction extends Instruction {
 	private Landmark local;
 
 	/**
+	 * Is the landmark on the left or right from the user's perspective?
+	 */
+	private boolean leftTurn;
+
+	/**
 	 * Constructor of the LandmarkInstruction class
 	 * 
 	 * @param decisionPoint
@@ -29,9 +34,10 @@ public class LandmarkInstruction extends Instruction {
 	 *            The local landmark at the decision point
 	 */
 	public LandmarkInstruction(GeoPoint decisionPoint, int maneuverType,
-			Landmark local) {
+			Landmark local, boolean leftTurn) {
 		super(decisionPoint, maneuverType);
 		this.local = local;
+		this.leftTurn = leftTurn;
 	}
 
 	/**
@@ -47,6 +53,11 @@ public class LandmarkInstruction extends Instruction {
 				// Use landmark category for all other landmarks
 				instruction += this.local.getFormattedCategory();
 			}
+			if (this.leftTurn) {
+				instruction += " on your left";
+			} else {
+				instruction += " on your right";
+			}
 			return instruction;
 		} else {
 			return null;
@@ -61,6 +72,11 @@ public class LandmarkInstruction extends Instruction {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
 			String instruction = super.getManeuver() + " at the "
 					+ this.local.getTitle();
+			if (this.leftTurn) {
+				instruction += " on your left";
+			} else {
+				instruction += " on your right";
+			}
 			return instruction;
 		} else {
 			return null;
@@ -72,5 +88,13 @@ public class LandmarkInstruction extends Instruction {
 	 */
 	public Landmark getLocal() {
 		return this.local;
+	}
+
+	/**
+	 * @return Whether the landmark is on the left (<code>TRUE</code>) or right
+	 *         (<code>FALSE</code>) from the user's perspective
+	 */
+	public boolean getLeftTurn() {
+		return this.leftTurn;
 	}
 }

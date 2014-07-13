@@ -500,9 +500,18 @@ public class InstructionManager {
 				// Search for local landmark or street furniture to create
 				// instruction
 				if ((localLandmark = searchForLocalLandmark(decisionPoint)) != null) {
+					// Get the shape points from the route
+					GeoPoint[] shapePoints = this.route.getShapePoints();
+					// Find the shape points index of this local landmark
+					int indexDecisionPoint = searchDecisionPointIndex(
+							decisionPoint, shapePoints);
+
 					// Create a LandmarkInstruction
 					instruction[1] = new LandmarkInstruction(decisionPoint,
-							maneuverType, localLandmark);
+							maneuverType, localLandmark, isLeftTurn(
+									shapePoints[indexDecisionPoint - 1],
+									shapePoints[indexDecisionPoint],
+									localLandmark.getCenter()));
 				} else if ((streetFurniture = searchForStreetFurniture(
 						decisionPoint, previousDecisionPoint)) != null) {
 					// Create a StreetFurnitureInstruction from one street
@@ -574,7 +583,9 @@ public class InstructionManager {
 				double distance = currentShapePoint.distanceTo(currentLandmark);
 				if (distance <= this.globalLandmarks.get(j).getRadius()) {
 					result = new GlobalInstruction(shapePoints[i],
-							this.globalLandmarks.get(j));
+							this.globalLandmarks.get(j), isLeftTurn(
+									shapePoints[i], shapePoints[i - 1],
+									decisionPoint));
 					return result;
 				}
 			}
@@ -624,7 +635,9 @@ public class InstructionManager {
 				double distance = currentShapePoint.distanceTo(currentLandmark);
 				if (distance <= this.localLandmarks.get(j).getRadius()) {
 					result = new GlobalInstruction(shapePoints[i],
-							this.localLandmarks.get(j));
+							this.localLandmarks.get(j), isLeftTurn(
+									shapePoints[i], shapePoints[i - 1],
+									decisionPoint));
 					return result;
 				}
 			}
@@ -843,5 +856,33 @@ public class InstructionManager {
 			}
 		}
 		return index;
+	}
+
+	/**
+	 * Algorithm to calculate whether the triangle of three points perform a
+	 * left turn or a right turn. This is done to find out whether a landmark is
+	 * on the right or left side from the user's perspective
+	 * 
+	 * @param p1
+	 *            Previous shape point
+	 * @param p2
+	 *            Current shape point
+	 * @param p3
+	 *            Landmark
+	 * @return <code>TRUE</code>: left turn<br/>
+	 *         <code>FALSE</code>: right turn
+	 */
+	private boolean isLeftTurn(GeoPoint p1, GeoPoint p2, GeoPoint p3) {
+		double result = (p2.getLongitude() - p1.getLongitude())
+				* (p3.getLatitude() - p1.getLatitude())
+				- (p2.getLatitude() - p1.getLatitude())
+				* (p3.getLongitude() - p1.getLongitude());
+		if (result > 0) {
+			// Left turn
+			return true;
+		} else {
+			// Right turn
+			return false;
+		}
 	}
 }

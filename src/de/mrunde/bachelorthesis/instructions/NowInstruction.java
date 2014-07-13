@@ -17,9 +17,14 @@ public class NowInstruction extends Instruction {
 	private Landmark global;
 
 	/**
-	 * Is the landmark of the category sightseeing or not?
+	 * Is the global landmark of the category sightseeing or not?
 	 */
 	private boolean sightseeingLandmark;
+
+	/**
+	 * Is the global landmark on the left or right from the user's perspective?
+	 */
+	private boolean leftTurn;
 
 	/**
 	 * Constructor of the LandmarkInstruction class
@@ -33,6 +38,7 @@ public class NowInstruction extends Instruction {
 			this.global = ((GlobalInstruction) instruction).getGlobal();
 			this.sightseeingLandmark = ((GlobalInstruction) instruction)
 					.getGlobal().getCategory() == LandmarkCategory.SIGHTSEEING;
+			this.leftTurn = ((GlobalInstruction) instruction).getLeftTurn();
 		} else {
 			this.global = null;
 		}
@@ -46,9 +52,14 @@ public class NowInstruction extends Instruction {
 			// Global now instruction
 			String instruction = "You pass the ";
 			if (this.sightseeingLandmark) {
-				instruction += this.global.getTitle() + " now";
+				instruction += this.global.getTitle();
 			} else {
-				instruction += this.global.getCategory() + " now";
+				instruction += this.global.getCategory();
+			}
+			if (this.leftTurn) {
+				instruction += " now on your left";
+			} else {
+				instruction += " now on your right";
 			}
 			return instruction;
 		} else if (Maneuver.isTurnAction(super.getManeuverType())) {

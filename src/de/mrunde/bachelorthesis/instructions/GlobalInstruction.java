@@ -18,6 +18,11 @@ public class GlobalInstruction extends Instruction {
 	private Landmark global;
 
 	/**
+	 * Is the landmark on the left or right from the user's perspective?
+	 */
+	private boolean leftTurn;
+
+	/**
 	 * Constructor of the GlobalInstruction class
 	 * 
 	 * @param instructionPoint
@@ -25,9 +30,11 @@ public class GlobalInstruction extends Instruction {
 	 * @param global
 	 *            The global landmark along the route
 	 */
-	public GlobalInstruction(GeoPoint instructionPoint, Landmark global) {
+	public GlobalInstruction(GeoPoint instructionPoint, Landmark global,
+			boolean leftTurn) {
 		super(instructionPoint, 0);
 		this.global = global;
+		this.leftTurn = leftTurn;
 	}
 
 	/**
@@ -43,6 +50,11 @@ public class GlobalInstruction extends Instruction {
 			instruction += "the " + this.global.getFormattedCategory()
 					+ " soon";
 		}
+		if (this.leftTurn) {
+			instruction += " on your left";
+		} else {
+			instruction += " on your right";
+		}
 		return instruction;
 	}
 
@@ -53,6 +65,11 @@ public class GlobalInstruction extends Instruction {
 	public String toExtendedString() {
 		String instruction = "You will pass the " + this.global.getTitle()
 				+ " soon";
+		if (this.leftTurn) {
+			instruction += " on your left";
+		} else {
+			instruction += " on your right";
+		}
 		return instruction;
 	}
 
@@ -61,5 +78,13 @@ public class GlobalInstruction extends Instruction {
 	 */
 	public Landmark getGlobal() {
 		return this.global;
+	}
+
+	/**
+	 * @return Whether the landmark is on the left (<code>TRUE</code>) or right
+	 *         (<code>FALSE</code>) from the user's perspective
+	 */
+	public boolean getLeftTurn() {
+		return this.leftTurn;
 	}
 }
