@@ -157,13 +157,13 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	/**
 	 * Minimum distance for a route segment to use a NowInstruction
 	 */
-	private final int MIN_DISTANCE_FOR_NOW_INSTRUCTION = 1000;
+	private final int MIN_DISTANCE_FOR_NOW_INSTRUCTION = 100;
 
 	/**
 	 * The NowInstruction will be returned at this distance before reaching the
 	 * next decision point
 	 */
-	private final int DISTANCE_FOR_NOW_INSTRUCTION = 100;
+	private final int DISTANCE_FOR_NOW_INSTRUCTION = 20;
 
 	/**
 	 * Variable to control if the usage of a NowInstruction has been checked
@@ -178,7 +178,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	/**
 	 * Maximum distance to a decision point when it is supposed to be reached
 	 */
-	private final int MAX_DISTANCE_TO_DECISION_POINT = 20;
+	private final int MAX_DISTANCE_TO_DECISION_POINT = 10;
 
 	/**
 	 * Store the last distance between the next decision point and the current
@@ -768,13 +768,17 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			double distanceDP2 = results[0];
 
 			// Check the distances with the stored ones
-			if (distanceDP1 < MAX_DISTANCE_TO_DECISION_POINT) {
-				// Distance to decision point is less than 20m so the
+			if (distanceDP1 < MAX_DISTANCE_TO_DECISION_POINT
+					&& distanceCounter > 0) {
+				// Distance to decision point is less than
+				// MAX_DISTANCE_TO_DECISION_POINT and increasing, so the
 				// instruction is being updated
 				updateInstruction();
 			} else if (distanceDP1 < DISTANCE_FOR_NOW_INSTRUCTION
 					&& nowInstructionUsed == true) {
-				// Distance to
+				// Distance to decision point is less than
+				// DISTANCE_FOR_NOW_INSTRUCTION and decreasing, so a now
+				// instruction is prompted to the user
 				updateNowInstruction();
 			} else if (distanceDP1 > lastDistanceDP1
 					&& distanceDP2 < lastDistanceDP2) {
@@ -934,7 +938,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 		// Display the verbal instruction
 		this.tv_instruction.setText(verbalInstruction);
 
-		// The instruction image stays the same
+		// The instruction image stays the same so nothing has to be done here
 
 		// Speak out the verbal instruction
 		speakInstruction();
