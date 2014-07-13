@@ -3,6 +3,7 @@ package de.mrunde.bachelorthesis.instructions;
 import com.mapquest.android.maps.GeoPoint;
 
 import de.mrunde.bachelorthesis.basics.Landmark;
+import de.mrunde.bachelorthesis.basics.LandmarkCategory;
 
 /**
  * This is a "global landmark"-based instruction.
@@ -34,13 +35,13 @@ public class GlobalInstruction extends Instruction {
 	 */
 	public String toString() {
 		String instruction = "You will pass ";
-		String category = this.global.getFormattedCategory();
-		if (category.startsWith("a") || category.startsWith("e")
-				|| category.startsWith("i") || category.startsWith("o")
-				|| category.startsWith("u")) {
-			instruction += "an " + category + " soon";
+		if (LandmarkCategory.SIGHTSEEING.equals(this.global.getCategory())) {
+			// Use landmark title for landmarks of the category SIGHTSEEING
+			instruction += "the " + this.global.getTitle() + " soon";
 		} else {
-			instruction += "a " + category + " soon";
+			// Use landmark category for all other landmarks
+			instruction += "the " + this.global.getFormattedCategory()
+					+ " soon";
 		}
 		return instruction;
 	}
@@ -50,15 +51,8 @@ public class GlobalInstruction extends Instruction {
 	 *         the landmark instead of its category
 	 */
 	public String toExtendedString() {
-		String instruction = "You will pass ";
-		String title = this.global.getTitle();
-		if (title.startsWith("a") || title.startsWith("e")
-				|| title.startsWith("i") || title.startsWith("o")
-				|| title.startsWith("u")) {
-			instruction += "an " + title + " soon";
-		} else {
-			instruction += "a " + title + " soon";
-		}
+		String instruction = "You will pass the " + this.global.getTitle()
+				+ " soon";
 		return instruction;
 	}
 
