@@ -163,7 +163,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 * The NowInstruction will be returned at this distance before reaching the
 	 * next decision point
 	 */
-	private final int DISTANCE_FOR_NOW_INSTRUCTION = 20;
+	private final int DISTANCE_FOR_NOW_INSTRUCTION = 48;
 
 	/**
 	 * Variable to control if the usage of a NowInstruction has been checked
@@ -178,7 +178,7 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	/**
 	 * Maximum distance to a decision point when it is supposed to be reached
 	 */
-	private final int MAX_DISTANCE_TO_DECISION_POINT = 10;
+	private final int MAX_DISTANCE_TO_DECISION_POINT = 32;
 
 	/**
 	 * Store the last distance between the next decision point and the current
@@ -214,6 +214,13 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 * TextToSpeech for audio output
 	 */
 	private TextToSpeech tts;
+
+	/**
+	 * Store all logs of the <code>onLocationChanged()</code> and
+	 * <code>updateInstruction()</code> methods in this String to display them
+	 * on the application via the <code>OptionsMenu</code>
+	 */
+	private String debugger = "";
 
 	/**
 	 * This method is called when the application has been started
@@ -277,8 +284,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void setupMapView() {
 		this.map = (MapView) findViewById(R.id.map);
 		map.setBuiltInZoomControls(false);
-		map.setClickable(true);
-		map.setLongClickable(true);
+		map.setClickable(true); // TODO must be set to false in final version
+		map.setLongClickable(true); // TODO must be set to false in final
+									// version
 	}
 
 	/**
@@ -690,13 +698,23 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			String[] allInstructions = im.getVerbalInstructions();
 
 			// Display all instructions in a list
-			AlertDialog.Builder builder = new AlertDialog.Builder(
+			AlertDialog.Builder builder1 = new AlertDialog.Builder(
 					NaviActivity.this);
-			builder.setTitle(R.string.allInstructions);
-			builder.setItems(allInstructions, null);
+			builder1.setTitle(R.string.allInstructions);
+			builder1.setItems(allInstructions, null);
 
-			AlertDialog alertDialog = builder.create();
-			alertDialog.show();
+			AlertDialog alertDialog1 = builder1.create();
+			alertDialog1.show();
+			return true;
+		case R.id.menu_debugger:
+			// Display all stored logs in a list
+			AlertDialog.Builder builder2 = new AlertDialog.Builder(
+					NaviActivity.this);
+			builder2.setTitle(R.string.menu_debugger);
+			builder2.setMessage(debugger);
+
+			AlertDialog alertDialog2 = builder2.create();
+			alertDialog2.show();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -735,6 +753,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 
 	@Override
 	public void onLocationChanged(Location location) {
+		debugger += "onLocationChanged() called...\n";
+
 		double lat = location.getLatitude();
 		double lng = location.getLongitude();
 
@@ -767,12 +787,17 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 			Location.distanceBetween(lat, lng, dp2Lat, dp2Lng, results);
 			double distanceDP2 = results[0];
 
+			// Log the distances
+			String distancesString = "LastDistanceDP1: " + lastDistanceDP1
+					+ " | distanceDP1: " + distanceDP1 + " | LastDistanceDP2: "
+					+ lastDistanceDP2 + " | distanceDP2: " + distanceDP2;
+			debugger += distancesString + "\n";
+			Log.v("NaviActivity.onLocationChanged", distancesString);
+
 			// Check the distances with the stored ones
-			if (distanceDP1 < MAX_DISTANCE_TO_DECISION_POINT
-					&& distanceCounter > 0) {
+			if (distanceDP1 < MAX_DISTANCE_TO_DECISION_POINT) {
 				// Distance to decision point is less than
-				// MAX_DISTANCE_TO_DECISION_POINT and increasing, so the
-				// instruction is being updated
+				// MAX_DISTANCE_TO_DECISION_POINT
 				updateInstruction();
 			} else if (distanceDP1 < DISTANCE_FOR_NOW_INSTRUCTION
 					&& nowInstructionUsed == true) {
@@ -787,8 +812,10 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				lastDistanceDP1 = distanceDP1;
 				lastDistanceDP2 = distanceDP2;
 				distanceCounter++;
-				Log.v("NaviActivity.onLocationChanged", "distanceCounter: "
-						+ distanceCounter);
+
+				String logMessage = "distanceCounter: " + distanceCounter;
+				debugger += logMessage + "\n";
+				Log.v("NaviActivity.onLocationChanged", logMessage);
 			} else if (distanceDP1 > lastDistanceDP1
 					&& distanceDP2 > lastDistanceDP2) {
 				// Distance to the next decision point and the decision point
@@ -796,8 +823,11 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				lastDistanceDP1 = distanceDP1;
 				lastDistanceDP2 = distanceDP2;
 				distanceCounter--;
-				Log.v("NaviActivity.onLocationChanged",
-						"distanceIncreaseCounter: " + distanceCounter);
+
+				String logMessage = "distanceIncreaseCounter: "
+						+ distanceCounter;
+				debugger += logMessage + "\n";
+				Log.v("NaviActivity.onLocationChanged", logMessage);
 			}
 
 			// Check if the whole guidance needs to be reloaded due to a driving
@@ -833,7 +863,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	 * current instruction to the following instruction.
 	 */
 	private void updateInstruction() {
-		Log.i("NaviActivity", "Updating Instruction...");
+		String logMessage = "Updating Instruction...";
+		debugger += logMessage + "\n";
+		Log.i("NaviActivity", logMessage);
 
 		// Reset the distances, their counters, and the NowInstruction
 		// controllers

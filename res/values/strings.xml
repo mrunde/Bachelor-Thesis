@@ -11,7 +11,7 @@
     
     <string name="menu_routeTypes">Change route type</string><string name="menu_help">Help</string><string name="menu_about">About</string>
 
-    <string name="menu_allInstructions">Show all instructions</string><string-array name="routeTypes">
+    <string name="menu_allInstructions">Show all instructions</string><string name="menu_debugger">Debugger</string><string-array name="routeTypes">
         <item>Fastest</item>
         <item>Shortest</item>
         <item>Pedestrian</item>
@@ -29,6 +29,7 @@
     <string name="cancel">Cancel</string>
     <string name="closeActivity_title">Stopping Navigation</string><string name="closeActivity_message">Are you sure you want to stop the navigation?</string>
     <string name="allInstructions">All route instructions</string>
+    
     
     
     
