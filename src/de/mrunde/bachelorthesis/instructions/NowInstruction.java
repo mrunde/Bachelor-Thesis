@@ -50,21 +50,21 @@ public class NowInstruction extends Instruction {
 	public String toString() {
 		if (this.global != null) {
 			// Global now instruction
-			String instruction = "You pass the ";
+			String instruction = "Now you will pass the ";
 			if (this.sightseeingLandmark) {
 				instruction += this.global.getTitle();
 			} else {
 				instruction += this.global.getCategory();
 			}
 			if (this.leftTurn) {
-				instruction += " now on your left";
+				instruction += " on your left";
 			} else {
-				instruction += " now on your right";
+				instruction += " on your right";
 			}
 			return instruction;
 		} else if (Maneuver.isTurnAction(super.getManeuverType())) {
 			// Local now instruction
-			String instruction = super.getManeuver() + " now";
+			String instruction = "Now " + super.getManeuver();
 			return instruction;
 		} else {
 			// No turn action happens, can be ignored
