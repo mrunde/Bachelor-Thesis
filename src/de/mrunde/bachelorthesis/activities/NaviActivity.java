@@ -805,6 +805,9 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 				// DISTANCE_FOR_NOW_INSTRUCTION and decreasing, so a now
 				// instruction is prompted to the user
 				updateNowInstruction();
+				// Set variable nowInstructionUsed to false, so that the now
+				// instruction is only used once
+				nowInstructionUsed = false;
 			} else if (distanceDP1 > lastDistanceDP1
 					&& distanceDP2 < lastDistanceDP2) {
 				// The distance to the next decision point has increased and the
