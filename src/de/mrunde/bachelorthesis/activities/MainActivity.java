@@ -177,8 +177,6 @@ public class MainActivity extends MapActivity implements OnInitListener {
 	 */
 	private void setupGUI() {
 		this.edt_destination = (EditText) findViewById(R.id.edt_destination);
-		// TODO just for testing, must be deleted...
-		edt_destination.setText("Am Kanonengraben, Münster");
 
 		this.btn_search = (Button) findViewById(R.id.btn_search);
 		btn_search.setOnClickListener(new OnClickListener() {
