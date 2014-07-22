@@ -284,9 +284,8 @@ public class NaviActivity extends MapActivity implements OnInitListener,
 	private void setupMapView() {
 		this.map = (MapView) findViewById(R.id.map);
 		map.setBuiltInZoomControls(false);
-		map.setClickable(true); // TODO must be set to false in final version
-		map.setLongClickable(true); // TODO must be set to false in final
-									// version
+		map.setClickable(false);
+		map.setLongClickable(false);
 	}
 
 	/**
