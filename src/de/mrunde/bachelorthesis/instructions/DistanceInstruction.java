@@ -37,8 +37,8 @@ public class DistanceInstruction extends Instruction {
 	 */
 	public String toString() {
 		if (Maneuver.isTurnAction(super.getManeuverType())) {
-			String instruction = super.getManeuver();
 			if (this.distance > 0) {
+				String instruction = super.getManeuver();
 				instruction += " in ";
 				if (this.distance >= 1000) {
 					float distanceAsFloat = ((float) distance) / 1000;
@@ -46,8 +46,12 @@ public class DistanceInstruction extends Instruction {
 				} else {
 					instruction += distance + " meters";
 				}
+				return instruction;
+			} else {
+				// Return toString() result of NowInstruction for distances
+				// not greater than 0
+				return new NowInstruction(this).toString();
 			}
-			return instruction;
 		} else {
 			return null;
 		}
