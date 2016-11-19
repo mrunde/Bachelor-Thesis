@@ -3,6 +3,8 @@ Bachelor-Thesis
 
 Integrating global and local landmarks into mobile navigation services
 
+![Order of Instructions](https://raw.githubusercontent.com/mrunde/Bachelor-Thesis/master/order_of_instructions.png)
+
 -----
 
 The MIT License (MIT)
